@@ -20,7 +20,7 @@ All operational details and official URLs are centralised in `src/config.ts`.
 - `assemblyArea`: CLTE assembly destination
 - `links`: WSH Portal, online fault report, emergency information, student insurance, and Haze SOP
 
-Leave a link as an empty string to show a clearly labelled “Link to be confirmed” button. No partial or inferred URL is used; replace the placeholders only with complete official destinations.
+Leave a link as an empty string to hide that action. Only complete, confirmed official destinations are shown in the interface.
 
 ## Updating scenarios
 
