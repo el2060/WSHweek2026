@@ -46,7 +46,9 @@ Content was checked against:
 - `CLTE WSH Staff briefing_29July.pdf`
 - `CLTE WSH team meet_July26.pdf`
 
-Confirmed from the decks: Admin Field; 6460 6999 for emergencies; prompt injury reporting via WSH Portal; 6460 6000 / online fault reporting for hazards and defects; CLTE emergency roles; Rest & Recovery locations; and the 27 April wet-weather incident near Block 73.
+Confirmed from the decks: Admin Field; 6460 6999 for campus emergencies; prompt injury reporting via WSH Portal; 6460 6000 / online fault reporting for hazards and defects; CLTE emergency roles; Rest & Recovery locations; and the 27 April wet-weather incident near Block 73.
+
+The supplied campus accident SOP adds the serious-medical-injury sequence: call 995 immediately, give the exact location, then inform the NP Guard Post at 6460 6999 so security can guide the ambulance. For student cases, SAS at 6460 6777 coordinates with the relevant School/Division and follows up. The mock report uses the supplied WSH Portal form as a structural reference, but reveals only three practice steps and never asks for names or contact details.
 
 Still requiring official confirmation or full URLs: WSH Portal, emergency-information page, Student Insurance page, Haze SOP, and any building-specific evacuation routes. No route from a CLTE building has been invented in this prototype.
 
