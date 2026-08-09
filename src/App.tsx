@@ -8,11 +8,11 @@ type Profile = { name: string; context: 'office' | 'facilitation' | 'student' | 
 const initialProgress: Progress = { office: false, walkway: false, evacuation: false, reporting: false };
 const initialProfile: Profile = { name: '', context: 'mixed', focus: 'notice' };
 
-function useSessionProgress() {
+function useSavedProgress() {
   const [progress, setProgress] = useState<Progress>(() => {
-    try { return JSON.parse(sessionStorage.getItem('clte-safety-progress') || '') as Progress; } catch { return initialProgress; }
+    try { return JSON.parse(localStorage.getItem('clte-safety-progress') || sessionStorage.getItem('clte-safety-progress') || '') as Progress; } catch { return initialProgress; }
   });
-  useEffect(() => sessionStorage.setItem('clte-safety-progress', JSON.stringify(progress)), [progress]);
+  useEffect(() => localStorage.setItem('clte-safety-progress', JSON.stringify(progress)), [progress]);
   return [progress, setProgress] as const;
 }
 
@@ -29,15 +29,18 @@ function SceneHeader({ kicker, title, copy }: { kicker: string; title: string; c
   return <div className="scene-heading"><p className="eyebrow">{kicker}</p><h2>{title}</h2><p>{copy}</p></div>;
 }
 
-function Intro({ onStart, profile, setProfile }: { onStart: () => void; profile: Profile; setProfile: (profile: Profile) => void }) {
+function Intro({ onStart, onReset, profile, setProfile, hasSaved, startLabel }: { onStart: () => void; onReset: () => void; profile: Profile; setProfile: (profile: Profile) => void; hasSaved: boolean; startLabel: string }) {
+  const contexts:[Profile['context'],string][]=[['mixed','Across CLTE'],['office','Office work'],['facilitation','Facilitation'],['student','Student support']];
+  const focuses:[Profile['focus'],string][]=[['notice','Notice'],['respond','Respond'],['evacuate','Evacuate'],['report','Report']];
+  const focusLine={notice:'See the detail before it becomes an incident.',respond:'Build calm responses as situations change.',evacuate:'Practise the route and roll-call moments.',report:'Match each situation to the right channel.'}[profile.focus];
   return <section id="intro" className="intro">
     <div className="intro-orbit orbit-one" /><div className="intro-orbit orbit-two" />
     <div className="intro-copy">
       <p className="eyebrow light">CLTE · Safety Week 2026</p>
       <h1>CLTE <em>Safety Lens</em></h1>
-      <p className="tagline">Notice. Respond. Report.</p>
-      <div className="intro-actions"><button className="primary light-button" onClick={onStart}>{profile.name ? `Begin, ${profile.name}` : 'Begin'} <ArrowDown size={19}/></button></div>
-      <details className="personalise"><summary><UserRound/><span>Make it yours</span><ChevronDown/></summary><div className="personalise-fields"><label><span>Name</span><input value={profile.name} onChange={e=>setProfile({...profile,name:e.target.value.slice(0,30)})} placeholder="Optional"/></label><label><span>Work context</span><select value={profile.context} onChange={e=>setProfile({...profile,context:e.target.value as Profile['context']})}><option value="mixed">A mix of things</option><option value="office">Office-based work</option><option value="facilitation">Facilitating sessions</option><option value="student">Supporting students</option></select></label><label><span>Focus</span><select value={profile.focus} onChange={e=>setProfile({...profile,focus:e.target.value as Profile['focus']})}><option value="notice">Spotting concerns</option><option value="respond">Responding calmly</option><option value="evacuate">Evacuation readiness</option><option value="report">Reporting routes</option></select></label></div></details>
+      <p className="tagline" key={profile.focus}>{focusLine}</p>
+      <div className="intro-actions"><button className="primary light-button" onClick={onStart}>{profile.name ? `${startLabel}, ${profile.name}` : startLabel} <ArrowDown size={19}/></button>{hasSaved&&<span>Saved on this browser</span>}</div>
+      <details className="personalise"><summary><UserRound/><span>Choose your lens</span><ChevronDown/></summary><div className="lens-setup"><label className="lens-name"><span>Name <small>optional</small></span><input value={profile.name} onChange={event=>setProfile({...profile,name:event.target.value.slice(0,30)})} placeholder="How should we address you?"/></label><fieldset><legend>My day is mostly…</legend><div>{contexts.map(([id,label])=><button type="button" key={id} className={profile.context===id?'selected':''} onClick={()=>setProfile({...profile,context:id})}>{label}</button>)}</div></fieldset><fieldset><legend>Sharpen my lens for…</legend><div>{focuses.map(([id,label])=><button type="button" key={id} className={profile.focus===id?'selected':''} onClick={()=>setProfile({...profile,focus:id})}>{label}</button>)}</div></fieldset><div className="local-save"><ShieldCheck/><span>Saved only in this browser.</span>{hasSaved&&<button type="button" onClick={onReset}>Reset</button>}</div></div></details>
     </div>
     <div className="lens-hero" aria-hidden="true"><div className="lens-glass"><Eye /></div><div className="lens-handle" /></div>
   </section>;
@@ -135,17 +138,17 @@ function PocketGuide({ onComplete }: { onComplete: () => void }) {
 }
 
 function Completion({ progress, profile }: { progress: Progress; profile: Profile }) {
-  const [reflection,setReflection]=useState(()=>sessionStorage.getItem('clte-safety-reflection')||''); const count=Object.values(progress).filter(Boolean).length;
-  useEffect(()=>{if(reflection)sessionStorage.setItem('clte-safety-reflection',reflection)},[reflection]);
+  const [reflection,setReflection]=useState(()=>localStorage.getItem('clte-safety-reflection')||''); const count=Object.values(progress).filter(Boolean).length;
+  useEffect(()=>{if(reflection)localStorage.setItem('clte-safety-reflection',reflection)},[reflection]);
   const focusLine={notice:'Your chosen focus was spotting concerns early. Try one slow scan of your usual workspace.',respond:'Your chosen focus was responding calmly. Keep the care–prevent–report rhythm close.',evacuate:'Your chosen focus was evacuation readiness. Check the posted route from the spaces you use.',report:'Your chosen focus was reporting. Save the pocket guide so the right route is close at hand.'}[profile.focus];
-  return <section className="completion"><Sparkles/><p className="eyebrow">{profile.name ? `${profile.name}’s journey` : 'Journey complete'}</p><h2>See something that could go wrong?<br/><em>Flag it early.</em></h2><p>Small actions—clearing a path, checking on someone, knowing where to go or making a report—can help prevent a more serious incident.</p><div className="personal-takeaway"><Eye/><span>{focusLine}</span></div><div className="completion-count"><span>{count}</span> situations explored</div><label><span>What area around your work environment may be worth a second look?</span><select value={reflection} onChange={e=>setReflection(e.target.value)}><option value="">Choose one (optional)</option><option>Walkways and cables</option><option>Meeting-room setup</option><option>Storage and equipment</option><option>Electrical items</option><option>Emergency information</option><option>Something else</option></select></label><small>Your choice stays in this browser session.</small></section>;
+  return <section className="completion"><Sparkles/><p className="eyebrow">{profile.name ? `${profile.name}’s journey` : 'Journey complete'}</p><h2>See something that could go wrong?<br/><em>Flag it early.</em></h2><p>Small actions—clearing a path, checking on someone, knowing where to go or making a report—can help prevent a more serious incident.</p><div className="personal-takeaway"><Eye/><span>{focusLine}</span></div><div className="completion-count"><span>{count}</span> situations explored</div><label><span>What area around your work environment may be worth a second look?</span><select value={reflection} onChange={e=>setReflection(e.target.value)}><option value="">Choose one (optional)</option><option>Walkways and cables</option><option>Meeting-room setup</option><option>Storage and equipment</option><option>Electrical items</option><option>Emergency information</option><option>Something else</option></select></label><small>Saved only in this browser.</small></section>;
 }
 
 export default function App() {
-  const [progress,setProgress]=useSessionProgress(); const [sound,setSound]=useState(false); const [menu,setMenu]=useState(false);
+  const [progress,setProgress]=useSavedProgress(); const [sound,setSound]=useState(false); const [menu,setMenu]=useState(false);
   const [view,setView]=useState<View>('intro');
-  const [profile,setProfileState]=useState<Profile>(()=>{try{return JSON.parse(sessionStorage.getItem('clte-safety-profile')||'') as Profile}catch{return initialProfile}});
-  const setProfile=(next:Profile)=>{setProfileState(next);sessionStorage.setItem('clte-safety-profile',JSON.stringify(next))};
+  const [profile,setProfileState]=useState<Profile>(()=>{try{return JSON.parse(localStorage.getItem('clte-safety-profile')||sessionStorage.getItem('clte-safety-profile')||'') as Profile}catch{return initialProfile}});
+  const setProfile=(next:Profile)=>{setProfileState(next);localStorage.setItem('clte-safety-profile',JSON.stringify(next))};
   useEffect(()=>{
     if(!sound)return;
     const chime=(event:MouseEvent)=>{if(!(event.target as HTMLElement).closest('button'))return;const audio=new AudioContext();const oscillator=audio.createOscillator();const gain=audio.createGain();oscillator.frequency.value=420;gain.gain.setValueAtTime(.025,audio.currentTime);gain.gain.exponentialRampToValueAtTime(.001,audio.currentTime+.07);oscillator.connect(gain).connect(audio.destination);oscillator.start();oscillator.stop(audio.currentTime+.07);oscillator.addEventListener('ended',()=>audio.close())};
@@ -156,6 +159,9 @@ export default function App() {
   const completed=useMemo(()=>Object.values(progress).filter(Boolean).length,[progress]);
   const chapters:{n:string;id:keyof Progress;label:string}[]=[{n:'01',id:'office',label:'Notice'},{n:'02',id:'walkway',label:'Respond'},{n:'03',id:'evacuation',label:'Evacuate'},{n:'04',id:'reporting',label:'Report'}];
   const canVisit=(id:keyof Progress)=>id==='office'||(id==='walkway'&&progress.office)||(id==='evacuation'&&progress.walkway)||(id==='reporting'&&progress.evacuation);
+  const resumeView:View=!progress.office?'office':!progress.walkway?'walkway':!progress.evacuation?'evacuation':!progress.reporting?'reporting':'completion';
+  const hasSaved=completed>0||profile.name!==''||profile.context!=='mixed'||profile.focus!=='notice';
+  const resetJourney=()=>{setProgress(initialProgress);setProfileState(initialProfile);localStorage.removeItem('clte-safety-progress');localStorage.removeItem('clte-safety-profile');localStorage.removeItem('clte-safety-reflection');sessionStorage.removeItem('clte-safety-progress');sessionStorage.removeItem('clte-safety-profile');setView('intro')};
   return <div className="app-shell"><header><button className="logo" onClick={()=>setView('intro')} aria-label="Ngee Ann Polytechnic CLTE Safety Lens · Home"><img src="/assets/np-logo.png" alt="Ngee Ann Polytechnic"/><span className="logo-title">CLTE Safety Lens</span></button><nav className={menu?'open':''}>{chapters.map(({n,id,label})=><button key={id} disabled={!canVisit(id)} onClick={()=>setView(id)} className={`${view===id?'current':''} ${progress[id]?'done':''}`}>{n}<span>{label}</span></button>)}</nav><div className="header-tools"><span>{completed}/4 explored</span><button onClick={()=>setSound(!sound)} aria-label={sound?'Turn sound off':'Turn sound on'}>{sound?<Volume2/>:<VolumeX/>}</button><button className="menu" onClick={()=>setMenu(!menu)} aria-label="Toggle navigation">{menu?<X/>:<Menu/>}</button></div></header>
-    <main className="experience-stage"><div key={view} className="view-transition">{view==='intro'&&<Intro profile={profile} setProfile={setProfile} onStart={()=>setView('office')}/>} {view==='office'&&<OfficeScene profile={profile} onComplete={()=>complete('office','walkway')}/>} {view==='walkway'&&<WetScene profile={profile} onComplete={()=>complete('walkway','haze')}/>} {view==='haze'&&<HazeInterstitial profile={profile} onComplete={()=>setView('evacuation')}/>} {view==='evacuation'&&<EvacuationScene profile={profile} onComplete={()=>complete('evacuation','reporting')}/>} {view==='reporting'&&<RoutingScene profile={profile} onComplete={()=>complete('reporting','practice')}/>} {view==='practice'&&<PracticeReport onComplete={()=>setView('guide')}/>} {view==='guide'&&<PocketGuide onComplete={()=>setView('completion')}/>} {view==='completion'&&<Completion profile={profile} progress={progress}/>}</div></main></div>;
+    <main className="experience-stage"><div key={view} className="view-transition">{view==='intro'&&<Intro profile={profile} setProfile={setProfile} onReset={resetJourney} hasSaved={hasSaved} startLabel={completed?'Resume':'Begin'} onStart={()=>setView(resumeView)}/>} {view==='office'&&<OfficeScene profile={profile} onComplete={()=>complete('office','walkway')}/>} {view==='walkway'&&<WetScene profile={profile} onComplete={()=>complete('walkway','haze')}/>} {view==='haze'&&<HazeInterstitial profile={profile} onComplete={()=>setView('evacuation')}/>} {view==='evacuation'&&<EvacuationScene profile={profile} onComplete={()=>complete('evacuation','reporting')}/>} {view==='reporting'&&<RoutingScene profile={profile} onComplete={()=>complete('reporting','practice')}/>} {view==='practice'&&<PracticeReport onComplete={()=>setView('guide')}/>} {view==='guide'&&<PocketGuide onComplete={()=>setView('completion')}/>} {view==='completion'&&<Completion profile={profile} progress={progress}/>}</div></main></div>;
 }

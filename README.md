@@ -11,6 +11,10 @@ pnpm dev
 
 Use `pnpm build` for a production build and `pnpm preview` to review it locally.
 
+## Browser-local personalisation
+
+The selected CLTE work context, learning focus, journey progress and final reflection are saved in the browser's local storage. No account, server-side profile or backend database is used. Staff can reset this saved journey from **Choose your lens** on the home screen.
+
 ## Updating official information
 
 All operational details and official URLs are centralised in `src/config.ts`.
