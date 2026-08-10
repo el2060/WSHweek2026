@@ -1,65 +1,56 @@
-# Design QA — CLTE WSH Safety Week refinement
+# Design QA — CLTE activity homepage copy
 
 ## Comparison target
 
-- Source visual truth: `C:\Users\limee\.codex\generated_images\019feaee-5d13-76b1-b4ef-866fc71aea55\exec-e2fcb855-93ce-485a-88f8-11950f1963de.png`
-- Browser-rendered implementation: `C:\Users\limee\OneDrive\Documents\ChatGPT\WSH Week Interactive\output\refinement\haze-desktop-final-1536x1024.png`
-- Combined comparison evidence: `C:\Users\limee\OneDrive\Documents\ChatGPT\WSH Week Interactive\output\refinement\haze-source-vs-implementation.png`
-- Viewport: 1536 × 1024 CSS px
-- Source pixels: 1536 × 1024
+- Source visual truth: `C:\Users\limee\AppData\Local\Temp\codex-clipboard-3f3c820f-9235-41d9-ba0e-130863f95d79.png`
+- Browser-rendered implementation: `C:\Users\limee\OneDrive\Documents\ChatGPT\WSH Week Interactive\output\refinement\homepage-clte-copy.png`
+- Combined comparison evidence: `C:\Users\limee\OneDrive\Documents\ChatGPT\WSH Week Interactive\output\refinement\homepage-copy-comparison.png`
+- Responsive evidence: `C:\Users\limee\OneDrive\Documents\ChatGPT\WSH Week Interactive\output\refinement\homepage-clte-copy-mobile.png`
+- Viewport: 1536 × 1024 CSS px; mobile check at 390 × 844 CSS px
+- Source pixels: 2392 × 1677
 - Implementation pixels: 1536 × 1024
 - Device scale factor: 1
-- Density normalization: none required
-- State: Haze response, Assess step, no choices selected
+- Density normalization: source fitted to 1536 × 1024 for the side-by-side comparison; implementation required no normalization
+- State: homepage with previously completed scenario progress and the resume CTA
 
 ## Full-view comparison
 
-The implementation preserves the source composition: light fixed header, full-width atmospheric campus illustration, concise scenario context in the upper-left, and a large overlapping decision workspace across the lower portion. The implementation intentionally makes the decision workspace taller and slightly denser than the concept so instructions, four complete choices, progress, feedback, and the next action remain functional at common laptop heights. This supports the user's requirement that decision-making remain the primary focus.
+The implementation preserves the selected safety-focused visual, illustration, palette, split composition, header, CTA position, and motion. Only the ownership and explanatory copy changed. The new hierarchy leads with `CLTE Workplace Safety Activity`, while `Part of NP WSH Week 2026` remains supporting context, so the page reads as a CLTE activity rather than a central campaign.
 
 ## Required fidelity surfaces
 
-- Fonts and typography: The existing Manrope/DM Sans system matches the bold geometric display and readable product text in the target. Heading scale, compact uppercase labels, weights, and line wrapping are coherent. No clipping or truncation remains at the tested desktop and mobile widths.
-- Spacing and layout rhythm: The large image and bottom workspace follow the source proportions. Controls have consistent spacing and practical targets. The 1280×720 and 390×844 captures show the decision task and primary controls without horizontal clipping.
-- Colors and visual tokens: Warm cream, deep navy, teal, muted amber, and coral remain mapped to the existing application tokens. The implementation uses a darker left image wash than the mock to maintain reliable heading contrast over responsive crops; this is an intentional accessibility adjustment.
-- Image quality and asset fidelity: `public/assets/haze-response.png` is a purpose-generated 16:9 editorial illustration matching the supplied walkway and evacuation art direction. Subject, campus setting, haze, safe indoor destination, crop, grain, and palette match the target. No placeholder, CSS-drawn illustration, or inline SVG substitute is used.
-- Copy and content: The scenario is concise and specific. The decision options, corrective feedback, escalation guidance, report-simulation disclaimer, contact guide, and completion review use plain operational language.
-- Icons: Existing Lucide icons retain the project's stroke language. Location choices use semantic book, building, and walking icons; core decisions retain numbered markers for consistency and scanning.
-- States and interactions: Haze selection, feedback, location choice, escalation, report practice, report review, contact tabs, completion review, and resume behavior were exercised. Selected, disabled, corrective, success, and next-step states are visible and functional.
-- Responsiveness: Verified at 1536×1024, 1280×720, and 390×844. Intro, haze, practice report, guide, and completion no longer collapse into partial-width columns. The wet-walkway choices begin within the first 720px viewport.
-- Accessibility: Semantic headings, fieldsets, labels, buttons, live feedback, visible focus, reduced-motion rules, tab/tabpanel relationships, roving tab focus, and keyboard Arrow/Home/End tab navigation are present. A clean browser run reported no console warnings or errors.
+- Fonts and typography: The existing Manrope and DM Sans families, display weight, line height, and responsive scaling are unchanged. The longer direct title wraps cleanly without clipping at desktop and mobile widths.
+- Spacing and layout rhythm: Hero proportions, text anchor, illustration crop, CTA placement, header height, and initial-viewport fit are preserved. No horizontal overflow was visible at 1536 × 1024 or 390 × 844.
+- Colors and visual tokens: Cream, navy, teal, coral, opacity overlays, and contrast are unchanged from the selected homepage.
+- Image quality and asset fidelity: The existing `public/assets/wsh-week-hero.png` is unchanged and remains sharp at both tested sizes. No replacement illustration, placeholder, or code-drawn substitute was introduced.
+- Copy and content: The title now identifies the product directly as a CLTE workplace safety activity. The eyebrow explains that it is part of NP WSH Week 2026. The supporting sentence plainly states that staff will complete five short workplace scenarios.
+- Affordances and interaction states: The primary CTA remained visible and functional. With saved progress, `Continue activity` correctly resumed at the guided report simulation, and the NP/CLTE home control returned to the homepage.
+- Responsiveness: At 390 × 844, the complete title, description, CTA, and meaningful portion of the safety illustration remain in the initial viewport; the compact menu and sound controls remain accessible.
+- Accessibility: The revised home control has a clear accessible label, the headline remains a semantic H1, CTA text remains explicit, focus treatment is unchanged, and browser console inspection returned no errors.
 
 ## Focused evidence
 
-- Haze desktop initial state: `output/refinement/haze-desktop-final-1536x1024.png`
-- Haze mobile location/feedback state: `output/refinement/haze-mobile-pass1.png`
-- Practice report mobile: `output/refinement/practice-mobile-pass2.png`
-- Contact guide mobile: `output/refinement/guide-mobile-pass2.png`
-- Contact guide desktop: `output/refinement/guide-desktop-pass2.png`
-- Completion review mobile: `output/refinement/completion-mobile-pass2.png`
-- Wet-weather desktop task visibility: `output/refinement/wet-desktop-pass2.png`
-
-These focused captures were needed because responsive flow, long text, keyboard tabs, form controls, and below-the-fold task visibility are too small to judge reliably in the full-view haze comparison.
+The mobile capture was required because the longer utility title has materially different line wrapping at 390 px. It shows the full copy and CTA without truncation. No additional focused desktop crop was needed because the full-view comparison keeps the header, hero copy, CTA, and illustration readable at equal normalized dimensions.
 
 ## Comparison history
 
-### Audit baseline
+### Current pass
 
-- Earlier P1: intro, haze, report practice, contact guide, and completion clipped or collapsed at 1280×720 and 390×844.
-- Earlier P1: Home → Continue skipped the required practice report and contact guide after scenario 5.
-- Earlier P2: the wet-weather illustration delayed the first decision beyond the initial laptop viewport.
-- Earlier P2: the contact tabs did not support expected arrow-key focus movement.
-- Fixes: added explicit responsive containment and mobile layouts; introduced persisted practice/guide/completion progress; shortened the wet-weather visual; implemented an illustrated interaction-first haze composition; added accessible tab semantics and focus movement; clarified the simulated report attachment; expanded completion into a review with return actions.
-- Post-fix evidence: the focused captures listed above show the corrected layouts and states. Browser interaction confirmed that incomplete progress resumes at practice, completed progress resumes at review, and keyboard focus moves with the selected contact tab.
+- No actionable P0, P1, or P2 mismatch was found.
+- Intentional content deviation: campaign-style `WSH Safety Week 2026` was replaced with direct CLTE activity wording, as requested.
+- Intentional header deviation: `CLTE WSH 2026` was replaced with `CLTE staff activity` to remove the appearance of a central programme identity.
+- Post-change browser evidence confirms that the visual treatment and core navigation remain intact.
 
-### Final comparison
+## Primary interactions tested
 
-- No actionable P0, P1, or P2 mismatch remains.
-- Acceptable deviation: the source uses decorative icons inside every first-step choice; the implementation uses numbered choice markers to match the rest of the activity and keep the learning labels dominant.
-- Acceptable deviation: the implementation uses a stronger dark image wash on the left to maintain readable contrast across responsive crops.
+- Loaded the homepage at 1536 × 1024.
+- Activated `Continue activity` and verified that saved progress resumed at the guided report simulation.
+- Activated the NP/CLTE home control and verified return to the homepage.
+- Rechecked the homepage at 390 × 844.
+- Checked captured browser console errors: none.
 
 ## Follow-up polish
 
-- P3: once official URLs are confirmed, populate the guide actions so users can open the WSH Portal, fault form, emergency information, and Zone A map directly.
-- P3: run a dedicated screen-reader and 200% zoom conformance pass before institutional rollout.
+- No P3 visual changes are recommended for this scoped copy-only refinement.
 
 final result: passed
