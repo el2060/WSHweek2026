@@ -12,7 +12,7 @@ export const officialInfo = {
     emergencyInfo: '',
     studentInsurance: '',
     hazeSop: '',
-    oneMap: 'https://www.onemap.gov.sg/?lat=1.33351616007246&lng=103.776976659192',
+    oneMap: '',
   },
 };
 

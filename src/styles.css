@@ -122,3 +122,17 @@ nav button{border:0;background:transparent;color:var(--ink);font-size:.7rem;disp
 @media(max-width:850px){.intro{display:flex;align-items:flex-start;padding:104px 6vw 42px;min-height:100svh}.intro:before{background:linear-gradient(180deg,rgba(246,240,228,1) 0%,rgba(246,240,228,1) 50%,rgba(246,240,228,.94) 55%,rgba(246,240,228,.12) 68%,transparent 100%)}.intro-copy>.eyebrow{margin-bottom:.85rem}.intro h1{max-width:100%;font-size:clamp(3.3rem,15.2vw,5rem);line-height:.84;margin-bottom:1rem}.intro .tagline{max-width:94%;font-size:.91rem;line-height:1.43}.intro-actions{margin-top:1.15rem}.intro-note{margin-top:.7rem;font-size:.66rem}.wsh-hero-visual{top:50%;height:50%}.wsh-hero-visual>img{object-position:72% 32%;filter:saturate(.94) contrast(1.04)}.wsh-hero-visual:after{background:linear-gradient(180deg,rgba(246,240,228,.22),rgba(12,48,59,.08))}.hero-signal{display:none}}
 
 @media(prefers-reduced-motion:reduce){.wsh-hero-visual>img,.hero-signal{animation:none!important}}
+
+/* Confirm the assembly point without implying an evacuation route */
+.assembly-point-drill{grid-template-columns:.9fr 1.1fr;overflow:hidden;background:#dfe7e1}
+.assembly-marker{position:relative;isolation:isolate;min-height:520px;border-radius:22px;overflow:hidden;padding:clamp(2rem,4vw,3.5rem);display:flex;flex-direction:column;justify-content:flex-end;background:linear-gradient(155deg,#123a42 0%,#0c303b 58%,#087d76 100%);color:#fff}
+.assembly-marker:before,.assembly-marker:after{content:"";position:absolute;z-index:-1;border:1px solid rgba(174,225,214,.24);border-radius:50%;transition:transform .8s ease,border-color .8s ease}
+.assembly-marker:before{width:390px;height:390px;right:-140px;top:-110px}.assembly-marker:after{width:240px;height:240px;right:-70px;top:-35px}
+.assembly-marker.confirmed:before,.assembly-marker.confirmed:after{transform:scale(1.08);border-color:rgba(174,225,214,.5)}
+.assembly-pin{position:absolute;right:clamp(1.5rem,4vw,3rem);top:clamp(1.5rem,4vw,3rem);width:94px;height:94px;border-radius:50% 50% 50% 8px;transform:rotate(-45deg);display:grid;place-items:center;background:var(--coral);box-shadow:0 18px 45px rgba(0,0,0,.2);animation:assemblyPulse 2.6s ease-in-out infinite}
+.assembly-pin svg{display:none}.assembly-pin span{position:relative;transform:rotate(45deg);font:800 2rem 'Manrope',sans-serif}
+.assembly-marker>p{margin:0 0 .45rem;color:#add9d2;font-size:.72rem;font-weight:800;letter-spacing:.13em;text-transform:uppercase}.assembly-marker h3{margin:0;font-size:clamp(3.4rem,5.6vw,6.2rem);line-height:.85;color:#fff}.assembly-marker>strong{margin-top:.9rem;color:#f4c766;font:800 1.3rem 'Manrope',sans-serif;letter-spacing:.08em;text-transform:uppercase}.assembly-marker>small{max-width:290px;margin-top:1.1rem;color:#ccdcda;font-size:.78rem;line-height:1.45}
+.assembly-options button{min-height:64px;padding:1rem 1.1rem}.assembly-options button strong{font-size:.9rem}.assembly-point-drill .role-handoff>div{justify-content:flex-end}
+@keyframes assemblyPulse{50%{box-shadow:0 18px 45px rgba(0,0,0,.2),0 0 0 12px rgba(228,95,79,.12)}}
+@media(max-width:850px){.assembly-point-drill{grid-template-columns:1fr;padding:1rem;gap:1.5rem}.assembly-marker{min-height:360px;padding:1.5rem}.assembly-marker h3{font-size:3.7rem}.assembly-pin{width:76px;height:76px;right:1.4rem;top:1.4rem}.assembly-point-drill .drill-panel{padding:.3rem}}
+@media(prefers-reduced-motion:reduce){.assembly-pin{animation:none!important}}
