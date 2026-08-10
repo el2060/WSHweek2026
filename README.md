@@ -1,6 +1,6 @@
-# CLTE Safety Lens
+# CLTE WSH Safety Week 2026 Activity
 
-A responsive, self-paced Safety & Health Week 2026 prototype for NP's Centre for Learning & Teaching Excellence (CLTE).
+A responsive, self-paced WSH Safety Week 2026 activity for staff in NP's Centre for Learning & Teaching Excellence (CLTE).
 
 ## Run locally
 
@@ -11,9 +11,9 @@ pnpm dev
 
 Use `pnpm build` for a production build and `pnpm preview` to review it locally.
 
-## Browser-local personalisation
+## Browser-local progress
 
-The selected CLTE work context, learning focus, journey progress and final reflection are saved in the browser's local storage. No account, server-side profile or backend database is used. Staff can reset this saved journey from **Choose your lens** on the home screen.
+Completed sections are saved in the browser's local storage so staff can continue the activity on the same device. The activity does not request a name, role, work context or personal profile. No account or backend database is used.
 
 ## Updating official information
 
@@ -58,7 +58,7 @@ Still requiring official confirmation or full URLs: WSH Portal, emergency-inform
 
 ## Privacy and accessibility
 
-There is no backend, submission, authentication or analytics. The optional name, work context, learning focus, progress and closing reflection use browser session storage only. The selected context adapts the guidance in each situation and the final takeaway. Hotspots and activities work with keyboard/touch, controls have visible focus states, and ambient motion respects `prefers-reduced-motion`.
+There is no backend, submission, authentication or analytics. Only section progress is stored locally in the browser. Hotspots and activities work with keyboard/touch, controls have visible focus states, and ambient motion respects `prefers-reduced-motion`.
 
 ## Illustration generation
 
