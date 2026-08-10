@@ -29,14 +29,19 @@ function SceneHeader({ kicker, title, copy }: { kicker: string; title: string; c
 
 function Intro({ onStart, startLabel }: { onStart: () => void; startLabel: string }) {
   return <section id="intro" className="intro">
-    <div className="intro-orbit orbit-one" /><div className="intro-orbit orbit-two" />
     <div className="intro-copy">
       <p className="eyebrow light">CLTE staff activity</p>
       <h1>WSH Safety Week <em>2026</em></h1>
       <p className="tagline">Complete five short scenarios on office hazards, injury response, haze, fire evacuation and reporting.</p>
       <div className="intro-actions"><button className="primary light-button" onClick={onStart}>{startLabel} <ArrowDown size={19}/></button></div>
+      <p className="intro-note">Self-paced · No personal details required</p>
     </div>
-    <div className="lens-hero" aria-hidden="true"><div className="lens-glass"><Eye /></div><div className="lens-handle" /></div>
+    <div className="wsh-hero-visual" aria-hidden="true">
+      <img src="/assets/wsh-week-hero.png" alt=""/>
+      <span className="hero-signal signal-route"><Check/>Clear the route</span>
+      <span className="hero-signal signal-care"><HeartHandshake/>Look out for others</span>
+      <span className="hero-signal signal-report"><ShieldCheck/>Report hazards</span>
+    </div>
   </section>;
 }
 
