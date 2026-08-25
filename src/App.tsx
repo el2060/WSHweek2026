@@ -97,50 +97,50 @@ function HazeInterstitial({ onComplete }: { onComplete: () => void }) {
 }
 
 function EvacuationScene({ onComplete }: { onComplete: () => void }) {
-  const [fireStage,setFireStage]=useState(0); const [answer,setAnswer]=useState<string|null>(null); const [mapOpen,setMapOpen]=useState(false); const [destinationChoice,setDestinationChoice]=useState<string|null>(null); const [rollChoice,setRollChoice]=useState<string|null>(null);
-  const fireDecisions=[
-    {kicker:'Alarm · first response',title:'The alarm sounds. You smell burning.',copy:'Light smoke is visible near the corridor. What do you do first?',status:'Alarm active · light smoke',choices:[
-      {id:'leave',label:'Stop the activity and direct everyone out calmly',feedback:'Clear direction gets the group moving immediately. Leave belongings and begin evacuation.',best:true},
-      {id:'investigate',label:'Check where the smoke is coming from',feedback:'Do not delay evacuation to investigate a suspected fire or smoke source.',best:false},
-      {id:'belongings',label:'Ask everyone to collect laptops and bags',feedback:'Belongings cost time. Leave them and move promptly.',best:false},
+  const [routeStage,setRouteStage]=useState(0); const [answers,setAnswers]=useState<Record<number,string>>({});
+  const routeStages=[
+    {id:'start',time:'0-3 sec',label:'Start',title:'Know where to go',instruction:'When the alarm sounds, leave belongings and follow the fire warden to the nearest safe exit.',prompt:'What is your first action?',choices:[
+      {id:'evacuate',label:'Stop work, leave belongings and evacuate calmly',feedback:'Correct. Begin evacuation immediately and follow the fire warden and posted instructions.',best:true},
+      {id:'investigate',label:'Find the source of smoke before leaving',feedback:'Do not delay or investigate. Keep clear of smoke and begin evacuation.',best:false},
+      {id:'collect',label:'Collect laptops and bags for the group',feedback:'Belongings cost time. Leave them and move promptly.',best:false},
     ]},
-    {kicker:'Route change',title:'Smoke drifts across the usual exit.',copy:'Visibility at that doorway is falling. Choose the safe response.',status:'Smoke at usual exit · route changes',choices:[
-      {id:'alternate',label:'Keep clear of smoke and follow the warden to a safe exit',feedback:'Do not enter the smoky route. Follow the fire warden and posted evacuation instructions to the nearest safe exit.',best:true},
-      {id:'push',label:'Move quickly through the smoke because the exit is close',feedback:'A familiar or shorter route is not safe when smoke is present. Keep clear and use a safe alternative.',best:false},
-      {id:'lift',label:'Use the lift to avoid the smoky corridor',feedback:'Do not use the lift unless emergency personnel specifically direct you to do so.',best:false},
+    {id:'follow',time:'3-7 sec',label:'Follow',title:'Stay on the route',instruction:'From Block 27, follow the designated pedestrian route past Block 56 toward Block 1 / Atrium Library.',prompt:'Which route should the group take?',choices:[
+      {id:'designated',label:'The designated route, together with the group',feedback:'Correct. Stay together, walk calmly and follow the warden’s direction.',best:true},
+      {id:'shortcut',label:'The shortest route across open roads',feedback:'A shortcut can introduce traffic risk. Use the designated pedestrian route.',best:false},
+      {id:'own',label:'Any familiar path to Admin Field',feedback:'Keep with the group and use the designated route shown on the map.',best:false},
     ]},
-    {kicker:'Keep the group moving',title:'A colleague with a cane hesitates.',copy:'The route is clear, but they may need support. What now?',status:'Safe exit visible · assistance needed',choices:[
-      {id:'assist',label:'Offer help, alert the warden and move with the group',feedback:'Offer support without blocking the evacuation flow, and keep the fire warden informed.',best:true},
-      {id:'carry',label:'Lift and carry them without asking',feedback:'Unplanned lifting can injure both people. Ask what help is needed and coordinate with the warden.',best:false},
-      {id:'leave',label:'Leave them behind so the group is not delayed',feedback:'People who may need assistance should not be abandoned. Alert the warden and support a safe evacuation.',best:false},
+    {id:'cross',time:'7-10 sec',label:'Cross',title:'Cross safely. Stay alert.',instruction:'Slow down at the controlled road crossing near Block 1. Check traffic and follow the traffic marshal.',prompt:'How should you cross?',choices:[
+      {id:'marshal',label:'Pause, check traffic and cross under the marshal’s control',feedback:'Correct. Stay alert, keep walking and do not run or panic.',best:true},
+      {id:'run',label:'Run across quickly before traffic arrives',feedback:'Do not run. Pause, check traffic and follow the marshal’s signal.',best:false},
+      {id:'around',label:'Leave the route and cross wherever the road is clear',feedback:'Use the controlled crossing shown on the designated route.',best:false},
+    ]},
+    {id:'arrive',time:'10-15 sec',label:'Arrive',title:'Report and remain',instruction:`Enter ${officialInfo.assemblyArea}, join the CLTE group in ${officialInfo.assemblyZone} and report for roll call.`,prompt:'A colleague is missing at roll call. What do you do?',choices:[
+      {id:'report',label:'Tell the fire warden what I know and remain in Zone A',feedback:'Correct. Report whether they may be away, off campus or unaccounted for, then remain until dismissed.',best:true},
+      {id:'search',label:'Return to Block 27 to look for them',feedback:'Never re-enter to search. Report what you know to the fire warden.',best:false},
+      {id:'leave',label:'Leave the field to call them privately',feedback:'Stay with the CLTE group for roll call and further instructions.',best:false},
     ]},
   ];
-  const decision=fireDecisions[fireStage]; const activeChoice=decision.choices.find(choice=>choice.id===answer);
-  const advanceFire=()=>{if(fireStage<2){setFireStage(stage=>stage+1);setAnswer(null)}else setMapOpen(true)};
-  const destinationCorrect=destinationChoice==='admin-field'; const rollCorrect=rollChoice==='report';
-  return <section id="evacuation" className={`chapter evacuation fire-response fire-stage-${fireStage} ${activeChoice?.best?'decision-safe':''}`}>
-    <SceneHeader kicker="04 · Fire emergency" title="Alarm to roll call" copy="Choose what to do at each moment."/>
-    {!mapOpen&&<div className="fire-scenario">
-      <div className="scene-frame alarm-scene fire-scene">
-        <img src="/assets/evacuation.webp" alt="Illustrated training room evacuation with a fire warden guiding a calm group and a colleague assisting a person with a walking cane."/>
-        <div className="fire-vignette"/><div className="smoke smoke-near"/><div className="smoke smoke-far"/>
-        <div className="embers" aria-hidden="true">{Array.from({length:18},(_,index)=><i key={index} style={{left:`${44+(index*23)%50}%`,animationDelay:`-${(index*.37).toFixed(2)}s`,animationDuration:`${3.4+(index%5)*.55}s`}}/>)}</div>
-        <span className="alarm-dot" aria-label="Fire alarm active"/><div className="alarm-rings" aria-hidden="true"><i/><i/><i/></div>
-        <div className="scene-alert" aria-live="polite"><span><Flame/>Fire alarm</span><strong>{decision.status}</strong><small>Moment {fireStage+1} of 3</small></div>
+  const stage=routeStages[routeStage]; const selected=stage.choices.find(choice=>choice.id===answers[routeStage]);
+  const completeCount=routeStages.filter((item,index)=>item.choices.find(choice=>choice.id===answers[index])?.best).length; const allCorrect=completeCount===routeStages.length;
+  const reviewNext=()=>{const next=routeStages.findIndex((item,index)=>!item.choices.find(choice=>choice.id===answers[index])?.best);setRouteStage(next<0?0:next)};
+  return <section id="evacuation" className={`chapter evacuation fire-response route-response route-stage-${routeStage}`}>
+    <SceneHeader kicker="04 · Fire emergency" title="Block 27 to Admin Field" copy="Explore the route in any order. Retry each checkpoint until it is clear."/>
+    <div className="route-explorer">
+      <div className="route-map" aria-label="Emergency walking route from Block 27 to Zone A at Admin Field">
+        <div className="route-map-canvas"><img src="/assets/block27-admin-field-route.jpg" alt="Aerial route map showing the emergency walking route from Block 27, past Block 56 and Block 1 Atrium Library, through the controlled road crossing to Admin Field."/></div>
+        <div className="route-map-status"><span><Flame/> Fire 04</span><strong>Block 27 → Zone A</strong><small>{completeCount}/4 checkpoints understood</small></div>
+        <p className="route-map-note"><MapPin/> Follow fire wardens and current posted evacuation instructions.</p>
       </div>
-      <div className="fire-decision reveal" key={fireStage}>
-        <div className="fire-decision-head"><div><p className="eyebrow">{decision.kicker}</p><h3>{decision.title}</h3><p>{decision.copy}</p></div><div className="fire-moments" aria-label={`Emergency response moment ${fireStage+1} of 3`}>{[0,1,2].map(index=><i key={index} className={index<=fireStage?'active':''}/>)}</div></div>
-        <div className="fire-options">{decision.choices.map((choice,index)=><button key={choice.id} className={answer===choice.id?`selected ${choice.best?'safe':'risk'}`:''} onClick={()=>setAnswer(choice.id)}><span>0{index+1}</span><strong>{choice.label}</strong><ArrowRight/></button>)}</div>
-        {activeChoice&&<div className={`decision-consequence fire-feedback ${activeChoice.best?'good':'consider'}`}><Info/><div><strong>{activeChoice.best?'Keep moving':'Pause and reassess'}</strong><p>{activeChoice.feedback}</p></div></div>}
-        {activeChoice?.best&&<button className="primary fire-advance" onClick={advanceFire}>{fireStage<2?'Continue evacuation':'Continue to assembly point'} <ArrowRight/></button>}
-      </div>
-    </div>}
-    {mapOpen&&<div className="assembly assembly-point-drill reveal">
-      <div className={`assembly-marker ${destinationCorrect?'confirmed':''}`} aria-live="polite">
-        {destinationCorrect?<><div className="assembly-pin" aria-hidden="true"><span>A</span></div><p>CLTE assembly point</p><h3>{officialInfo.assemblyArea}</h3><strong>{officialInfo.assemblyZone}</strong><small>Follow fire wardens and posted instructions.</small></>:<><div className="assembly-pin" aria-hidden="true"><MapPin/></div><p>Assembly point check</p><h3>Choose a location</h3><small>Select an answer to reveal the CLTE assembly point.</small></>}
-      </div>
-      <div className="drill-panel"><p className="eyebrow">Assembly point</p><h3>Where should CLTE staff from Block 27 assemble?</h3><div className="drill-options assembly-options"><button className={destinationChoice==='admin-field'?'selected':''} onClick={()=>setDestinationChoice('admin-field')}><strong>Zone A · Admin Field</strong></button><button className={destinationChoice==='entrance'?'selected':''} onClick={()=>setDestinationChoice('entrance')}><strong>Outside the Block 27 entrance</strong></button><button className={destinationChoice==='nearby'?'selected':''} onClick={()=>setDestinationChoice('nearby')}><strong>Any open space nearby</strong></button></div>{destinationChoice&&<div className={`decision-consequence ${destinationCorrect?'good':'consider'}`}><Info/><div><strong>{destinationCorrect?'Correct · Zone A, Admin Field':'Go to the assigned assembly point'}</strong><p>{destinationCorrect?'Remain with the CLTE group for roll call.':'CLTE staff from Block 27 assemble at Zone A, Admin Field.'}</p></div></div>}{destinationCorrect&&<div className="rollcall-decision reveal"><p className="eyebrow">Roll call</p><h3>A colleague is missing. What do you do?</h3><div className="drill-options"><button className={rollChoice==='report'?'selected':''} onClick={()=>setRollChoice('report')}>Tell the fire warden what I know and remain in Zone A</button><button className={rollChoice==='search'?'selected':''} onClick={()=>setRollChoice('search')}>Return to Block 27 to look for them</button><button className={rollChoice==='leave'?'selected':''} onClick={()=>setRollChoice('leave')}>Leave the assembly area to call them</button></div>{rollChoice&&<div className={`decision-consequence ${rollCorrect?'good':'consider'}`}><Info/><div><strong>{rollCorrect?'Report and remain':'Do not leave or re-enter'}</strong><p>{rollCorrect?'Tell the warden whether they are away, off campus or unaccounted for. Remain until dismissed.':'Report what you know, stay with the group and never re-enter to search.'}</p></div></div>}</div>}{rollCorrect&&<div className="role-handoff reveal"><p><strong>ERC/AERC</strong><span>Coordinates response and headcount.</span></p><p><strong>Fire wardens</strong><span>Guide evacuation and report group status.</span></p><p><strong>Staff</strong><span>Follow, assist, report and remain.</span></p><div><button className="primary" onClick={onComplete}>Continue <ArrowRight/></button></div></div>}</div>
-    </div>}
+      <aside className="route-console">
+        <div className="route-checkpoints" role="tablist" aria-label="Emergency route checkpoints">{routeStages.map((item,index)=>{const done=item.choices.find(choice=>choice.id===answers[index])?.best;return <button key={item.id} role="tab" aria-selected={routeStage===index} className={`${routeStage===index?'active':''} ${done?'done':''}`} onClick={()=>setRouteStage(index)}><span>{done?<Check/>:index+1}</span><strong>{item.label}</strong><small>{item.time}</small></button>})}</div>
+        <div className="route-step reveal" key={routeStage}>
+          <p className="eyebrow">Checkpoint {routeStage+1} · {stage.time}</p><h3>{stage.title}</h3><p className="route-instruction">{stage.instruction}</p><p className="route-prompt">{stage.prompt}</p>
+          <div className="route-choices">{stage.choices.map(choice=><button key={choice.id} aria-pressed={answers[routeStage]===choice.id} className={answers[routeStage]===choice.id?`selected ${choice.best?'safe':'risk'}`:''} onClick={()=>setAnswers(value=>({...value,[routeStage]:choice.id}))}><span>{answers[routeStage]===choice.id?(choice.best?<Check/>:<X/>):null}</span><strong>{choice.label}</strong></button>)}</div>
+          {selected&&<div className={`route-result ${selected.best?'good':'consider'}`} aria-live="polite"><Info/><div><strong>{selected.best?'Checkpoint clear':'Try another response'}</strong><p>{selected.feedback}</p></div></div>}
+        </div>
+        <div className="route-console-footer"><button className="secondary" disabled={routeStage===0} onClick={()=>setRouteStage(value=>value-1)}><ArrowRight className="turn"/> Back</button>{routeStage<routeStages.length-1?<button className="primary" onClick={()=>setRouteStage(value=>value+1)}>Next checkpoint <ArrowRight/></button>:allCorrect?<button className="primary" onClick={onComplete}>Complete Fire 04 <ArrowRight/></button>:<button className="primary" onClick={reviewNext}>Review next checkpoint <ArrowRight/></button>}</div>
+      </aside>
+    </div>
   </section>;
 }
 
@@ -200,13 +200,12 @@ export default function App() {
   const scenarioKeys:(keyof Progress)[]=['office','walkway','haze','evacuation','reporting'];
   const completed=useMemo(()=>scenarioKeys.filter(key=>progress[key]).length,[progress]);
   const chapters:{n:string;id:keyof Progress;label:string}[]=[{n:'01',id:'office',label:'Hazards'},{n:'02',id:'walkway',label:'Injury'},{n:'03',id:'haze',label:'Haze'},{n:'04',id:'evacuation',label:'Fire'},{n:'05',id:'reporting',label:'Report'}];
-  const canVisit=(id:keyof Progress)=>id==='office'||(id==='walkway'&&progress.office)||(id==='haze'&&progress.walkway)||(id==='evacuation'&&progress.haze)||(id==='reporting'&&progress.evacuation);
   const resumeView:View=!progress.office?'office':!progress.walkway?'walkway':!progress.haze?'haze':!progress.evacuation?'evacuation':!progress.reporting?'reporting':!progress.practice?'practice':!progress.guide?'guide':'completion';
   const resumeLabels:Record<View,string>={intro:'activity',office:'office hazards',walkway:'injury response',haze:'haze response',evacuation:'fire emergency',reporting:'reporting',practice:'report practice',guide:'WSH contacts',completion:'activity review'};
   const startLabel=progress.completion?'Review activity':completed?`Continue: ${resumeLabels[resumeView]}`:'Start online activity';
   const statusText=progress.completion?'Completed · progress saved':completed===0?'':completed<5?`${completed}/5 scenarios completed`:!progress.practice?'5/5 scenarios · report practice remaining':!progress.guide?'Report practice complete · contacts remaining':'Activity complete';
   const headerStatus=completed<5?`${completed}/5 scenarios`:!progress.practice?'5/5 · Report practice':!progress.guide?'5/5 · Contacts':'Activity complete';
   const resetProgress=()=>{localStorage.removeItem('clte-safety-progress');sessionStorage.removeItem('clte-safety-progress');setProgress(initialProgress);setView('intro');setResetOpen(false)};
-  return <div className="app-shell"><header><button className="logo" onClick={()=>setView('intro')} aria-label="Ngee Ann Polytechnic · CLTE workplace safety online activity · Home"><img src="/assets/np-logo.png" alt="Ngee Ann Polytechnic"/><span className="logo-title">CLTE online activity</span></button><nav className={menu?'open':''}>{chapters.map(({n,id,label})=><button key={id} disabled={!canVisit(id)} onClick={()=>setView(id)} className={`${view===id?'current':''} ${progress[id]?'done':''}`}>{n}<span>{label}</span></button>)}</nav><div className="header-tools"><span aria-live="polite">{headerStatus}</span><button onClick={()=>setSound(!sound)} aria-label={sound?'Turn sound off':'Turn sound on'}>{sound?<Volume2/>:<VolumeX/>}</button><button className="menu" onClick={()=>setMenu(!menu)} aria-label="Toggle navigation">{menu?<X/>:<Menu/>}</button></div></header>
+  return <div className="app-shell"><header><button className="logo" onClick={()=>setView('intro')} aria-label="Ngee Ann Polytechnic · CLTE workplace safety online activity · Home"><img src="/assets/np-logo.png" alt="Ngee Ann Polytechnic"/><span className="logo-title">CLTE online activity</span></button><nav className={menu?'open':''} aria-label="Scenarios · open in any order">{chapters.map(({n,id,label})=><button key={id} onClick={()=>setView(id)} className={`${view===id?'current':''} ${progress[id]?'done':''}`}>{n}<span>{label}</span></button>)}</nav><div className="header-tools"><span aria-live="polite">{headerStatus}</span><button onClick={()=>setSound(!sound)} aria-label={sound?'Turn sound off':'Turn sound on'}>{sound?<Volume2/>:<VolumeX/>}</button><button className="menu" onClick={()=>setMenu(!menu)} aria-label="Toggle navigation">{menu?<X/>:<Menu/>}</button></div></header>
     <main className="experience-stage"><div key={view} className="view-transition">{view==='intro'&&<Intro startLabel={startLabel} statusText={statusText} canReset={completed>0||progress.practice||progress.guide||progress.completion} onReset={()=>setResetOpen(true)} onStart={()=>setView(resumeView)}/>} {view==='office'&&<OfficeScene onComplete={()=>complete('office','walkway')}/>} {view==='walkway'&&<WetScene onComplete={()=>complete('walkway','haze')}/>} {view==='haze'&&<HazeInterstitial onComplete={()=>complete('haze','evacuation')}/>} {view==='evacuation'&&<EvacuationScene onComplete={()=>complete('evacuation','reporting')}/>} {view==='reporting'&&<RoutingScene onComplete={()=>complete('reporting','practice')}/>} {view==='practice'&&<PracticeReport onComplete={()=>complete('practice','guide')}/>} {view==='guide'&&<PocketGuide onComplete={()=>{setProgress(value=>({...value,guide:true,completion:true}));setView('completion')}}/>} {view==='completion'&&<Completion onReview={setView} onGuide={()=>setView('guide')} onReset={()=>setResetOpen(true)}/>}</div></main><ResetDialog open={resetOpen} onCancel={()=>setResetOpen(false)} onConfirm={resetProgress}/></div>;
 }
