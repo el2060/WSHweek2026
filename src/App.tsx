@@ -146,11 +146,15 @@ function EvacuationScene({ onComplete }: { onComplete: () => void }) {
     <div className="pov-camera" key={photo[0]}><img src={photo[0]} alt={photo[1]}/></div><div className="pov-shade" aria-hidden="true"/>
     <div className="pov-hud">
       <div className="pov-status"><span><Flame/> Fire 02 · Live route drill</span><strong>Block 27 → Zone A</strong><small>{allCorrect?'Route clear · ready to complete':`${completeCount}/${routeStages.length} decisions clear`}</small></div>
-      <div className="pov-tools"><button onClick={()=>setMapOpen(true)}><MapPin/> Route map</button>{stage.photos.length>1&&<button onClick={()=>setPhotoIndex(value=>(value+1)%stage.photos.length)}><Eye/> Look around · {photoIndex+1}/{stage.photos.length}</button>}</div>
+      <div className="pov-tools"><button onClick={()=>setMapOpen(true)}><MapPin/> Route map</button></div>
     </div>
     <div className="pov-location reveal" key={`${routeStage}-${photoIndex}`}><p className="eyebrow">Checkpoint {routeStage+1} · {stage.location}</p><h2>{stage.title}</h2><p>{stage.instruction}</p><small><Eye/> Actual route photo · {photo[1]}</small></div>
-    <aside className="pov-decision" aria-label={`Decision at ${stage.location}`}>
+    <aside className={`pov-decision ${stage.photos.length>1?'has-gallery':''}`} aria-label={`Decision at ${stage.location}`}>
       <div className="pov-decision-head"><span>{String(routeStage+1).padStart(2,'0')}</span><div><p>Decision point</p><h3>{stage.prompt}</h3></div></div>
+      {stage.photos.length>1&&<div className="pov-scene-gallery" aria-label="Real route views">
+        <div className="pov-scene-gallery-head"><span><Eye/> Real route views</span><small>{photoIndex+1} of {stage.photos.length}</small></div>
+        <div className="pov-scene-thumbnails" style={{gridTemplateColumns:`repeat(${stage.photos.length},minmax(0,1fr))`}}>{stage.photos.map((view,index)=><button key={view[0]} type="button" className={photoIndex===index?'active':''} aria-pressed={photoIndex===index} aria-label={`Show route view ${index+1}: ${view[1]}`} onClick={()=>setPhotoIndex(index)}><img src={view[0]} alt=""/><span>View {index+1}</span></button>)}</div>
+      </div>}
       <div className="pov-choices">{stage.choices.map((choice,index)=><button key={choice.id} aria-pressed={answers[routeStage]===choice.id} className={answers[routeStage]===choice.id?`selected ${choice.best?'safe':'risk'}`:''} onClick={()=>setAnswers(value=>({...value,[routeStage]:choice.id}))}><span>{answers[routeStage]===choice.id?(choice.best?<Check/>:<X/>):String.fromCharCode(65+index)}</span><strong>{choice.label}</strong></button>)}</div>
       {selected&&<div className={`pov-feedback ${selected.best?'good':'consider'}`} aria-live="polite"><Info/><div><strong>{selected.best?'Good call':'Try again'}</strong><p>{selected.feedback}</p></div></div>}
       <div className="pov-actions"><button disabled={routeStage===0} onClick={()=>selectStage(routeStage-1)}><ArrowRight className="turn"/> Back</button>{allCorrect?<button className="pov-complete-action" onClick={onComplete}>Finish Fire 02 <ArrowRight/></button>:routeStage<routeStages.length-1?<button onClick={()=>selectStage(routeStage+1)}>Next checkpoint <ArrowRight/></button>:<button onClick={reviewNext}>Review missed points <ArrowRight/></button>}</div>

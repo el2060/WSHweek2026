@@ -255,3 +255,32 @@ nav{gap:.45rem}nav button{min-height:42px;padding:.55rem .78rem;font-size:.95rem
 .simulation-banner{font-size:.86rem}.mock-steps button{font-size:.88rem}.step-counter{font-size:.82rem}.choice-field legend,.mock-input>span{font-size:.82rem}.choice-field button{font-size:.9rem}.mock-input input,.mock-input textarea{font-size:1rem;line-height:1.5}.mock-input small{font-size:.76rem}.learning-feedback{font-size:.86rem}.example-attachment strong{font-size:.88rem}.example-attachment small{font-size:.78rem}.mock-preview dt{font-size:.76rem}.mock-preview dd{font-size:.9rem;line-height:1.45}.guide-tabs button{font-size:.92rem}.interactive-guide .guide-focus li{font-size:1rem;line-height:1.5}.interactive-guide .guide-link{font-size:.88rem}.completion-review span{font-size:.78rem}.completion-review strong{font-size:1.18rem}.completion-review p{font-size:.9rem;line-height:1.45}.personal-takeaway{font-size:.94rem}.review-hub>.eyebrow{font-size:.78rem}.review-hub button{font-size:.86rem}.review-hub button span{font-size:.76rem}.intro-note{font-size:.78rem}
 
 @media(max-width:850px){nav{gap:.25rem;padding:.75rem 1rem}nav button{min-height:48px;padding:.72rem .85rem;font-size:1rem}nav button span{font-size:.95rem}.scene-heading>p:last-child{font-size:.96rem}.pov-status>span{font-size:.68rem}.pov-status>strong{font-size:.9rem}.pov-tools button{font-size:0}.pov-location>small{font-size:.72rem}.pov-stage-rail button strong{font-size:.72rem}.pov-decision-head p{font-size:.72rem}.pov-choices button>strong{font-size:.9rem}.pov-feedback p{font-size:.84rem}.haze-progress span{font-size:.72rem}.haze-brief>p:not(.eyebrow){font-size:.94rem}.routing-board .channel-drop>span{font-size:.82rem}.mock-steps button{font-size:.82rem}.review-hub button{font-size:.9rem}}
+
+/* Fire route photo exploration */
+.pov-decision{max-height:calc(100svh - 180px)}
+.pov-scene-gallery{padding:.75rem 0 .7rem;border-bottom:1px solid rgba(255,255,255,.14)}
+.pov-scene-gallery-head{display:flex;align-items:center;justify-content:space-between;gap:.75rem;color:#9be4d9;font-size:.74rem;font-weight:800;letter-spacing:.04em}
+.pov-scene-gallery-head span{display:flex;align-items:center;gap:.45rem}.pov-scene-gallery-head svg{width:17px;height:17px}.pov-scene-gallery-head small{color:#b8cecb;font-size:.72rem;font-weight:700}
+.pov-scene-thumbnails{display:grid;gap:.5rem;margin-top:.6rem}
+.pov-scene-thumbnails button{position:relative;height:72px;padding:0;overflow:hidden;border:2px solid rgba(255,255,255,.18);border-radius:10px;background:#09252d;cursor:pointer;transition:border-color .18s ease,transform .18s ease,box-shadow .18s ease}
+.pov-scene-thumbnails button:hover{transform:translateY(-2px);border-color:rgba(155,228,217,.72)}
+.pov-scene-thumbnails button:focus-visible{outline:3px solid #fff;outline-offset:2px}
+.pov-scene-thumbnails button.active{border-color:#78dfcf;box-shadow:0 0 0 2px rgba(120,223,207,.2)}
+.pov-scene-thumbnails img{display:block;width:100%;height:100%;object-fit:cover;filter:brightness(.78);transition:filter .18s ease,transform .25s ease}
+.pov-scene-thumbnails button:hover img,.pov-scene-thumbnails button.active img{filter:brightness(1)}
+.pov-scene-thumbnails button:hover img{transform:scale(1.04)}
+.pov-scene-thumbnails button span{position:absolute;left:.4rem;bottom:.35rem;padding:.18rem .38rem;border-radius:100px;background:rgba(3,18,23,.78);color:#fff;font-size:.7rem;font-weight:800;line-height:1.2}
+.pov-decision.has-gallery .pov-choices button{min-height:54px}
+
+@media(max-width:900px){
+  .pov-decision{max-height:none}
+  .pov-scene-gallery{border-bottom-color:var(--line)}
+  .pov-scene-gallery-head{color:var(--teal)}
+  .pov-scene-gallery-head small{color:var(--ink-2)}
+  .pov-scene-thumbnails button{height:82px;border-color:var(--line);background:#e8e2d6}
+  .pov-scene-thumbnails button:focus-visible{outline-color:var(--teal)}
+  .pov-scene-thumbnails button.active{border-color:var(--teal);box-shadow:0 0 0 2px rgba(10,133,119,.15)}
+  .pov-decision.has-gallery .pov-choices button{min-height:60px}
+}
+
+@media(max-width:420px){.pov-scene-thumbnails{gap:.35rem}.pov-scene-thumbnails button{height:72px}.pov-scene-thumbnails button span{font-size:.66rem}}
