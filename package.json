@@ -10,11 +10,13 @@
     "check": "tsc -b --pretty false"
   },
   "dependencies": {
+    "@openai/sites-vite-plugin": "^0.2.0",
     "@vitejs/plugin-react": "latest",
     "lucide-react": "latest",
     "react": "latest",
     "react-dom": "latest",
-    "vite": "latest"
+    "vite": "latest",
+    "xlsx": "^0.18.5"
   },
   "devDependencies": {
     "@types/react": "latest",
