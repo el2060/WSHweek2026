@@ -15,12 +15,16 @@ async (page) => {
   };
   const audit = async label => {
     states++;
+    await page.evaluate(()=>new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(resolve))));
     const result = await page.evaluate(() => {
       const root = document.querySelector('#office');
       const visible = el => el.getBoundingClientRect().height > 0;
       const markers = [...root.querySelectorAll('.hazard-marker')];
       const image = root.querySelector('.scene-frame img');
       const imageBox = image.getBoundingClientRect();
+      const panelBox = root.querySelector('.hazard-panel').getBoundingClientRect();
+      const navBox = root.querySelector('.hazard-picker').getBoundingClientRect();
+      const overlap = (a,b) => Math.min(a.right,b.right)-Math.max(a.left,b.left)>1 && Math.min(a.bottom,b.bottom)-Math.max(a.top,b.top)>1;
       return {
         overflow: document.documentElement.scrollWidth > innerWidth + 1,
         clips: [...root.querySelectorAll('button')].filter(visible).filter(el => el.scrollWidth > el.clientWidth + 2 || el.scrollHeight > el.clientHeight + 2).map(el => el.textContent),
@@ -29,6 +33,9 @@ async (page) => {
         hitTargets: markers.every(el => { const r=el.getBoundingClientRect(); const x=r.x+r.width/2, y=r.y+r.height/2; return y<70 || y>innerHeight || el.contains(document.elementFromPoint(x,y)); }),
         image: image.complete && image.naturalWidth > 0,
         ratio: imageBox.width / imageBox.height,
+        panelShare: panelBox.width / innerWidth,
+        fullScene: imageBox.width >= innerWidth-1,
+        markersClear: markers.every(el=>{const r=el.getBoundingClientRect(); return r.left>=0 && r.right<=innerWidth && !overlap(r,panelBox) && !overlap(r,navBox);}),
         motion: root.querySelector('.hazard-result') ? getComputedStyle(root.querySelector('.hazard-result')).animationName : 'none',
       };
     });
@@ -37,6 +44,8 @@ async (page) => {
     assert(!result.small, `${label}: small text`);
     assert(result.targets && result.hitTargets, `${label}: obscured/small markers`);
     assert(result.image && Math.abs(result.ratio-1672/941)<.01, `${label}: missing/cropped scene`);
+    assert(result.fullScene && result.markersClear, `${label}: scene not full-width or markers cropped/covered`);
+    assert(page.viewportSize().width<=1280 || result.panelShare<=.34, `${label}: decision panel dominates`);
     assert(result.motion === 'none', `${label}: reduced motion ignored`);
   };
   for (const width of [1920,1440,1024,768,390,320]) {

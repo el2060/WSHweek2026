@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { ArrowLeft, ArrowRight, Check, X } from 'lucide-react';
 import { officeHotspots } from './config';
 import { ReadingText } from './ReadingText';
@@ -19,36 +19,46 @@ export default function OfficeScene({ onComplete }: { onComplete: () => void }) 
   const [choices, setChoices] = useState(readChoices);
   const [step, setStep] = useState(() => Math.max(0, officeHotspots.findIndex(item => !isCorrect(item, choices))));
   const heading = useRef<HTMLHeadingElement>(null);
+  const workspace = useRef<HTMLDivElement>(null);
+  const panel = useRef<HTMLDivElement>(null);
   const active = officeHotspots[step];
   const selected = active.options.find(option => option.id === choices[active.id]);
   const count = officeHotspots.filter(item => isCorrect(item, choices)).length;
   const allDone = count === officeHotspots.length;
   const applyChoice = (id: string) => setChoices(current => ({ ...current, [active.id]: id }));
   useEffect(() => { try { localStorage.setItem(storageKey, JSON.stringify(choices)); } catch { /* Optional storage. */ } }, [choices]);
+  useLayoutEffect(() => {
+    // Reserve space below the decision panel for every on-scene hazard marker.
+    const update = () => workspace.current?.style.setProperty('--office-panel-height', `${panel.current?.offsetHeight || 600}px`);
+    const observer = new ResizeObserver(update);
+    if (panel.current) observer.observe(panel.current);
+    update();
+    return () => observer.disconnect();
+  }, []);
   const choose = (index: number) => {
     setStep(index);
     requestAnimationFrame(() => { heading.current?.focus({ preventScroll: true }); if (window.matchMedia('(max-width: 900px)').matches) heading.current?.scrollIntoView({ block: 'start', behavior: 'instant' }); });
   };
   const next = () => choose(step < officeHotspots.length - 1 ? step + 1 : Math.max(0, officeHotspots.findIndex(item => !isCorrect(item, choices))));
-  return <section id="office" className="chapter hazard-guided">
-    <div className="scene-heading"><p className="eyebrow">01 · Spot hazards</p><h2>Make the space safe.</h2><p><ReadingText>Five hazards. Choose a safe action.</ReadingText></p></div>
-    <div className="office-workspace">
+  return <section id="office" className="chapter hazard-guided office-immersive">
+    <div className="scene-heading"><h1>01 · Spot hazards</h1></div>
+    <div className="office-workspace" ref={workspace}>
       <div className="office-context">
         <div className="scene-frame">
           <img src="/assets/office.webp" alt="Starting office scene: a bag in the walkway, an open drawer, a hanging cable, leaning files and a drink beside the printer."/>
-          {officeHotspots.map((item, index) => <button key={item.id} className={`hazard-marker ${index === step ? 'current' : ''} ${isCorrect(item, choices) ? 'done' : ''}`} style={{ left: `${item.x}%`, top: `${item.y}%` }} aria-label={`Inspect: ${item.title}`} aria-current={index === step ? 'step' : undefined} onClick={() => choose(index)}>{isCorrect(item, choices) ? <Check size={20} aria-hidden="true"/> : index + 1}</button>)}
+          {officeHotspots.map((item, index) => <button key={item.id} data-hazard={item.id} className={`hazard-marker ${index === step ? 'current' : ''} ${isCorrect(item, choices) ? 'done' : ''}`} style={{ left: `${item.x}%`, top: `var(--hazard-marker-top, ${item.y}%)` }} aria-label={`Inspect: ${item.title}`} aria-current={index === step ? 'step' : undefined} onClick={() => choose(index)}>{isCorrect(item, choices) ? <Check size={20} aria-hidden="true"/> : index + 1}</button>)}
         </div>
-        <div className="hazard-picker" role="group" aria-label="Five hazards — explore in any order">
+      </div>
+      <div className="office-scene-shade" aria-hidden="true"/>
+      <div className="hazard-picker" role="group" aria-label="Five hazards — explore in any order">
           {officeHotspots.map((item, index) => <button key={item.id} aria-current={index === step ? 'step' : undefined} onClick={() => choose(index)}><span>{isCorrect(item, choices) ? <Check size={17} aria-hidden="true"/> : index + 1}</span>{item.label}{isCorrect(item, choices) && <span className="sr-only"> — completed</span>}</button>)}
         </div>
-        <p className="hazard-scene-note">Starting scene</p>
-      </div>
-      <div className="hazard-panel">
+      <div className="hazard-panel" ref={panel}>
         <p className="eyebrow">Hazard {step + 1} of 5</p>
         <h3 ref={heading} tabIndex={-1}><ReadingText>{active.title}</ReadingText></h3>
         <p className="hazard-story"><ReadingText>{active.body}</ReadingText></p>
         <div className="hazard-workbench" key={active.id}>
-          <p className="hazard-prompt" id={`hazard-prompt-${active.id}`}>{active.prompt}</p>
+          <p className="hazard-prompt sr-only" id={`hazard-prompt-${active.id}`}>{active.prompt}</p>
           <div className="hazard-destinations" role="group" aria-labelledby={`hazard-prompt-${active.id}`}>
             {active.options.map(option => <button className={`hazard-choice ${selected?.id === option.id ? `selected ${option.correct ? 'correct' : 'incorrect'}` : ''}`} key={option.id} aria-pressed={selected?.id === option.id} onClick={() => applyChoice(option.id)}><span>{option.label}</span>{selected?.id === option.id && (option.correct ? <Check size={20} aria-hidden="true"/> : <X size={20} aria-hidden="true"/>)}</button>)}
           </div>
@@ -57,6 +67,6 @@ export default function OfficeScene({ onComplete }: { onComplete: () => void }) 
         <div className="hazard-footer"><p className="scene-counter">{count}/5 completed</p><div>{step > 0 && <button className="text-button" onClick={() => choose(step - 1)}><ArrowLeft size={18}/>Back</button>}{allDone ? <button className="primary" onClick={onComplete}>Continue to Fire <ArrowRight size={19}/></button> : <button className="secondary" onClick={next}>{step < 4 ? 'Next hazard' : 'Review remaining'}<ArrowRight size={19}/></button>}</div></div>
       </div>
     </div>
-    <p className="hazard-safety-note"><ReadingText>Can’t fix it safely? Keep others clear and ask for help.</ReadingText></p>
+    <div className="office-footnote"><p className="hazard-scene-note">Tap a marker · starting scene</p><p className="hazard-safety-note"><ReadingText>Can’t fix it safely? Keep others clear and ask for help.</ReadingText></p></div>
   </section>;
 }

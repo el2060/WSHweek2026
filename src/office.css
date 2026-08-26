@@ -1,4 +1,4 @@
-/* Keep the scene useful and the learning action dominant. */
+/* Scene-led hazard practice with a compact, readable decision surface. */
 .mock-report .practice-choice-cue { font-size: var(--reading-body); line-height: 1.5; margin: .25rem 0 .75rem; }
 .hazard-guided .office-workspace { align-items: start; }
 .office-context,.hazard-panel { min-width: 0; }
@@ -39,10 +39,83 @@
   .hazard-panel { padding: 1.5rem; }
 }
 @media(max-width:600px) {
+  .office-immersive .hazard-marker { width: 44px; height: 44px; font-size: 16px; }
   .hazard-panel { padding: 1.25rem 1.125rem; }
   .hazard-picker { display: grid; grid-template-columns: repeat(5,minmax(max-content,1fr)); gap: .25rem; }
   .hazard-picker button { flex-direction: column; justify-content: center; padding: .5rem 0; gap: .25rem; font-size: 1rem; }
   .hazard-destinations { gap: .625rem; }
   .hazard-footer>div { width: 100%; justify-content: space-between; }
   .hazard-footer>div>button:last-child { margin-left: auto; }
+}
+
+/* Full office canvas. The image and markers share one scaled coordinate plane.
+   Limit side cropping to 10% of the source so all five hazards stay visible. */
+.view-transition:has(>.office-immersive) { animation: none; }
+.app-shell #office.office-immersive {
+  --office-header: 72px;
+  position: relative; display: block; isolation: isolate;
+  padding: var(--office-header) 0 0; min-height: 100svh;
+  background: #12343a; border: 0;
+}
+.office-immersive .office-workspace {
+  --office-scene-height: max(calc(100svh - var(--office-header)),calc(var(--office-panel-height,600px) * 1.55 + 5rem));
+  position: relative; display: block; width: 100%; max-width: none;
+  min-height: var(--office-scene-height); padding: 1.25rem 0 7rem; margin: 0;
+}
+.app-shell #office .scene-heading {
+  position: absolute; z-index: 3; top: calc(var(--office-header) + 1.25rem); left: var(--activity-gutter);
+  width: auto; max-width: 40%; margin: 0; padding: .65rem 1rem;
+  background: #10383dea; border-left: 2px solid #9fe1d1; border-radius: 0 .5rem .5rem 0;
+}
+.office-immersive .scene-heading h1 { margin: 0; color: white; font-size: 1.125rem; line-height: 1.4; letter-spacing: 0; }
+.office-immersive .office-context { position: absolute; inset: 0; max-width: none; width: 100%; overflow: hidden; }
+.office-immersive .scene-frame {
+  position: absolute; bottom: 0; left: 50%; transform: translateX(-50%);
+  width: min(125%,max(100%,calc(var(--office-scene-height) * 1672 / 941)));
+  max-width: none; border-radius: 0; overflow: visible; background: transparent;
+}
+.office-immersive .scene-frame>img { display: block; width: 100%; height: auto; aspect-ratio: 1672/941; }
+.office-scene-shade { position: absolute; inset: 0; pointer-events: none; background: linear-gradient(180deg,#08262c1a,transparent 35%,transparent 75%,#08262ce6); }
+.office-immersive .hazard-marker { z-index: 1; }
+.office-immersive .hazard-panel {
+  position: relative; z-index: 2; width: 28rem; max-width: 34%; margin: 0 var(--activity-gutter) 0 auto;
+  padding: 1.5rem; border: 0; border-radius: .875rem; background: #fffdf7; box-shadow: 0 8px 36px #08262c26;
+}
+.office-immersive .hazard-story { line-height: 1.5; margin: 0 0 1.25rem; }
+.office-immersive .hazard-destinations { margin-top: 0; }
+.office-immersive .hazard-result p { line-height: 1.5; }
+.office-immersive .hazard-footer { margin-top: 1.25rem; padding-top: 1rem; gap: .75rem; }
+.office-immersive .hazard-footer .scene-counter { font-size: .9375rem; font-weight: 400; }
+.app-shell .office-immersive .hazard-footer button { font-size: 1rem; }
+.office-immersive .hazard-footer>div { gap: .5rem; }
+.office-immersive .hazard-picker {
+  position: absolute; z-index: 2; bottom: 4rem; right: var(--activity-gutter);
+  width: min(32rem,calc(100% - 2 * var(--activity-gutter))); margin: 0; gap: .5rem;
+}
+.office-immersive .hazard-picker button { flex: 1; justify-content: center; min-height: 3rem; padding: .625rem .75rem; background: #10383dea; border-color: #9fc2ba; color: white; }
+.office-immersive .hazard-picker button[aria-current] { background: #08665e; border-color: #b8eee2; color: white; }
+.office-footnote { position: absolute; z-index: 2; bottom: 1rem; inset-inline: var(--activity-gutter); display: flex; flex-wrap: wrap; justify-content: space-between; gap: .375rem 1rem; }
+.office-footnote p { font-size: .9375rem; line-height: 1.5; color: white; background: #10383dd9; padding: .25rem .5rem; border-radius: .25rem; margin: 0; }
+.office-immersive .hazard-marker:focus-visible,.office-immersive .hazard-picker button:focus-visible { outline-color: #fce89d; }
+@media(min-width:1440px) { .app-shell #office.office-immersive { --office-header: 4.5rem; } }
+@media(max-width:1280px) {
+  .app-shell #office .scene-heading { position: static; max-width: none; border: 0; border-radius: 0; padding: .875rem 1.125rem; }
+  .office-immersive .office-workspace { display: flex; flex-direction: column; min-height: 0; padding: 0; }
+  .office-immersive .office-context { position: relative; margin: 0; }
+  .office-immersive .scene-frame { position: relative; bottom: auto; left: auto; width: 100%; max-width: none; transform: none; }
+  .office-scene-shade { display: none; }
+  .office-immersive .hazard-panel { order: 2; width: 100%; max-width: none; margin: 0; padding: 1.5rem max(1.125rem,calc((100vw - 44rem)/2)); border-radius: 0; box-shadow: none; }
+  .office-immersive .hazard-picker { position: static; order: 1; width: 100%; padding: .75rem 1.125rem; }
+  .office-footnote { position: static; padding: .75rem 1.125rem 1rem; }
+}
+@media(max-width:850px) { .app-shell #office.office-immersive { --office-header: 64px; } }
+@media(max-width:600px) {
+  .office-immersive .hazard-picker { gap: .25rem; }
+  .office-immersive .hazard-picker button { padding: .5rem .125rem; }
+}
+@media(max-width:360px) {
+  .office-immersive .hazard-marker[data-hazard=files] { --hazard-marker-top: 60%; }
+  .office-immersive .hazard-picker { grid-template-columns: repeat(6,minmax(0,1fr)); }
+  .office-immersive .hazard-picker button { grid-column: span 2; }
+  .office-immersive .hazard-picker button:nth-child(n+4) { grid-column: span 3; }
 }

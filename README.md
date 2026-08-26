@@ -36,12 +36,13 @@ The unrelated AuditLens prototype in `src/App.tsx` and `src/styles.css` is prese
 
 ### Guided scenario 01
 
-- `src/OfficeScene.tsx` and `src/office.css` provide a guided scene with five named hazards. Content and marker coordinates live in `src/config.ts`.
+- `src/OfficeScene.tsx` and `src/office.css` provide a full-canvas office scene with five named hazards and a compact, high-contrast decision panel (at most 34% of the desktop width). The image and markers scale together; feedback is given space without covering a hazard. Phones show the complete illustration above the choices. Content and marker coordinates live in `src/config.ts`.
 - Each hazard contrasts a realistic quick fix with a safer action: move a bag aside versus store it; partly close a drawer versus close it fully; unplug unfamiliar equipment versus ask for help; store heavy files overhead versus on a lower shelf; add a drink lid versus move it away. One short context sentence makes the distinction clear. Correct positions vary without randomisation. Green checks / “Correct” and warm red crosses / “Not quite — try again” accompany brief explanations. No score, drag-and-drop or object movement. All five remain freely accessible through numbered markers or names.
 - Corrected image/copy mismatches: files lean on the cabinet beside the laptop, the cable hangs beside the desk, and the drink marker now points at the cup rather than the printer. The original illustration remains visible and is labelled as the starting scene.
 - The files activity identifies the files as heavy before asking where to store them. Cable guidance explicitly says the equipment is unfamiliar, so staff need not guess whether unplugging it is appropriate.
 - Choice progress uses `clte-office-v3`, survives revisits and is cleared by Reset activity (which also clears legacy v1/v2 keys). Earlier choices do not preselect answers in this version. Main text remains at least 18px; markers have 44px minimum tap targets. Selecting the safe action for each hazard enables Continue to Fire; unsafe choices never receive completion checks.
 - `scripts/verify-office.js` checks 90 states: before selection, shortcut feedback and safer-action feedback for all five hazards at six widths. It also covers mixed answer positions, concise copy, free/sequential navigation, keyboard use, marker hit targets, correct-only progress, changing an answer, persistence/resume, reset, malformed/legacy storage and completion. Existing safe answers retain their stable IDs; replaced shortcuts receive new IDs so old selections cannot silently choose new actions.
+- `scripts/verify-office-immersive.js` checks 120 additional layout states from 320 to 3778px, including enlarged text, to ensure the panel, navigation and footnotes never cover a hazard marker.
 
 ### Illustrated decisions: scenarios 03, 04 and 05
 

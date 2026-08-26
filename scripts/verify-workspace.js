@@ -37,14 +37,16 @@ async (page) => {
       const panel = document.querySelector('.office-workspace').getBoundingClientRect();
       const heading = document.querySelector('.scene-heading').getBoundingClientRect();
       const image = document.querySelector('.office-workspace .scene-frame').getBoundingClientRect();
+      const decision = document.querySelector('.hazard-panel').getBoundingClientRect();
       const type = document.querySelector('.hazard-choice');
-      return {width:innerWidth,workspace:panel.width,usage:panel.width/innerWidth,gap:panel.top-heading.bottom,imageShare:image.width/panel.width,font:parseFloat(getComputedStyle(type).fontSize),root:parseFloat(getComputedStyle(document.documentElement).fontSize)};
+      return {width:innerWidth,workspace:panel.width,usage:panel.width/innerWidth,gap:panel.top-heading.bottom,imageShare:image.width/panel.width,decisionShare:decision.width/innerWidth,font:parseFloat(getComputedStyle(type).fontSize),root:parseFloat(getComputedStyle(document.documentElement).fontSize)};
     });
     measurements.push(measure);
     if (width >= 901) {
       assert(measure.usage >= (width > 3000 ? .7 : .85), `${width}: narrow workspace ${measure.usage}`);
       assert(measure.gap <= measure.root * 1.6, `${width}: excess gap after chapter heading`);
-      assert(measure.imageShare < .5, `${width}: illustration dominates the workspace`);
+      assert(measure.imageShare >= .99, `${width}: office scene is not full width`);
+      if(width>1280)assert(measure.decisionShare <= .34, `${width}: decision panel dominates the office scene`);
     }
     assert(measure.font >= 18, `${width}: small decision text`);
     if ([3778,2267,1920,1366,390].includes(width)) await page.screenshot({path:`output/playwright/spacing-office-${width}.png`,fullPage:true});
