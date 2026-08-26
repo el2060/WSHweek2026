@@ -3,6 +3,7 @@ import { ArrowDown, ArrowRight, Check, ClipboardCheck, ExternalLink, Eye, Flame,
 import { officeHotspots, officialInfo, routes, type Hotspot } from './config';
 import { InjuryScene, HazeScene, clearGuidedProgress } from './GuidedScenes';
 import PracticeReport from './PracticeReport';
+import { ReadingText } from './ReadingText';
 
 type Progress = { office: boolean; walkway: boolean; haze: boolean; evacuation: boolean; reporting: boolean; practice: boolean; guide: boolean; completion: boolean };
 type View = 'intro' | 'office' | 'walkway' | 'haze' | 'evacuation' | 'reporting' | 'practice' | 'guide' | 'completion';
@@ -34,9 +35,9 @@ function Intro({ onStart, onReset, startLabel, statusText, canReset }: { onStart
     <div className="intro-copy">
       <div className="wsh-week-lockup"><strong>WSH Week</strong><b>2026</b></div>
       <p className="eyebrow light">CLTE staff online activity</p>
-      <h1>Workplace safety <em>made practical.</em></h1>
-      <p className="tagline">Five short scenarios. Try a small action. Learn as you go.</p>
-      <div className="intro-actions"><button className="primary light-button" onClick={onStart}>{startLabel} <ArrowDown size={19}/></button>{canReset&&<button className="intro-reset" onClick={onReset}><RotateCcw/>Start again</button>}</div>
+      <h1><span>Workplace safety</span><em>made practical.</em></h1>
+      <p className="tagline"><span className="reading-phrase">Five short scenarios.</span>{' '}<span className="reading-phrase">Try a small action.</span>{' '}<span className="reading-phrase">Learn as you go.</span></p>
+      <div className="intro-actions"><button className="primary light-button" onClick={onStart}><span>{startLabel}</span><ArrowDown size={19}/></button>{canReset&&<button className="intro-reset" onClick={onReset}><RotateCcw/><span>Start again</span></button>}</div>
       {statusText&&<p className="intro-note" aria-live="polite">{statusText}</p>}
     </div>
     <div className="wsh-hero-visual" aria-hidden="true">
@@ -123,11 +124,11 @@ function EvacuationScene({ onComplete }: { onComplete: () => void }) {
         <div className="pov-scene-thumbnails" style={{gridTemplateColumns:`repeat(${stage.photos.length},minmax(0,1fr))`}}>{stage.photos.map((view,index)=><button key={view[0]} type="button" className={photoIndex===index?'active':''} aria-pressed={photoIndex===index} aria-label={`Show route view ${index+1}: ${view[1]}`} onClick={()=>setPhotoIndex(index)}><img src={view[0]} alt=""/><span>View {index+1}</span></button>)}</div>
       </div>}
       <div className="pov-choices">{stage.choices.map((choice,index)=><button key={choice.id} aria-pressed={answers[routeStage]===choice.id} className={answers[routeStage]===choice.id?`selected ${choice.best?'safe':'risk'}`:''} onClick={()=>setAnswers(value=>({...value,[routeStage]:choice.id}))}><span>{answers[routeStage]===choice.id?(choice.best?<Check/>:<X/>):String.fromCharCode(65+index)}</span><strong>{choice.label}</strong></button>)}</div>
-      {selected&&<div className={`pov-feedback ${selected.best?'good':'consider'}`} aria-live="polite"><Info/><div><strong>{selected.best?'Good call':'Try again'}</strong><p>{selected.feedback}</p></div></div>}
+      {selected&&<div className={`pov-feedback ${selected.best?'good':'consider'}`} aria-live="polite"><Info/><div><strong>{selected.best?'Good call':'Try again'}</strong><p><ReadingText>{selected.feedback}</ReadingText></p></div></div>}
       <div className="pov-actions"><button disabled={routeStage===0} onClick={()=>selectStage(routeStage-1)}><ArrowRight className="turn"/> Back</button>{allCorrect?<button className="pov-complete-action" onClick={onComplete}>Finish Fire 02 <ArrowRight/></button>:routeStage<routeStages.length-1?<button onClick={()=>selectStage(routeStage+1)}>Next checkpoint <ArrowRight/></button>:<button onClick={reviewNext}>Review missed points <ArrowRight/></button>}</div>
     </aside>
     <div className="pov-stage-rail" role="tablist" aria-label="Actual evacuation route checkpoints">{routeStages.map((item,index)=>{const done=item.choices.find(choice=>choice.id===answers[index])?.best;return <button key={item.id} role="tab" aria-selected={routeStage===index} className={`${routeStage===index?'active':''} ${done?'done':''}`} onClick={()=>selectStage(index)}><span>{done?<Check/>:index+1}</span><strong>{item.label}</strong></button>})}</div>
-    {mapOpen&&<div className="pov-map-backdrop" onMouseDown={event=>{if(event.target===event.currentTarget)setMapOpen(false)}}><div className="pov-map-dialog" role="dialog" aria-modal="true" aria-label="Block 27 to Admin Field route map"><button className="sheet-close" onClick={()=>setMapOpen(false)} aria-label="Close route map"><X/></button><img src="/assets/block27-admin-field-route.jpg" alt="Aerial emergency route map from Block 27 to Zone A at Admin Field."/><p><MapPin/><span><strong>Block 27 → Zone A, Admin Field</strong><small>Follow fire wardens and current posted evacuation instructions.</small></span></p></div></div>}
+    {mapOpen&&<div className="pov-map-backdrop" onMouseDown={event=>{if(event.target===event.currentTarget)setMapOpen(false)}}><div className="pov-map-dialog" role="dialog" aria-modal="true" aria-label="Block 27 to Admin Field route map"><button className="sheet-close" onClick={()=>setMapOpen(false)} aria-label="Close route map"><X/></button><img src="/assets/block27-admin-field-route.jpg" alt="Aerial emergency route map from Block 27 to Zone A at Admin Field."/><p><MapPin/><span><strong>Block 27 → Zone A, Admin Field</strong><small><ReadingText>Follow fire wardens and current posted evacuation instructions.</ReadingText></small></span></p></div></div>}
   </section>;
 }
 
@@ -150,14 +151,14 @@ function PocketGuide({ onComplete, reviewing = false }: { onComplete: () => void
   const [tab,setTab]=useState<'emergency'|'incident'|'hazard'>('emergency');
   const tabs=['emergency','incident','hazard'] as const;
   const moveTab=(event:React.KeyboardEvent<HTMLButtonElement>,current:typeof tab)=>{if(!['ArrowRight','ArrowLeft','Home','End'].includes(event.key))return;event.preventDefault();const tablist=event.currentTarget.parentElement;const index=tabs.indexOf(current);const next=event.key==='Home'?0:event.key==='End'?tabs.length-1:event.key==='ArrowRight'?(index+1)%tabs.length:(index-1+tabs.length)%tabs.length;setTab(tabs[next]);requestAnimationFrame(()=>tablist?.querySelectorAll<HTMLButtonElement>('[role="tab"]')[next]?.focus())};
-  const tabButton=(id:typeof tab,label:string,icon:React.ReactNode)=><button id={`guide-tab-${id}`} role="tab" aria-selected={tab===id} aria-controls={`guide-panel-${id}`} tabIndex={tab===id?0:-1} onKeyDown={event=>moveTab(event,id)} onClick={()=>setTab(id)}>{icon}{label}</button>;
+  const tabButton=(id:typeof tab,label:string,icon:React.ReactNode)=><button id={`guide-tab-${id}`} role="tab" aria-selected={tab===id} aria-controls={`guide-panel-${id}`} tabIndex={tab===id?0:-1} onKeyDown={event=>moveTab(event,id)} onClick={()=>setTab(id)}>{icon}<span>{label}</span></button>;
   return <section id="guide" className="guide interactive-guide">
     <div className="guide-title"><p className="eyebrow">Keep this handy</p><h2>WSH contacts</h2><p>What to do. Who to call.</p></div>
     <div className="guide-tabs" role="tablist" aria-label="WSH contact categories">{tabButton('emergency','Emergency',<Phone/>)}{tabButton('incident','Incident / near miss',<HeartHandshake/>)}{tabButton('hazard','Hazard / defect',<Wrench/>)}</div>
     <div id={`guide-panel-${tab}`} role="tabpanel" aria-labelledby={`guide-tab-${tab}`} className="guide-focus reveal" key={tab}>
-      {tab==='emergency'&&<article><p className="eyebrow">Serious medical injury</p><h3>Call {officialInfo.ambulanceNumber}</h3><ul><li>Give the exact location</li><li>Call Guard Post: <strong>{officialInfo.emergencyNumber}</strong></li><li>Stay with the person until help arrives</li></ul><div className="guide-actions"><ActionLink href={officialInfo.links.emergencyInfo}>Emergency info</ActionLink><ActionLink href={officialInfo.links.oneMap}>Zone A map</ActionLink></div></article>}
-      {tab==='incident'&&<article><p className="eyebrow">Incident or near miss</p><h3>Care. Control. Report.</h3><ul><li>Help the person and make the area safe</li><li>Student case? Call SAS: <strong>{officialInfo.sasNumber}</strong></li><li>Report promptly in the WSH Portal</li></ul><div className="guide-actions"><ActionLink href={officialInfo.links.wshPortal}>WSH Portal</ActionLink><ActionLink href={officialInfo.links.studentInsurance}>Student insurance</ActionLink></div></article>}
-      {tab==='hazard'&&<article><p className="eyebrow">Hazard or defect</p><h3>Call {officialInfo.faultNumber}</h3><ul><li>Make the area safer if you can</li><li>Alert the person in charge</li><li>Report the fault</li></ul><ActionLink href={officialInfo.links.faultReport}>Report a fault</ActionLink></article>}
+      {tab==='emergency'&&<article><p className="eyebrow">Serious medical injury</p><h3>Call <span className="reading-number">{officialInfo.ambulanceNumber}</span></h3><ul><li>Give the exact location</li><li>Call Guard Post: <strong className="reading-number">{officialInfo.emergencyNumber}</strong></li><li>Stay with the person until help arrives</li></ul><div className="guide-actions"><ActionLink href={officialInfo.links.emergencyInfo}>Emergency info</ActionLink><ActionLink href={officialInfo.links.oneMap}>Zone A map</ActionLink></div></article>}
+      {tab==='incident'&&<article><p className="eyebrow">Incident or near miss</p><h3>Care. Control. Report.</h3><ul><li>Help the person and make the area safe</li><li>Student case? Call SAS: <strong className="reading-number">{officialInfo.sasNumber}</strong></li><li>Report promptly in the WSH Portal</li></ul><div className="guide-actions"><ActionLink href={officialInfo.links.wshPortal}>WSH Portal</ActionLink><ActionLink href={officialInfo.links.studentInsurance}>Student insurance</ActionLink></div></article>}
+      {tab==='hazard'&&<article><p className="eyebrow">Hazard or defect</p><h3>Call <span className="reading-number">{officialInfo.faultNumber}</span></h3><ul><li>Make the area safer if you can</li><li>Alert the person in charge</li><li>Report the fault</li></ul><ActionLink href={officialInfo.links.faultReport}>Report a fault</ActionLink></article>}
     </div>
     <button className="primary guide-finish" onClick={onComplete}>{reviewing ? 'Back to completion' : 'Finish activity'} <ArrowRight/></button>
   </section>;
@@ -173,7 +174,15 @@ function ResetDialog({ open, onCancel, onConfirm }: { open: boolean; onCancel: (
 
 function Completion({ onReview, onGuide, onReset, onHome }: { onReview: (view: View) => void; onGuide: () => void; onReset: () => void; onHome: () => void }) {
   const reviewItems:{view:View;n:string;label:string}[]=[{view:'office',n:'01',label:'Office hazards'},{view:'evacuation',n:'02',label:'Fire emergency'},{view:'walkway',n:'03',label:'Injury response'},{view:'haze',n:'04',label:'Haze response'},{view:'reporting',n:'05',label:'Reporting'}];
-  return <section className="completion"><Sparkles/><p className="eyebrow">CLTE WSH Week 2026</p><h2>Activity complete</h2><p>You’ve reached the end. You can close this tab or return to the home screen.</p><div className="completion-review"><article><span>01</span><strong>Care first</strong><p>Help the person. Control the risk.</p></article><article><span>02</span><strong>Call clearly</strong><p>For serious injury: 995 + exact location.</p></article><article><span>03</span><strong>Close the loop</strong><p>Report, join roll call and remain.</p></article></div><div className="personal-takeaway"><Check/><span>Know your nearest exit, assembly point and emergency contacts.</span></div><div className="review-hub"><p className="eyebrow">Replay any scenario</p><div>{reviewItems.map(item=><button key={item.view} onClick={()=>onReview(item.view)}><span>{item.n}</span>{item.label}<ArrowRight/></button>)}</div></div><div className="completion-actions"><button className="start-again" onClick={onReset}><RotateCcw/>Start again</button><button className="text-button" onClick={onGuide}>Review contacts</button><button className="primary" onClick={onHome}>Back to home <ArrowRight/></button></div></section>;
+  return <section className="completion">
+    <Sparkles/><p className="eyebrow">CLTE WSH Week 2026</p><h2>Activity complete</h2>
+    <p>You’ve reached the end. You can close this tab or return to the home screen.</p>
+    <div className="completion-actions"><button className="primary" onClick={onHome}>Back to home <ArrowRight/></button><button className="text-button" onClick={onGuide}>Review contacts</button></div>
+    <div className="completion-review"><article><span>01</span><strong>Care first</strong><p>Help the person. Control the risk.</p></article><article><span>02</span><strong>Call clearly</strong><p>For serious injury: 995 + exact location.</p></article><article><span>03</span><strong>Close the loop</strong><p>Report, join roll call and remain.</p></article></div>
+    <div className="personal-takeaway"><Check/><span>Know your nearest exit, assembly point and emergency contacts.</span></div>
+    <div className="review-hub"><p className="eyebrow">Replay any scenario</p><div>{reviewItems.map(item=><button key={item.view} onClick={()=>onReview(item.view)}><span>{item.n}</span>{item.label}<ArrowRight/></button>)}</div></div>
+    <button className="start-again" onClick={onReset}><RotateCcw/>Start again</button>
+  </section>;
 }
 
 export default function App() {

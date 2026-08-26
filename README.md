@@ -63,6 +63,14 @@ The script resets CLTE progress only in that test browser session. It covers fre
 
 Hotspot `x` and `y` values are percentages relative to the scene image. Operational text is kept out of the generated art and remains accessible HTML.
 
+### Reading layout
+
+`src/reading.css` is the final, shared typography/layout layer after the legacy scene styles and `guided.css`. Instructions and feedback use 18–19px body text, with responsive headings, consistent reading widths and full-height wrapping controls. Tablet layouts collapse before the text columns become cramped. No learning text is line-clamped or ellipsized.
+
+Short home and chapter-heading phrases stay together. `src/ReadingText.tsx` keeps the final two words of selected learning paragraphs together, while allowing the group to reflow if enlarged text needs more space. Contact numbers remain unbroken. Completion places Back to home immediately after the finish message.
+
+Run `scripts/verify-reading-layout.js` through Playwright CLI in a dedicated test browser. It exercises every screen at 1440, 1024, 768, 390 and 320 CSS pixels, plus 125% text at 640 and 390 pixels; checks body-text size, control clipping, overflow and phrase wrapping; and captures `output/playwright/layout-*.png`. The script resets only that browser's CLTE progress.
+
 ## Replacing illustrations
 
 Replace the WebP files in `public/assets/` while keeping the filenames:

@@ -1,0 +1,271 @@
+/* Reading system: generous type, natural phrase wraps and consistent text measures.
+   Keep this after the legacy scene styles; do not truncate learning content. */
+:root {
+  --reading-body: 1.1875rem;
+  --reading-small: 1rem;
+  --reading-title: clamp(2rem, 1.5rem + 1.6vw, 2.75rem);
+  --reading-panel: clamp(1.625rem, 1.3rem + 1vw, 2rem);
+  --reading-gutter: clamp(1.125rem, 3vw, 2.5rem);
+}
+.app-shell :where(h1,h2,h3) { text-wrap: balance; line-height: 1.16; letter-spacing: -.035em; overflow-wrap: normal; word-break: normal; }
+.app-shell :where(p,li,blockquote,dd) { text-wrap: pretty; }
+.app-shell :where(button,a) { text-wrap: balance; }
+.app-shell :where(button) { max-width: 100%; white-space: normal; }
+.app-shell :where(button, .guide-link) > svg { flex-shrink: 0; }
+.app-shell :where(.primary,.secondary,.text-button,.guide-link) { min-height: 3rem; height: auto; font-size: 1.125rem; line-height: 1.4; text-align: center; }
+.app-shell :where(.primary,.secondary) { padding: .75rem 1.125rem; box-shadow: none; }
+.app-shell :where(.primary,.secondary) > span { min-width: 0; }
+.app-shell .eyebrow { font-size: .8125rem; line-height: 1.5; letter-spacing: .1em; }
+.reading-phrase { display: inline-block; max-width: 100%; }
+.reading-number { white-space: nowrap; }
+.app-shell :where(.moment-panel,.pov-decision,.bottom-sheet,.route-feedback,.mock-panel,.guide-focus,.mock-preview) { min-width: 0; }
+
+/* One calm headline, then complete phrases — never an isolated final 'go'. */
+.app-shell .intro { min-height: 100svh; padding: 7rem max(2.5rem, calc((100vw - 1240px)/2)) 3rem; align-items: center; }
+.intro .intro-copy { width: min(41rem, 56%); }
+.intro .wsh-week-lockup { margin-bottom: 1.25rem; gap: .625rem; }
+.intro .wsh-week-lockup strong { font-size: clamp(1.75rem, 2.4vw, 2.5rem); line-height: 1.15; }
+.intro .wsh-week-lockup b { font-size: clamp(1.125rem, 1.5vw, 1.5rem); }
+.intro-copy>.wsh-week-lockup+.eyebrow { margin-bottom: 1.5rem; font-size: .875rem; color: #52686d; }
+.intro h1 { max-width: 100%; margin-bottom: 1.5rem; font-size: clamp(3rem, 4.6vw, 4.75rem); line-height: 1.08; letter-spacing: -.05em; text-shadow: none; }
+.intro h1>span { display: block; text-wrap: balance; }
+.intro h1 em { font-size: .85em; line-height: 1.15; letter-spacing: -.04em; margin-top: .15em; }
+.intro .tagline { max-width: 34rem; font-size: 1.25rem; font-weight: 600; line-height: 1.65; letter-spacing: 0; }
+.intro .intro-actions { display: flex; flex-direction: row; align-items: center; flex-wrap: wrap; gap: .75rem 1.5rem; margin-top: 1.75rem; }
+.intro-actions .light-button { margin: 0; font-size: 1.125rem; box-shadow: none; min-height: 3.25rem; }
+.intro .intro-reset { font-size: 1.125rem; gap: .625rem; }
+.intro .intro-note { font-size: 1rem; line-height: 1.5; margin-top: 1.125rem; letter-spacing: 0; text-wrap: pretty; }
+
+/* All chapter headings follow the same reading order and baseline. */
+.app-shell :where(.chapter,.guided-scene,.mock-report,.interactive-guide,.completion) { padding-top: 6.5rem; padding-bottom: 3rem; }
+.chapter .scene-heading { display: block; width: min(1240px, 100%); margin: 0 auto 1.5rem; padding: 0; }
+.chapter .scene-heading>.eyebrow { margin: 0 0 .625rem; }
+.chapter .scene-heading h2,.reporting>.scene-heading h2,.guided-heading h1,.interactive-guide .guide-title h2 { font-size: var(--reading-title); line-height: 1.16; letter-spacing: -.035em; margin-bottom: .75rem; max-width: 30ch; }
+.chapter .scene-heading>p:last-child,.guided-heading>p:last-child,.interactive-guide .guide-title>p:last-child { font-size: var(--reading-body); line-height: 1.55; max-width: 64ch; margin: 0; }
+.guided-heading { margin-bottom: 1.5rem; }
+.chapter { padding-inline: var(--reading-gutter); }
+.office-workspace { width: min(1240px, 100%); }
+.office-workspace .bottom-sheet { padding: 1.625rem; }
+.office-workspace .bottom-sheet h3,.moment-context h2 { font-size: 1.5rem; line-height: 1.25; }
+.office-workspace .bottom-sheet>p,.decision-empty p,.office-workspace .decision-options button,.decision-consequence p { font-size: var(--reading-body); line-height: 1.5; text-wrap: pretty; }
+.office-workspace .bottom-sheet .decision-label { font-size: .875rem!important; color: var(--teal); line-height: 1.5; }
+.decision-consequence strong { font-size: 1.125rem; }
+.scene-complete { width: min(1240px,100%); flex-wrap: wrap; gap: 1rem; font-size: 1.125rem; }
+.scene-counter { font-size: .9375rem; top: .75rem; bottom: auto; left: .75rem; max-width: calc(100% - 1.5rem); pointer-events: none; }
+.sheet-close { display: grid; place-items: center; width: 2.75rem; height: 2.75rem; top: .5rem; right: .5rem; }
+
+/* Keep instructions, quotations and feedback at a real reading size. */
+.moment-body>h2,.pov-decision-head h3,.route-stage-head h3,.mock-step h2,.mock-preview h3 { font-size: var(--reading-panel); line-height: 1.2; letter-spacing: -.025em; }
+.moment-body>h2 { max-width: 28ch; }
+.moment-cue,.moment-context>p:not(.context-location),.moment-takeaway p,.help-practice blockquote,.pov-location>p:not(.eyebrow),.pov-feedback p,.route-feedback p { font-size: var(--reading-body); line-height: 1.55; max-width: 62ch; }
+.moment-context>p:not(.context-location) { font-size: 1.125rem; }
+.moment-takeaway strong,.pov-feedback strong,.route-feedback strong { font-size: var(--reading-body); line-height: 1.45; text-wrap: pretty; }
+.moment-navigation>p,.moment-count,.context-location,.practice-disclaimer,.practice-recipient>div>span,.script-label,.shelter-status,.plan-heading>span { font-size: var(--reading-small); line-height: 1.5; text-wrap: pretty; }
+.moment-nav button { font-size: 1.125rem; }
+.guided-scene .primary,.guided-scene .secondary,.guided-scene .text-button { font-size: 1.125rem; line-height: 1.4; }
+.moment-footer { align-items: center; gap: 1rem; }
+.moment-footer>div { gap: .75rem 1.25rem; min-width: 0; }
+.check-in-action strong,.keep-clear-control strong,.plan-heading>strong,.practice-recipient strong { font-size: 1.25rem; line-height: 1.4; text-wrap: pretty; }
+.check-in-action small,.keep-clear-control small { font-size: 1rem; line-height: 1.5; }
+.practice-recipient>div { min-width: 0; }
+.practice-recipient { flex-wrap: wrap; }
+.practice-label { font-size: .875rem; }
+.plan-controls button { font-size: 1.125rem; line-height: 1.4; }
+.guided-safety-note { font-size: 1rem; line-height: 1.6; max-width: 100%; }
+.context-anchor { font-size: 1.0625rem; line-height: 1.5; }
+
+/* Fire: text may grow; no clipped checkpoint labels or fixed-height copy. */
+.pov-location h2 { font-size: clamp(1.875rem,1.5rem + 1vw,2.5rem); line-height: 1.16; }
+.pov-location>small { display: block; font-size: .9375rem; line-height: 1.55; max-width: 54ch; text-wrap: pretty; }
+.pov-location>small>svg { display: inline; vertical-align: -.15em; margin-right: .375rem; }
+.pov-choices button>strong { font-size: var(--reading-body); line-height: 1.5; text-wrap: pretty; }
+.pov-status>span,.pov-status>small,.pov-scene-gallery-head,.pov-scene-gallery-head small { font-size: .9375rem; line-height: 1.5; }
+.pov-status>strong { font-size: 1.25rem; line-height: 1.45; }
+.pov-tools button { font-size: 1rem; min-width: max-content; white-space: nowrap; }
+.pov-actions { flex-wrap: wrap; align-items: center; gap: .75rem; }
+.pov-actions button { font-size: 1.0625rem; line-height: 1.4; min-height: 3rem; height: auto; }
+.pov-stage-rail button { height: auto; min-height: 3.5rem; padding: .625rem .5rem; }
+.pov-stage-rail button strong { font-size: .9375rem; white-space: normal; overflow: visible; text-overflow: clip; line-height: 1.4; }
+.route-photo-cue { font-size: 1rem; line-height: 1.45; }
+.route-photo-cue strong { text-wrap: pretty; }
+.pov-map-dialog>p { font-size: 1.125rem; line-height: 1.5; }
+.pov-map-dialog>p small { font-size: 1rem; line-height: 1.5; }
+
+/* Report routing: identical type and full-width, naturally wrapping labels. */
+.reporting>.scene-heading { width: min(960px,100%); }
+.reporting>.scene-frame { width: min(960px,100%); }
+.routing-board { width: min(960px,100%); max-width: 960px; padding: 1.75rem; margin: 1.25rem auto 0; }
+.route-stage-head { gap: 1.25rem; }
+.route-stage-head h3 { max-width: 30ch; margin: 0; }
+.route-prompt { font-size: 1rem; letter-spacing: .02em; text-transform: none; }
+.routing-board .channel-drop>strong,.routing-board .channel-drop>span { font-size: 1.125rem; line-height: 1.5; text-wrap: pretty; }
+.routing-board .channel-drop { min-width: 0; height: auto; padding: 1rem; }
+.route-progress { flex-wrap: wrap; }
+.route-feedback>div { min-width: 0; }
+
+/* Practice: compact step navigation, clear fields, no scrollbox inside a report. */
+.mock-report .simulation-banner,.mock-report .practice-case,.mock-report .mock-shell { width: min(1080px,100%); }
+.mock-report .simulation-banner { font-size: 1rem; line-height: 1.5; align-items: flex-start; }
+.mock-report .simulation-banner>svg { flex: none; margin-top: .2rem; }
+.practice-case>p { font-size: 1.125rem; line-height: 1.55; max-width: 66ch; }
+.practice-case>span { display: block; font-size: 1rem; line-height: 1.5; text-wrap: pretty; }
+.mock-report .eyebrow { color: var(--teal); }
+.mock-shell { grid-template-columns: 210px minmax(0,1fr); gap: 1.5rem; }
+.mock-panel { min-height: 0; padding: 1.75rem; overflow-wrap: normal; }
+.mock-step>.eyebrow { padding-right: 3rem; }
+.mock-step h2 { margin-bottom: 1.5rem; max-width: 24ch; }
+.mock-steps { padding: 1.25rem; }
+.mock-steps>button { font-size: 1.125rem; }
+.choice-field { margin: 0 0 1.5rem; min-width: 0; }
+.choice-field legend,.mock-input>span { font-size: 1rem; line-height: 1.5; letter-spacing: .02em; text-transform: none; }
+.choice-field button { font-size: 1.125rem; line-height: 1.45; text-wrap: pretty; }
+.mock-input input,.mock-input textarea { font-family: inherit; font-size: 1.125rem; line-height: 1.55; }
+.mock-input input::placeholder,.mock-input textarea::placeholder { color: #5c6e70; opacity: 1; }
+.mock-input textarea { min-height: 8rem; }
+.mock-input small { position: static; margin-top: .25rem; text-align: right; font-size: .875rem; line-height: 1.5; }
+.mock-report .practice-example { margin: -.5rem 0 1.25rem; font-size: 1rem; }
+.learning-feedback { font-size: 1.125rem; line-height: 1.55; }
+.learning-feedback>span { min-width: 0; text-wrap: pretty; }
+.mock-nav { flex-wrap: wrap; gap: .75rem; margin-top: 1.5rem; padding-top: 1.25rem; }
+.mock-nav button { flex: 0 1 auto; }
+.mock-preview h3 { padding-right: 1.75rem; }
+.mock-preview dl { max-height: none; overflow: visible; }
+.mock-preview dt { font-size: .9375rem; line-height: 1.5; }
+.mock-preview dd { font-size: 1.125rem; line-height: 1.55; overflow-wrap: anywhere; }
+.example-attachment>span { min-width: 0; }
+.example-attachment strong,.mock-report .completed strong,.practice-missing strong { font-size: 1.125rem; line-height: 1.5; }
+.mock-report .example-attachment small { font-size: 1rem; line-height: 1.55; }
+.mock-report .completed p,.mock-report .practice-missing p { font-size: 1.125rem; line-height: 1.55; }
+
+/* Contacts and completion share a stable reading width and a clear finish. */
+.interactive-guide { padding-inline: var(--reading-gutter); }
+.interactive-guide .guide-title,.interactive-guide .guide-tabs,.interactive-guide .guide-focus { width: min(960px,100%); margin-inline: auto; }
+.interactive-guide .guide-title { margin-bottom: 1.5rem; }
+.guide-tabs button { font-size: 1.125rem; line-height: 1.4; padding: .875rem .75rem; }
+.guide-tabs button>span { min-width: 0; }
+.interactive-guide .guide-focus { padding: 1.75rem; margin-block: 1.5rem; box-shadow: none; }
+.interactive-guide .guide-focus h3 { font-size: clamp(1.75rem,1.25rem + 1.8vw,2.75rem); line-height: 1.2; }
+.interactive-guide .guide-focus li { font-size: var(--reading-body); line-height: 1.6; margin-bottom: .625rem; text-wrap: pretty; }
+.interactive-guide .guide-focus ul { padding-left: 1.25rem; }
+.interactive-guide .guide-link { font-size: 1.125rem; }
+.completion>h2 { font-size: clamp(2.5rem,2rem + 2vw,3.5rem); line-height: 1.12; max-width: 24ch; margin: 0 auto 1rem; }
+.completion>p:not(.eyebrow) { font-size: var(--reading-body); line-height: 1.6; max-width: 56ch; margin: 0 auto 1.5rem; }
+.completion .completion-actions { max-width: 960px; margin: 0 auto 2rem; gap: 1rem 1.5rem; align-items: center; }
+.completion-review,.personal-takeaway,.review-hub { width: min(960px,100%); }
+.completion-review strong { font-size: 1.25rem; line-height: 1.4; }
+.completion-review p { font-size: 1.125rem; line-height: 1.55; }
+.personal-takeaway { font-size: 1.125rem; line-height: 1.55; text-wrap: pretty; }
+.review-hub button { font-size: 1.0625rem; line-height: 1.45; text-wrap: pretty; }
+.reset-dialog h2 { font-size: var(--reading-panel); line-height: 1.2; }
+.reset-dialog p:not(.eyebrow) { font-size: 1.125rem; line-height: 1.55; }
+.reset-dialog>div { flex-wrap: wrap; }
+
+@media(max-width:1050px) {
+  header .menu { display: grid!important; }
+  header .header-tools>span { display: none; }
+  header nav { display: none; position: absolute; top: 72px; left: 0; right: 0; padding: 1rem; background: var(--paper); border-block: 1px solid var(--line); flex-direction: column; gap: .375rem; }
+  header nav.open { display: flex; }
+  header nav button { min-height: 3rem; font-size: 1rem; padding: .75rem 1rem; }
+  header nav button span { display: inline; font-size: 1rem; }
+}
+@media(max-width:900px) {
+  .app-shell .intro { display: flex; flex-direction: column; align-items: flex-start; justify-content: flex-start; min-height: 100svh; padding: 6.5rem 6vw 0; background: #f6f0e4; }
+  .intro:before { display: none; }
+  .intro .intro-copy { width: 100%; max-width: 42rem; padding-bottom: 1.5rem; }
+  .intro h1 { font-size: clamp(2.75rem,6vw,4rem); line-height: 1.1; max-width: 14ch; }
+  .intro .wsh-hero-visual { position: relative; inset: auto; width: calc(100% + 12vw); height: clamp(180px,26vw,280px); min-height: 180px; margin: auto -6vw 0; flex: none; }
+  .wsh-hero-visual>img { object-position: 72% 36%; animation: none; }
+  .intro .tagline { max-width: 34rem; }
+  .guided-workspace { grid-template-columns: minmax(0,1fr); gap: 1.25rem; }
+  .moment-context { display: grid; grid-template-columns: 120px minmax(0,1fr); gap: 0 1rem; padding-bottom: 0; }
+  .moment-context .supporting-scene { grid-column: 1; grid-row: 1/4; align-self: start; }
+  .moment-context .supporting-scene img { height: 110px; }
+  .moment-context .context-location { margin: 0 0 .375rem; }
+  .moment-context h2 { margin-bottom: .375rem; }
+  .moment-context>p:not(.context-location) { margin: 0; }
+  .moment-context .context-anchor { display: none; }
+  .office-workspace { grid-template-columns: minmax(0,1fr); gap: 1.25rem; }
+  .office-workspace .scene-frame { max-width: 580px; margin-inline: auto; }
+  .office-workspace .bottom-sheet { min-height: 0; }
+  .decision-empty { min-height: 120px; }
+  .pov-response { grid-template-columns: minmax(0,1fr); grid-template-rows: auto; grid-template-areas: 'hud' 'photo' 'location' 'rail' 'decision'; padding: 6.5rem var(--reading-gutter) 2rem; }
+  .pov-camera { height: 220px; }
+  .pov-stage-rail { display: flex; overflow-x: auto; padding-bottom: .375rem; }
+  .pov-stage-rail button { min-width: 5.25rem; flex: 1 0 auto; }
+  .mock-shell { grid-template-columns: minmax(0,1fr); }
+  .mock-steps { grid-template-columns: repeat(3,minmax(0,1fr)); padding: .5rem; }
+  .mock-steps>.eyebrow,.mock-steps>h3 { display: none; }
+  .mock-steps>button { display: flex; justify-content: center; gap: .5rem; font-size: 1rem; min-height: 3.5rem; }
+  .mock-preview { grid-column: 1; }
+}
+@media(max-width:850px) { header nav { top: 64px; } }
+@media(max-width:700px) {
+  :root { --reading-body: 1.125rem; --reading-title: 2rem; --reading-panel: 1.625rem; }
+  .app-shell :where(.chapter,.guided-scene,.mock-report,.interactive-guide,.completion) { padding: 5.5rem 1.125rem 2rem; }
+  .intro .wsh-week-lockup { margin-bottom: .875rem; }
+  .intro .wsh-week-lockup strong { font-size: 1.75rem; }
+  .intro-copy>.wsh-week-lockup+.eyebrow { font-size: .8125rem; margin-bottom: 1.125rem; }
+  .intro h1 { font-size: clamp(2.5rem,9.5vw,3.25rem); max-width: 100%; margin-bottom: 1.25rem; }
+  .intro h1 em { font-size: .85em; }
+  .intro .tagline { font-size: 1.1875rem; line-height: 1.6; }
+  .intro .intro-actions { gap: .625rem 1.25rem; margin-top: 1.25rem; }
+  .intro .intro-note { margin-top: .75rem; }
+  .chapter .scene-heading,.reporting>.scene-heading { width: 100%; padding: 0; }
+  .office-workspace { width: 100%; }
+  .office-workspace .bottom-sheet { padding: 1.25rem; }
+  .scene-counter { font-size: .8125rem; }
+  .moment-nav { gap: .25rem; }
+  .moment-nav button { font-size: 1rem; gap: .5rem; padding: .625rem .125rem .75rem; }
+  .moment-nav button strong { line-height: 1.4; text-wrap: balance; }
+  .moment-context { grid-template-columns: 80px minmax(0,1fr); gap: 0 .875rem; }
+  .moment-context .supporting-scene { grid-row: 1/3; }
+  .moment-context .supporting-scene img { height: 76px; }
+  .moment-context .context-location { font-size: .875rem; }
+  .moment-context h2 { font-size: 1.25rem; line-height: 1.3; align-self: start; }
+  .moment-context>p:not(.context-location) { grid-column: 1/-1; margin-top: .75rem; font-size: 1.125rem; }
+  .moment-panel { padding: 1.375rem 1.125rem; }
+  .moment-cue { margin-bottom: 1.25rem; }
+  .guided-scene .primary,.guided-scene .secondary,.guided-scene .text-button { font-size: 1.0625rem; }
+  .moment-count { font-size: .9375rem; }
+  .moment-footer>div { flex-wrap: wrap; }
+  .moment-footer>div>button:last-child { max-width: 100%; }
+  .practice-recipient>div { min-width: 0; }
+  .practice-label { margin-left: 0; }
+  .check-in-action strong,.keep-clear-control strong { font-size: 1.125rem; }
+  .keep-clear-control { flex-wrap: wrap; }
+  .keep-clear-control>span:nth-child(2) { min-width: 8rem; }
+  .keep-clear-control small { font-size: .9375rem; }
+  .shelter-labels { font-size: 1rem; }
+  .help-practice blockquote { font-size: 1.125rem; }
+  .pov-response { padding: 5.5rem 1.125rem 2rem; }
+  .pov-camera { height: 180px; }
+  .pov-hud { gap: .75rem; flex-wrap: wrap; }
+  .pov-status { min-width: 0; }
+  .pov-status>span,.pov-status>small { font-size: .875rem; }
+  .pov-location>small { font-size: .9375rem; }
+  .pov-location .eyebrow { font-size: .8125rem; }
+  .pov-decision { padding: 1.375rem 1.125rem; }
+  .pov-stage-rail button { font-size: 1rem; }
+  .pov-actions button { font-size: 1rem; }
+  .pov-tools button { font-size: .9375rem; }
+  .route-photo-cue { font-size: .9375rem; }
+  .routing-board { padding: 1.375rem 1.125rem; }
+  .route-stage-head { grid-template-columns: 1fr; gap: 1rem; }
+  .routing-board .channel-board { grid-template-columns: 1fr; }
+  .routing-board .channel-drop { min-height: 5rem; }
+  .mock-report .simulation-banner { padding: .75rem; }
+  .practice-case { padding: .875rem 1rem; }
+  .mock-panel,.mock-preview { padding: 1.375rem 1.125rem; }
+  .mock-nav button { flex: 1 1 auto; }
+  .mock-steps>button { flex-direction: column; gap: .375rem; padding: .5rem .125rem; }
+  .choice-field>div { display: grid; grid-template-columns: minmax(0,1fr); }
+  .choice-field button { border-radius: .625rem; }
+  .guide-tabs { grid-template-columns: 1fr; }
+  .guide-tabs button { justify-content: flex-start; min-height: 3.5rem; }
+  .interactive-guide .guide-focus { padding: 1.375rem 1.125rem; }
+  .interactive-guide .guide-focus h3 { font-size: 1.875rem; }
+  .completion .completion-actions { align-items: stretch; gap: .625rem; margin-bottom: 1.5rem; }
+  .completion-review article { padding: 1.125rem 0; }
+  .completion-review span { margin-bottom: .375rem; }
+  .review-hub button { padding: .875rem 0; }
+}

@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { ArrowLeft, ArrowRight, Building2, Check, CloudFog, HeartHandshake, Info, MapPin, MessageCircle, Phone, ShieldCheck, UserRound } from 'lucide-react';
 import { officialInfo } from './config';
+import { ReadingText } from './ReadingText';
 
 type MomentState = { done: boolean[]; plan: 'indoors' | 'postpone' | null };
 const blank = (): MomentState => ({ done: [false, false, false], plan: null });
@@ -40,9 +41,9 @@ function MomentNav({ labels, step, done, onChange }: { labels: string[]; step: n
   </div>;
 }
 
-function Takeaway({ done, title, children }: { done: boolean; title: string; children: React.ReactNode }) {
+function Takeaway({ done, title, children }: { done: boolean; title: string; children: string }) {
   return <div className={`moment-takeaway ${done ? 'is-visible' : ''}`} role="status" aria-atomic="true">
-    {done && <><span className="takeaway-icon"><Check/></span><div><strong>{title}</strong><p>{children}</p></div></>}
+    {done && <><span className="takeaway-icon"><Check/></span><div><strong>{title}</strong><p><ReadingText>{children}</ReadingText></p></div></>}
   </div>;
 }
 
@@ -72,14 +73,14 @@ export function InjuryScene({ onComplete }: { onComplete: () => void }) {
   const done = state.done[step];
   const titles = ['Start with the person', 'Make space for safety', 'Ask for a helping hand'];
   return <section className="guided-scene injury-guided" id="walkway">
-    <div className="guided-heading"><p className="eyebrow">03 · Injury response</p><h1>A little care. A safer moment.</h1><p>A student has slipped on a wet walkway. Practise three simple ways to help.</p></div>
+    <div className="guided-heading"><p className="eyebrow">03 · Injury response</p><h1><span className="reading-phrase">A little care.</span>{' '}<span className="reading-phrase">A safer moment.</span></h1><p><ReadingText>A student has slipped on a wet walkway. Practise three simple ways to help.</ReadingText></p></div>
     <MomentNav labels={['Check in', 'Keep clear', 'Get help']} step={step} done={state.done} onChange={setStep}/>
     <div className="guided-workspace">
       <aside className="moment-context" aria-label="Scene context">
         <div className={`supporting-scene ${state.done[1] ? 'area-protected' : ''}`}><img src="/assets/walkway.webp" alt="A colleague beside a seated student on a wet campus walkway."/>{state.done[1] && <span className="keep-clear-marker"><ShieldCheck size={17}/> Keep clear</span>}</div>
         <p className="context-location"><MapPin size={17}/> Walkway beside Block 73</p>
         <h2>{step === 0 ? 'You’re nearby.' : step === 1 ? 'Others are approaching.' : 'You’re not on your own.'}</h2>
-        <p>{step === 0 ? 'Awake and seated. Approach only if it is safe.' : step === 1 ? 'The tiles are wet. People are approaching.' : 'Stay with the student while help is arranged.'}</p>
+        <p><ReadingText>{step === 0 ? 'Awake and seated. Approach only if it is safe.' : step === 1 ? 'The tiles are wet. People are approaching.' : 'Stay with the student while help is arranged.'}</ReadingText></p>
         <div className="context-anchor"><HeartHandshake/><span>Care first.<br/>Help is a team effort.</span></div>
       </aside>
       <div className="moment-panel">
@@ -88,7 +89,7 @@ export function InjuryScene({ onComplete }: { onComplete: () => void }) {
           {step === 0 && <><p className="moment-cue">A calm check-in helps you find out what support is needed. Don’t ask the student to stand up.</p>
             <button className={`check-in-action ${done ? 'acted' : ''}`} onClick={() => act()}><span className="person-disc"><UserRound/></span><span><small>Tap to check in</small><strong>“Are you okay? I’m here to help.”</strong></span><MessageCircle/></button>
           </>}
-          {step === 1 && <><p className="moment-cue">Ask someone to guide people around the wet area. Tap to place a keep-clear marker.</p>
+          {step === 1 && <><p className="moment-cue"><ReadingText>Ask someone to guide people around the wet area. Tap to place a keep-clear marker.</ReadingText></p>
             <button role="switch" aria-checked={done} aria-label="Keep-clear marker" className={`keep-clear-control ${done ? 'acted' : ''}`} onClick={() => act()}><ShieldCheck/><span><strong>Keep-clear marker</strong><small>{done ? 'In place · people redirected' : 'Tap to activate'}</small></span><span className="visual-switch" aria-hidden="true"><i/></span></button>
           </>}
           {step === 2 && <><p className="moment-cue">The student is awake and breathing normally. Ask for first-aid support and say where you are.</p><HelpPractice emergency={false} done={done} onAct={() => act()}/></>}
@@ -108,14 +109,14 @@ export function HazeScene({ onComplete }: { onComplete: () => void }) {
   const done = state.done[step];
   const titles = ['Give the outdoor plan a rethink', 'Step into cleaner air', 'Breathing difficulty? Get help now.'];
   return <section className="guided-scene haze-guided" id="haze">
-    <div className="guided-heading"><p className="eyebrow">04 · Haze response</p><h1>Change the plan. Care for each other.</h1><p>It’s hazy and a colleague with asthma feels unwell. Small actions can help.</p></div>
+    <div className="guided-heading"><p className="eyebrow">04 · Haze response</p><h1><span className="reading-phrase">Change the plan.</span>{' '}<span className="reading-phrase">Care for each other.</span></h1><p><ReadingText>It’s hazy and a colleague with asthma feels unwell. Small actions can help.</ReadingText></p></div>
     <MomentNav labels={['Adjust the plan', 'Move indoors', 'Get help']} step={step} done={state.done} onChange={setStep}/>
     <div className="guided-workspace">
       <aside className="moment-context" aria-label="Scene context">
         <div className="supporting-scene"><img src="/assets/haze-response.png" alt="Illustrated colleagues on a hazy campus."/></div>
         <p className="context-location"><CloudFog size={18}/> A hazy day on campus</p>
         <h2>{step === 0 ? 'Plans can change.' : step === 1 ? 'An indoor space is nearby.' : 'A change in symptoms.'}</h2>
-        <p>{step === 0 ? 'An outdoor activity is planned. Your colleague is coughing and light-headed.' : step === 1 ? 'They are awake and able to walk with you.' : 'Your colleague is now struggling to breathe. Get urgent help.'}</p>
+        <p><ReadingText>{step === 0 ? 'An outdoor activity is planned. Your colleague is coughing and light-headed.' : step === 1 ? 'They are awake and able to walk with you.' : 'Your colleague is now struggling to breathe. Get urgent help.'}</ReadingText></p>
         <div className="context-anchor"><HeartHandshake/><span>Notice the person.<br/>Reduce their exposure.</span></div>
       </aside>
       <div className="moment-panel">

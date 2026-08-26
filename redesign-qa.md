@@ -54,3 +54,19 @@ Completion is a terminal summary with Back to home as the primary action. Contac
 Validation: production build passed; `verify-erc-refinements.js` passed at 1440px and 390px with zero failures/runtime errors. Verified the full practice → contacts → finish → completion → home → review flow, plus optional contact review. Re-ran `verify-guided.js`: all five widths and the complete seven-checkpoint Fire route passed.
 
 Visual evidence reviewed: `output/playwright/erc-blk56-390.png`, `erc-practice-blank-390.png`, and `erc-completion-390.png`, with matching 1440px captures.
+
+## Reading-layout refinement
+
+The visual direction is content-first: clear, comfortably sized text, quiet supporting illustrations and a single obvious next action. The content order remains situation → small action → learning feedback → continuation. Existing feedback reveals and reduced-motion behaviour are retained; no new decorative motion is added.
+
+- Reduced the oversized, tightly stacked home headline. The tagline wraps by complete phrases, so “go” cannot be stranded by itself at the tested widths.
+- Unified chapter headings, paragraph sizes, reading widths and spacing across all five scenarios, practice, contacts and completion.
+- Added `ReadingText` for short paragraph endings that browser paragraph wrapping still left isolated. Chapter 03/04 headings group complete phrases without forcing desktop line breaks.
+- Switched tablet layouts to one column earlier; kept mobile context images compact. Learning text is not truncated or shrunk to fit.
+- Increased report field/choice text and made step navigation compact on small screens. Removed the nested scrolling region inside the practice preview.
+- Kept phone numbers together and moved Back to home directly below the completion message.
+- Browser interaction testing found the office progress counter covering a hotspot at tablet width. Moved it above the hotspot area and made it pointer-transparent.
+
+Verification: production build and existing guided/ERC regression suites passed. The reading-layout suite exercises 497 screen states across 1440, 1024, 768, 390 and 320px, with additional 125% root-font checks at 640 and 390px. It checks all hazard choices, all seven Fire checkpoints, every Injury/Haze moment before and after feedback, all routing situations, practice steps/review, all contact tabs, completion and reset. Desktop and phone captures are saved under `output/playwright/layout-*.png`.
+
+Final reading-layout result: PASS, 497 states, no clipped controls, no page overflow, no browser runtime errors, and no flagged single-word endings in the audited headings/paragraphs. Main learning text, choices and report fields were checked at 18px or above. Visual review also caught a legacy small-font override on phone hazard choices and an overlong location placeholder; both were corrected.
