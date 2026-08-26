@@ -57,7 +57,7 @@ async (page) => {
       await nav(chapter); await check(`${width}/${chapter}`);
       if (chapter === '02 Fire') {
         await page.getByRole('tab',{name:/Blk 56/}).click();
-        await page.getByRole('button',{name:/Stay on the walkway — do not cross here/}).click();
+        await page.getByRole('button',{name:/Call them back to the walkway/}).click();
       } else if (chapter === '03 Injury') {
         await page.locator('.journey-nav button').last().click(); await page.locator('.journey-choices button').nth(1).click();
       } else if (chapter === '04 Haze') {

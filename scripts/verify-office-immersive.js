@@ -2,7 +2,7 @@
 async (page) => {
   const failures=[], measurements=[];
   const button=name=>page.getByRole('button',{name,exact:true});
-  for(const [width,height,scale] of [[3778,1830,1],[1920,1000,1],[1440,900,1],[1366,768,1],[1101,800,1],[1440,900,1.25],[390,844,1],[320,740,1.25]]) {
+  for(const [width,height,scale] of [[3778,1830,1],[3640,1762,1],[1920,1000,1],[1440,900,1],[1366,768,1],[1101,800,1],[1440,900,1.25],[390,844,1],[320,740,1.25]]) {
     await page.setViewportSize({width,height});
     await page.evaluate(()=>localStorage.removeItem('clte-office-v3'));
     await page.reload();
@@ -19,7 +19,7 @@ async (page) => {
         const result=await page.evaluate(()=>{
           const box=el=>el.getBoundingClientRect();
           const panel=box(document.querySelector('.hazard-panel'));
-          const obstacles=[...document.querySelectorAll('.hazard-panel,.hazard-picker,.office-footnote')];
+          const obstacles=[...document.querySelectorAll('.hazard-panel,.hazard-picker,.office-footnote p')];
           const overlaps=(a,b)=>Math.min(a.right,b.right)-Math.max(a.left,b.left)>1&&Math.min(a.bottom,b.bottom)-Math.max(a.top,b.top)>1;
           const covered=[...document.querySelectorAll('.hazard-marker')].flatMap(el=>{
             const r=box(el);
@@ -28,10 +28,24 @@ async (page) => {
           const markers=[...document.querySelectorAll('.hazard-marker')].map(box);
           const crowded=markers.some((a,i)=>markers.slice(i+1).some(b=>Math.hypot(a.x+a.width/2-b.x-b.width/2,a.y+a.height/2-b.y-b.height/2)<(a.width+b.width)/2));
           const root=parseFloat(getComputedStyle(document.documentElement).fontSize);
-          return {panelRem:panel.height/root,covered,crowded,overflow:document.documentElement.scrollWidth>innerWidth+1,sceneHeight:box(document.querySelector('.office-workspace')).height};
+          // Source-image regions: protect the physical object and surrounding clue,
+          // not just the position of its marker (the earlier test missed this).
+          const regions={bag:[.43,.73,.56,.96],drawer:[.30,.80,.42,.995],cable:[.13,.62,.25,.94],files:[.24,.57,.35,.77],drink:[.84,.54,1,.83]};
+          const active=document.querySelector('#office').dataset.activeHazard;
+          const [left,top,right,bottom]=regions[active];
+          const img=box(document.querySelector('.scene-frame img'));
+          const region={left:img.left+left*img.width,top:img.top+top*img.height,right:img.left+right*img.width,bottom:img.top+bottom*img.height};
+          const hiddenObject=obstacles.filter(el=>overlaps(region,box(el))).map(el=>el.className);
+          const crop=document.querySelector('.office-context').getBoundingClientRect();
+          const croppedObject=region.left<crop.left-1||region.right>crop.right+1||region.top<crop.top-1||region.bottom>crop.bottom+1;
+          return {panelRem:panel.height/root,covered,crowded,hiddenObject,croppedObject,overflow:document.documentElement.scrollWidth>innerWidth+1,sceneHeight:box(document.querySelector('.office-workspace')).height};
         });
         measurements.push({width,scale,hazard,answer,...result});
-        if(result.covered.length||result.crowded||result.overflow)failures.push({width,scale,hazard,answer,...result});
+        if(result.covered.length||result.crowded||result.hiddenObject.length||result.croppedObject||result.overflow)failures.push({width,scale,hazard,answer,...result});
+        if(hazard===4 && [3640,1440,390].includes(width) && scale===1){
+          await page.evaluate(()=>window.scrollTo(0,0));
+          await page.screenshot({path:`output/playwright/office-drink-clear-${width}-${answer}.png`,fullPage:true,animations:'disabled'});
+        }
       }
     }
     await page.evaluate(()=>window.scrollTo(0,0));

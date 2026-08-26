@@ -40,13 +40,14 @@ export default function OfficeScene({ onComplete }: { onComplete: () => void }) 
     requestAnimationFrame(() => { heading.current?.focus({ preventScroll: true }); if (window.matchMedia('(max-width: 900px)').matches) heading.current?.scrollIntoView({ block: 'start', behavior: 'instant' }); });
   };
   const next = () => choose(step < officeHotspots.length - 1 ? step + 1 : Math.max(0, officeHotspots.findIndex(item => !isCorrect(item, choices))));
-  return <section id="office" className="chapter hazard-guided office-immersive">
+  return <section id="office" className="chapter hazard-guided office-immersive" data-active-hazard={active.id}>
     <div className="scene-heading"><h1>01 · Spot hazards</h1></div>
     <div className="office-workspace" ref={workspace}>
       <div className="office-context">
         <div className="scene-frame">
           <img src="/assets/office.webp" alt="Starting office scene: a bag in the walkway, an open drawer, a hanging cable, leaning files and a drink beside the printer."/>
-          {officeHotspots.map((item, index) => <button key={item.id} data-hazard={item.id} className={`hazard-marker ${index === step ? 'current' : ''} ${isCorrect(item, choices) ? 'done' : ''}`} style={{ left: `${item.x}%`, top: `var(--hazard-marker-top, ${item.y}%)` }} aria-label={`Inspect: ${item.title}`} aria-current={index === step ? 'step' : undefined} onClick={() => choose(index)}>{isCorrect(item, choices) ? <Check size={20} aria-hidden="true"/> : index + 1}</button>)}
+          <svg className="office-drink-leader" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true"><line className="desktop-leader" x1="81" y1="64" x2="86.5" y2="68"/><line className="phone-leader" x1="79" y1="57" x2="86.5" y2="68"/></svg>
+          {officeHotspots.map((item, index) => <button key={item.id} data-hazard={item.id} className={`hazard-marker ${index === step ? 'current' : ''} ${isCorrect(item, choices) ? 'done' : ''}`} style={{ left: `var(--hazard-marker-left, ${item.x}%)`, top: `var(--hazard-marker-top, ${item.y}%)` }} aria-label={`Inspect: ${item.title}`} aria-current={index === step ? 'step' : undefined} onClick={() => choose(index)}>{isCorrect(item, choices) ? <Check size={20} aria-hidden="true"/> : index + 1}</button>)}
         </div>
       </div>
       <div className="office-scene-shade" aria-hidden="true"/>

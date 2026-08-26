@@ -33,7 +33,7 @@ async (page) => {
         const visible = el => el.getBoundingClientRect().width > 0 && el.getBoundingClientRect().height > 0;
         const controls = [...document.querySelectorAll('main button, main a')].filter(visible);
         const clipped = controls.filter(el => el.scrollWidth > el.clientWidth + 2 || el.scrollHeight > el.clientHeight + 2).map(el => el.textContent.trim());
-        const selectors = '.tagline,.scene-heading>p:last-child,.guided-heading>p:last-child,.moment-cue,.moment-takeaway p,.help-practice blockquote,.hazard-story,.hazard-prompt,.hazard-choice,.hazard-result p,.practice-choice-cue,.pov-location>p:not(.eyebrow),.pov-choices button>strong,.pov-feedback p,.report-story,.report-cue strong,.report-ticket p,.report-takeaway p,.choice-field button,.mock-input input,.mock-input textarea,.mock-preview dd,.guide-focus li,.practice-case>p,.completion>p:not(.eyebrow),.completion-review p';
+        const selectors = '.tagline,.scene-heading>p:last-child,.guided-heading>p:last-child,.moment-cue,.moment-takeaway p,.help-practice blockquote,.hazard-story,.hazard-prompt,.hazard-choice,.hazard-result p,.practice-choice-cue,.pov-situation,.route-photo-cue,.pov-choices button>strong,.pov-feedback p,.report-story,.report-cue strong,.report-ticket p,.report-takeaway p,.choice-field button,.mock-input input,.mock-input textarea,.mock-preview dd,.guide-focus li,.practice-case>p,.completion>p:not(.eyebrow),.completion-review p';
         const small = [...document.querySelectorAll(selectors+',.journey-story,.journey-choices button,.journey-feedback p,.journey-reference li')].filter(visible).filter(el => parseFloat(getComputedStyle(el).fontSize) < 18).map(el => el.textContent);
         // Diagnostic: flag long prose with a single-word final line for manual review.
         const orphans = [...document.querySelectorAll('main p,main h1,main h2,main h3')].filter(visible).flatMap(el => {
@@ -76,7 +76,7 @@ async (page) => {
     await nav('02 Fire');
     for (let index = 0; index < 7; index++) {
       await page.getByRole('tab').nth(index).click(); await audit(`fire-${index}`);
-      await page.locator('.pov-choices button').first().click(); await audit(`fire-${index}-feedback`, [0, 3].includes(index));
+      await page.locator('.pov-choices button').nth([0,1,0,1,1,0,1][index]).click(); await audit(`fire-${index}-feedback`, [0, 3].includes(index));
     }
     await button('Route map').click(); await audit('route-map'); await button('Close route map').click();
     for (const [chapter, prefix, correct] of [['03 Injury', 'injury', [1,0,1]], ['04 Haze', 'haze', [0,1,0]]]) {

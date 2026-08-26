@@ -15,11 +15,11 @@ async (page) => {
     await page.reload();
     await nav('02 Fire');
     await page.getByRole('tab', { name: /Blk 56/ }).click();
-    assert(await page.getByRole('heading', { name: 'Stay on this side' }).isVisible(), `${width}: Block 56 direction missing`);
+    assert(await page.getByRole('heading', { name: 'How do you respond?' }).isVisible(), `${width}: Block 56 decision missing`);
     assert(await page.locator('.route-photo-cue').innerText().then(text => text.includes('Do not cross here')), `${width}: photo must warn against crossing`);
-    await page.getByRole('button', { name: /Use the zebra crossing in the photo/ }).click();
+    await page.getByRole('button', { name: /Follow them to keep together/ }).click();
     assert(await page.locator('.pov-feedback').innerText().then(text => text.includes('Stay on the walkway')), `${width}: incorrect crossing needs correction`);
-    await page.getByRole('button', { name: /Stay on the walkway — do not cross here/ }).click();
+    await page.getByRole('button', { name: /Call them back to the walkway/ }).click();
     assert(await page.locator('.pov-feedback.good').innerText().then(text => text.includes('Why this helps')), `${width}: staying on walkway is correct`);
     await page.screenshot({ path: `output/playwright/erc-blk56-${width}.png`, fullPage: true, animations: 'disabled' });
 

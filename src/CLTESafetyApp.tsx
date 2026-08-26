@@ -43,40 +43,33 @@ function Intro({ onStart, onReset, startLabel, statusText, canReset }: { onStart
 function EvacuationScene({ onComplete }: { onComplete: () => void }) {
   const [routeStage,setRouteStage]=useState(0); const [photoIndex,setPhotoIndex]=useState(0); const [answers,setAnswers]=useState<Record<number,string>>({}); const [mapOpen,setMapOpen]=useState(false);
   const routeStages=[
-    {id:'exit',label:'Exit',location:'Block 27 · Pantry',title:'The alarm sounds',instruction:'Leave now. Take only what is already with you.',photos:[['/assets/fire-route/route-01.webp','Pantry exit · open-door view'],['/assets/fire-route/route-02.webp','Pantry exit · approach view'],['/assets/fire-route/route-03.webp','Alternative exit · lift lobby view']],prompt:'What do you do first?',choices:[
-      {id:'evacuate',label:'Use the nearest safe exit',feedback:'Leave promptly. Follow exit signs and the fire warden.',best:true},
-      {id:'lift',label:'Take the lift',feedback:'Do not use the lift during a fire.',best:false},
-      {id:'investigate',label:'Find the smoke first',feedback:'Do not investigate or delay.',best:false},
+    {id:'exit',label:'Exit',location:'Block 27 · Pantry',situation:'The fire alarm sounds while you’re in the pantry.',photos:[['/assets/fire-route/route-01.webp','Pantry exit · open-door view'],['/assets/fire-route/route-02.webp','Pantry exit · approach view'],['/assets/fire-route/route-03.webp','Alternative exit · lift lobby view']],prompt:'What do you do first?',choices:[
+      {id:'evacuate',label:'Leave by the nearest safe exit',feedback:'Leave promptly. Follow exit signs and the fire warden. Use stairs, not lifts.',best:true},
+      {id:'bag',label:'Collect your bag from the desk',feedback:'Don’t delay to collect belongings. Leave by a safe exit and use stairs, not lifts.',best:false},
     ]},
-    {id:'stairs',label:'Stairs',location:'Block 27 · Stairwell',title:'Take the stairs',instruction:'Keep moving calmly with the group. Use the handrail.',photos:[['/assets/fire-route/route-04.webp','Middle staircase · entry'],['/assets/fire-route/route-05.webp','Mezzanine landing'],['/assets/fire-route/route-06.webp','First-floor landing']],prompt:'How do you move?',choices:[
-      {id:'steady',label:'Walk steadily + use the handrail',feedback:'A steady pace and the handrail help prevent falls when the stairs are busy.',best:true},
-      {id:'run',label:'Run before it gets crowded',feedback:'Running can cause a fall.',best:false},
-      {id:'wait',label:'Wait alone on the landing',feedback:'Stay with the evacuation flow.',best:false},
+    {id:'stairs',label:'Stairs',location:'Block 27 · Stairwell',situation:'The stairs are busy as colleagues head down.',photos:[['/assets/fire-route/route-04.webp','Middle staircase · entry'],['/assets/fire-route/route-05.webp','Mezzanine landing'],['/assets/fire-route/route-06.webp','First-floor landing']],prompt:'How do you go down?',choices:[
+      {id:'rush',label:'Hurry past others to clear the stairs',feedback:'Rushing past others can cause a fall. Walk steadily with the group and use the handrail.',best:false},
+      {id:'steady',label:'Walk steadily and use the handrail',feedback:'A steady pace and the handrail help prevent falls without disrupting the people behind you.',best:true},
     ]},
-    {id:'ground',label:'Ground',location:'Block 27 · Ground floor',title:'Follow the outdoor route',instruction:'Stay on the walkway with the group, past DST Office, Studio 27 and OIC.',photos:[['/assets/fire-route/route-07.webp','Ground floor · DST Office'],['/assets/fire-route/route-08.webp','Route past Studio 27'],['/assets/fire-route/route-09.webp','Route beside OIC']],prompt:'Which route do you take?',choices:[
-      {id:'group',label:'Stay with the group on the walkway',feedback:'The landmarks lead toward Block 56.',best:true},
-      {id:'shortcut',label:'Cut across the road',feedback:'Shortcuts add traffic risk.',best:false},
-      {id:'own',label:'Take my usual route',feedback:'Use the designated route.',best:false},
+    {id:'ground',label:'Ground',location:'Block 27 · Ground floor',situation:'Your usual path branches away from the evacuation group.',photos:[['/assets/fire-route/route-07.webp','Ground floor · DST Office'],['/assets/fire-route/route-08.webp','Route past Studio 27'],['/assets/fire-route/route-09.webp','Route beside OIC']],prompt:'Which way do you go?',choices:[
+      {id:'group',label:'Stay with the group on the walkway',feedback:'This route passes DST Office, Studio 27 and OIC towards Block 56. Follow the warden’s directions.',best:true},
+      {id:'own',label:'Take your usual route and meet them later',feedback:'Use the designated route with the group, not a familiar shortcut. Follow the warden’s directions.',best:false},
     ]},
-    {id:'blk56',label:'Blk 56',location:'Block 56 · Stay on the walkway',title:'Stay on this side',instruction:'Do not cross at Block 56. Continue along the walkway with the group.',photos:[['/assets/fire-route/route-10.webp','Block 56 landmark — continue on the walkway; do not use this crossing']],prompt:'How do you continue past Block 56?',choices:[
-      {id:'stay',label:'Stay on the walkway — do not cross here',feedback:'Keep following the walkway with the group. The crossing in this photo is not part of this checkpoint’s route.',best:true},
-      {id:'cross',label:'Use the zebra crossing in the photo',feedback:'Not at this checkpoint. Stay on the walkway and continue with the group.',best:false},
-      {id:'road',label:'Step onto the road to follow others',feedback:'Keep to the walkway. Do not step onto the road here.',best:false},
+    {id:'blk56',label:'Blk 56',location:'Block 56',situation:'A colleague starts towards the crossing in the photo.',photos:[['/assets/fire-route/route-10.webp','Block 56 · crossing beside the walkway']],prompt:'How do you respond?',choices:[
+      {id:'follow',label:'Follow them to keep together',feedback:'Stay on the walkway. Call them back—the crossing in this photo is not part of this route.',best:false},
+      {id:'stay',label:'Call them back to the walkway',feedback:'Keep the group on the walkway. A crossing can be safe for everyday use but not be part of this evacuation route.',best:true},
     ]},
-    {id:'junction',label:'Junction',location:'Admin Field approach',title:'Stay on the marked path',instruction:'At the Admin Field approach, use the walkway and marked zebra crossing. Follow the warden’s directions.',photos:[['/assets/fire-route/route-11.webp','T-junction near Admin Field'],['/assets/fire-route/route-12.webp','Zebra crossing to Admin Field']],prompt:'Which way is safest?',choices:[
-      {id:'walkway',label:'Walkway + zebra crossing',feedback:'This crossing is at the Admin Field approach, not Block 56. Follow the marked route and the warden’s directions.',best:true},
-      {id:'diagonal',label:'Cross diagonally',feedback:'Use the marked crossing.',best:false},
-      {id:'road',label:'Walk along the road edge',feedback:'Keep to the walkway.',best:false},
+    {id:'junction',label:'Junction',location:'Admin Field approach',situation:'Your group reaches the marked crossing near Admin Field.',photos:[['/assets/fire-route/route-11.webp','T-junction near Admin Field'],['/assets/fire-route/route-12.webp','Zebra crossing to Admin Field']],prompt:'When do you cross?',choices:[
+      {id:'follow',label:'As soon as the group ahead moves',feedback:'Don’t assume traffic has stopped. Follow the warden’s directions and check it is safe before crossing.',best:false},
+      {id:'walkway',label:'When the warden directs and it is safe',feedback:'Use this marked crossing near Admin Field—not the one at Block 56. Follow the warden and check traffic.',best:true},
     ]},
-    {id:'approach',label:'Approach',location:'Zone A · Admin Field',title:'Keep moving to Zone A',instruction:'Join the CLTE group in Zone A. Keep the approach walkway clear.',photos:[['/assets/fire-route/route-13.webp','Walkway around Admin Field']],prompt:'Where do you stop?',choices:[
-      {id:'zone',label:'Zone A with the CLTE group',feedback:'Gathering in Zone A keeps the approach clear for others and helps CLTE account for everyone.',best:true},
-      {id:'walkway',label:'On the covered walkway',feedback:'Continue to the assembly point.',best:false},
-      {id:'anywhere',label:'Anywhere on the field',feedback:'Join CLTE in Zone A.',best:false},
+    {id:'approach',label:'Approach',location:'Admin Field · Zone A',situation:'You’ve reached the field. A colleague stops on the approach walkway.',photos:[['/assets/fire-route/route-13.webp','Walkway around Admin Field']],prompt:'What do you suggest?',choices:[
+      {id:'zone',label:'Join CLTE in Zone A',feedback:'Gathering in Zone A keeps the approach clear for others and helps CLTE account for everyone.',best:true},
+      {id:'walkway',label:'Wait here for the rest of the group',feedback:'Waiting on the approach can block others. Continue to Zone A and join CLTE there.',best:false},
     ]},
-    {id:'rollcall',label:'Roll call',location:'Admin Field · Zone A',title:'Report and remain',instruction:'Stay with CLTE for roll call. Tell the warden if someone is missing; do not go back to search.',photos:[['/assets/fire-route/route-14.webp','Admin Field · assembly point']],prompt:'Someone is missing. What now?',choices:[
-      {id:'report',label:'Tell the warden + remain here',feedback:'Tell the warden who is missing and where they were last seen, if known. Staying here keeps the roll call accurate.',best:true},
-      {id:'search',label:'Return to Block 27',feedback:'Never re-enter to search.',best:false},
-      {id:'leave',label:'Leave to call them',feedback:'Remain with the group.',best:false},
+    {id:'rollcall',label:'Roll call',location:'Admin Field · Zone A',situation:'During roll call, a colleague is unaccounted for.',photos:[['/assets/fire-route/route-14.webp','Admin Field · assembly point']],prompt:'What would help most?',choices:[
+      {id:'search',label:'Go back to check their desk',feedback:'Do not re-enter to search. Tell the warden who is missing and where they were last seen, if known.',best:false},
+      {id:'report',label:'Tell the warden where you last saw them',feedback:'Share their name and last known location, if known. Stay with CLTE; do not go back to search.',best:true},
     ]},
   ];
   const stage=routeStages[routeStage]; const photo=stage.photos[photoIndex]||stage.photos[0]; const selected=stage.choices.find(choice=>choice.id===answers[routeStage]);
@@ -99,15 +92,17 @@ function EvacuationScene({ onComplete }: { onComplete: () => void }) {
       <div className="pov-tools"><button onClick={()=>setMapOpen(true)}><MapPin/> Route map</button></div>
     </div>
     <div className="pov-context">
-      {stage.id==='blk56'&&<div className="route-photo-cue"><Info size={20}/><strong>Do not cross here · stay on the walkway</strong></div>}
-      <div className="pov-location" key={routeStage}><p className="eyebrow">Checkpoint {routeStage+1} · {stage.location}</p><h2>{stage.title}</h2><p><ReadingText>{stage.instruction}</ReadingText></p></div>
       {stage.photos.length>1&&<div className="pov-scene-gallery" aria-label="Real route views">
         <div className="pov-scene-gallery-head"><span><Eye/> Route photos</span><small>{photoIndex+1} of {stage.photos.length}</small></div>
         <div className="pov-scene-thumbnails" style={{gridTemplateColumns:`repeat(${stage.photos.length},minmax(0,1fr))`}}>{stage.photos.map((view,index)=><button key={view[0]} type="button" className={photoIndex===index?'active':''} aria-pressed={photoIndex===index} aria-label={`Show route view ${index+1}: ${view[1]}`} onClick={()=>setPhotoIndex(index)}><img src={view[0]} alt=""/><span>View {index+1}</span></button>)}</div>
+        <p className="pov-photo-caption" aria-live="polite">{photo[1]}</p>
       </div>}
     </div>
     <aside className="pov-decision" aria-label={`Decision at ${stage.location}`}>
-      <div className="pov-decision-head"><span>{String(routeStage+1).padStart(2,'0')}</span><div><p>Your next step</p><h3>{stage.prompt}</h3></div></div>
+      <p className="pov-checkpoint">{String(routeStage+1).padStart(2,'0')} / 07 · {stage.location}</p>
+      {stage.id==='blk56'&&<div className="route-photo-cue"><Info size={20}/><strong>Do not cross here</strong></div>}
+      <p className="pov-situation"><ReadingText>{stage.situation}</ReadingText></p>
+      <div className="pov-decision-head"><h3>{stage.prompt}</h3></div>
       <div className="pov-choices">{stage.choices.map((choice,index)=><button key={choice.id} aria-pressed={answers[routeStage]===choice.id} className={answers[routeStage]===choice.id?`selected ${choice.best?'safe':'risk'}`:''} onClick={()=>setAnswers(value=>({...value,[routeStage]:choice.id}))}><span>{answers[routeStage]===choice.id?(choice.best?<Check/>:<X/>):String.fromCharCode(65+index)}</span><strong>{choice.label}</strong></button>)}</div>
       {selected&&<div className={`pov-feedback ${selected.best?'good':'consider'}`} aria-live="polite"><Info/><div><strong>{selected.best?'Why this helps':'A safer next step'}</strong><p><ReadingText>{selected.feedback}</ReadingText></p></div></div>}
       <div className="pov-actions"><button disabled={routeStage===0} onClick={()=>selectStage(routeStage-1)}><ArrowRight className="turn"/> Back</button>{allCorrect?<button className="pov-complete-action" onClick={onComplete}>Finish Fire 02 <ArrowRight/></button>:routeStage<routeStages.length-1?<button onClick={()=>selectStage(routeStage+1)}>Next checkpoint <ArrowRight/></button>:<button onClick={reviewNext}>Review remaining checkpoints <ArrowRight/></button>}</div>

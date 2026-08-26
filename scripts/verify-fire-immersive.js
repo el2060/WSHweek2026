@@ -2,6 +2,7 @@
 async (page) => {
   const failures = [], errors = [];
   let states = 0, photos = 0;
+  const correct = [0,1,0,1,1,0,1];
   const assert = (ok, label) => { if (!ok) failures.push(label); };
   const button = name => page.getByRole('button', { name, exact: true });
   page.on('pageerror', error => errors.push(error.message));
@@ -23,7 +24,7 @@ async (page) => {
       return {
         overflow: document.documentElement.scrollWidth>innerWidth+1,
         clips: controls.filter(el=>el.scrollWidth>el.clientWidth+2||el.scrollHeight>el.clientHeight+2).map(el=>el.textContent),
-        small: [...root.querySelectorAll('.pov-location>p:not(.eyebrow),.pov-choices strong,.pov-feedback p')].some(el=>parseFloat(getComputedStyle(el).fontSize)<18),
+        small: [...root.querySelectorAll('.pov-situation,.route-photo-cue,.pov-choices strong,.pov-feedback p')].some(el=>parseFloat(getComputedStyle(el).fontSize)<18),
         fullWidth: Math.abs(photo.width-innerWidth)<2 && Math.abs(photo.x)<2,
         photoHeight: photo.height,
         covered: overlap(context,panel)||overlap(context,rail)||overlap(panel,rail),
@@ -52,6 +53,11 @@ async (page) => {
     }
     for (let stage=0;stage<7;stage++) {
       await page.getByRole('tab').nth(stage).click();
+      assert(await page.locator('.pov-location').count()===0, `${width}/${stage}: competing instruction panel`);
+      assert(await page.locator('.pov-situation').count()===1, `${width}/${stage}: missing situation`);
+      assert(await page.locator('.pov-choices button').count()===2, `${width}/${stage}: expected two choices`);
+      assert(await page.locator('.pov-feedback').count()===0, `${width}/${stage}: feedback before choosing`);
+      assert(await page.locator('.pov-choices [aria-pressed="true"]').count()===0, `${width}/${stage}: preselected answer`);
       const views = await page.getByRole('button',{name:/^Show route view/}).all();
       for (let view=0;view<Math.max(1,views.length);view++) {
         if (views.length) {
@@ -63,13 +69,13 @@ async (page) => {
         await audit(`${width}/${scale}/${stage}/photo-${view}`);
       }
       if (views.length) await views[0].click();
-      for (const choice of [1,2,0]) {
+      for (const choice of [1-correct[stage],correct[stage]]) {
         await page.locator('.pov-choices button').nth(choice).click();
-        assert(await page.locator(choice===0?'.pov-feedback.good':'.pov-feedback.consider').count()===1, `${width}/${stage}/${choice}: feedback`);
+        assert(await page.locator(choice===correct[stage]?'.pov-feedback.good':'.pov-feedback.consider').count()===1, `${width}/${stage}/${choice}: feedback`);
         await audit(`${width}/${scale}/${stage}/choice-${choice}`);
       }
       if (stage===3) assert((await page.locator('.route-photo-cue').innerText()).includes('Do not cross here'), `${width}: crossing warning missing`);
-      if (scale===1 && [1440,390].includes(width) && [0,3,6].includes(stage)) {
+      if (scale===1 && [1440,390].includes(width) && [0,3,4,6].includes(stage)) {
         await page.evaluate(()=>window.scrollTo(0,0));
         await page.screenshot({path:`output/playwright/fire-immersive-${stage}-${width}.png`,fullPage:true,animations:'disabled'});
       }
@@ -101,6 +107,7 @@ async (page) => {
   await page.setViewportSize({width:390,height:844});
   assert(await page.locator('.pov-camera img').evaluate(el=>getComputedStyle(el).transform==='none'), 'phone photo should stay still');
   assert(!errors.length, `runtime errors: ${errors.join(';')}`);
+  assert(photos===112, `All 14 existing photos must load at each of the eight sizes; got ${photos}`);
   if(failures.length) throw new Error(failures.join('\n'));
   return {result:'PASS',states,photos,runtimeErrors:errors};
 }
