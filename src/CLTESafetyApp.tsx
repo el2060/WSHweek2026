@@ -1,8 +1,10 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
-import { ArrowDown, ArrowRight, Check, ClipboardCheck, ExternalLink, Eye, Flame, HeartHandshake, Info, MapPin, Menu, Phone, RotateCcw, Sparkles, Wrench, X } from 'lucide-react';
-import { officeHotspots, officialInfo, routes, type Hotspot } from './config';
+import { ArrowDown, ArrowRight, Check, ExternalLink, Eye, Flame, HeartHandshake, Info, MapPin, Menu, Phone, RotateCcw, Sparkles, Wrench, X } from 'lucide-react';
+import { officialInfo } from './config';
+import OfficeScene, { clearOfficeProgress } from './OfficeScene';
 import { InjuryScene, HazeScene, clearGuidedProgress } from './GuidedScenes';
 import PracticeReport from './PracticeReport';
+import ReportingScene, { clearReportingProgress } from './ReportingScene';
 import { ReadingText } from './ReadingText';
 
 type Progress = { office: boolean; walkway: boolean; haze: boolean; evacuation: boolean; reporting: boolean; practice: boolean; guide: boolean; completion: boolean };
@@ -22,14 +24,6 @@ function ActionLink({ href, children }: { href: string; children: React.ReactNod
   return <a className="guide-link" href={href} target="_blank" rel="noreferrer">{children}<ExternalLink size={17} /></a>;
 }
 
-function LensHotspot({ item, active, onOpen }: { item: Hotspot; active: boolean; onOpen: () => void }) {
-  return <button className={`hotspot ${active ? 'found' : ''}`} style={{ left: `${item.x}%`, top: `${item.y}%` }} onClick={onOpen} aria-label={`Inspect: ${item.title}`} aria-pressed={active}><span>{active ? <Check size={18} /> : <Eye size={18} />}</span></button>;
-}
-
-function SceneHeader({ kicker, title, copy }: { kicker: string; title: string; copy: string }) {
-  return <div className="scene-heading"><p className="eyebrow">{kicker}</p><h2>{title}</h2><p>{copy}</p></div>;
-}
-
 function Intro({ onStart, onReset, startLabel, statusText, canReset }: { onStart: () => void; onReset: () => void; startLabel: string; statusText: string; canReset: boolean }) {
   return <section id="intro" className="intro">
     <div className="intro-copy">
@@ -46,25 +40,6 @@ function Intro({ onStart, onReset, startLabel, statusText, canReset }: { onStart
   </section>;
 }
 
-function OfficeScene({ onComplete }: { onComplete: () => void }) {
-  const [answers,setAnswers]=useState<Record<string,string>>({}); const [active,setActive]=useState<Hotspot|null>(null);
-  const handled=officeHotspots.filter(item=>item.choices.find(choice=>choice.id===answers[item.id])?.best);
-  const activeChoice=active?.choices.find(choice=>choice.id===answers[active.id]);
-  return <section id="office" className="chapter">
-    <SceneHeader kicker="01 · Spot hazards" title="Make the space safe" copy="Find five risks. Fix each one."/>
-    <div className="office-workspace"><div className="scene-frame">
-      <img src="/assets/office.webp" alt="Illustrated CLTE-style office with cubicles, a shared walkway and colleagues preparing in a meeting room."/>
-      {officeHotspots.map(h=><LensHotspot key={h.id} item={h} active={handled.some(item=>item.id===h.id)} onOpen={()=>setActive(h)}/>)}
-      <div className="scene-counter" aria-live="polite"><Eye size={16}/>{handled.length}/{officeHotspots.length} hazards fixed</div>
-    </div><aside className={`bottom-sheet ${active ? 'open' : ''}`} aria-live="polite">
-      {active?<><button className="sheet-close" onClick={()=>setActive(null)} aria-label="Close decision"><X/></button><p className="decision-label">What would you do?</p><h3>{active.title}</h3><p>{active.body}</p><div className="decision-options">{active.choices.map(choice=><button key={choice.id} onClick={()=>setAnswers(current=>({...current,[active.id]:choice.id}))} className={answers[active.id]===choice.id?'selected':''}>{choice.label}</button>)}</div>{activeChoice&&<div className={`decision-consequence ${activeChoice.best?'good':'consider'}`}><Info/><div><strong>{activeChoice.best?'Fixed':'Try again'}</strong><p>{activeChoice.feedback}</p></div></div>}</>:<div className="decision-empty"><Eye/><h3>Choose a marker</h3><p>One quick decision at a time.</p></div>}
-    </aside>
-    </div>
-    {handled.length===officeHotspots.length&&<div className="scene-complete reveal"><Check/><strong>All five fixed</strong><button className="primary" onClick={onComplete}>Next scenario <ArrowRight/></button></div>}
-  </section>;
-}
-
-
 function EvacuationScene({ onComplete }: { onComplete: () => void }) {
   const [routeStage,setRouteStage]=useState(0); const [photoIndex,setPhotoIndex]=useState(0); const [answers,setAnswers]=useState<Record<number,string>>({}); const [mapOpen,setMapOpen]=useState(false);
   const routeStages=[
@@ -73,12 +48,12 @@ function EvacuationScene({ onComplete }: { onComplete: () => void }) {
       {id:'lift',label:'Take the lift',feedback:'Do not use the lift during a fire.',best:false},
       {id:'investigate',label:'Find the smoke first',feedback:'Do not investigate or delay.',best:false},
     ]},
-    {id:'stairs',label:'Stairs',location:'Block 27 · Stairwell',title:'Take the stairs',instruction:'People are moving in behind you.',photos:[['/assets/fire-route/route-04.webp','Middle staircase · entry'],['/assets/fire-route/route-05.webp','Mezzanine landing'],['/assets/fire-route/route-06.webp','First-floor landing']],prompt:'How do you move?',choices:[
-      {id:'steady',label:'Walk steadily + use the handrail',feedback:'Stay calm and keep the group moving.',best:true},
+    {id:'stairs',label:'Stairs',location:'Block 27 · Stairwell',title:'Take the stairs',instruction:'Keep moving calmly with the group. Use the handrail.',photos:[['/assets/fire-route/route-04.webp','Middle staircase · entry'],['/assets/fire-route/route-05.webp','Mezzanine landing'],['/assets/fire-route/route-06.webp','First-floor landing']],prompt:'How do you move?',choices:[
+      {id:'steady',label:'Walk steadily + use the handrail',feedback:'A steady pace and the handrail help prevent falls when the stairs are busy.',best:true},
       {id:'run',label:'Run before it gets crowded',feedback:'Running can cause a fall.',best:false},
       {id:'wait',label:'Wait alone on the landing',feedback:'Stay with the evacuation flow.',best:false},
     ]},
-    {id:'ground',label:'Ground',location:'Block 27 · Ground floor',title:'Follow the outdoor route',instruction:'Pass DST Office, Studio 27 and OIC.',photos:[['/assets/fire-route/route-07.webp','Ground floor · DST Office'],['/assets/fire-route/route-08.webp','Route past Studio 27'],['/assets/fire-route/route-09.webp','Route beside OIC']],prompt:'Which route do you take?',choices:[
+    {id:'ground',label:'Ground',location:'Block 27 · Ground floor',title:'Follow the outdoor route',instruction:'Stay on the walkway with the group, past DST Office, Studio 27 and OIC.',photos:[['/assets/fire-route/route-07.webp','Ground floor · DST Office'],['/assets/fire-route/route-08.webp','Route past Studio 27'],['/assets/fire-route/route-09.webp','Route beside OIC']],prompt:'Which route do you take?',choices:[
       {id:'group',label:'Stay with the group on the walkway',feedback:'The landmarks lead toward Block 56.',best:true},
       {id:'shortcut',label:'Cut across the road',feedback:'Shortcuts add traffic risk.',best:false},
       {id:'own',label:'Take my usual route',feedback:'Use the designated route.',best:false},
@@ -88,18 +63,18 @@ function EvacuationScene({ onComplete }: { onComplete: () => void }) {
       {id:'cross',label:'Use the zebra crossing in the photo',feedback:'Not at this checkpoint. Stay on the walkway and continue with the group.',best:false},
       {id:'road',label:'Step onto the road to follow others',feedback:'Keep to the walkway. Do not step onto the road here.',best:false},
     ]},
-    {id:'junction',label:'Junction',location:'Admin Field approach',title:'Stay on the marked path',instruction:'Admin Field is ahead.',photos:[['/assets/fire-route/route-11.webp','T-junction near Admin Field'],['/assets/fire-route/route-12.webp','Zebra crossing to Admin Field']],prompt:'Which way is safest?',choices:[
-      {id:'walkway',label:'Walkway + zebra crossing',feedback:'Stay on the pedestrian route.',best:true},
+    {id:'junction',label:'Junction',location:'Admin Field approach',title:'Stay on the marked path',instruction:'At the Admin Field approach, use the walkway and marked zebra crossing. Follow the warden’s directions.',photos:[['/assets/fire-route/route-11.webp','T-junction near Admin Field'],['/assets/fire-route/route-12.webp','Zebra crossing to Admin Field']],prompt:'Which way is safest?',choices:[
+      {id:'walkway',label:'Walkway + zebra crossing',feedback:'This crossing is at the Admin Field approach, not Block 56. Follow the marked route and the warden’s directions.',best:true},
       {id:'diagonal',label:'Cross diagonally',feedback:'Use the marked crossing.',best:false},
       {id:'road',label:'Walk along the road edge',feedback:'Keep to the walkway.',best:false},
     ]},
-    {id:'approach',label:'Approach',location:'Zone A · Admin Field',title:'Keep moving to Zone A',instruction:'The CLTE assembly area is ahead.',photos:[['/assets/fire-route/route-13.webp','Walkway around Admin Field']],prompt:'Where do you stop?',choices:[
-      {id:'zone',label:'Zone A with the CLTE group',feedback:'Keep the walkway clear.',best:true},
+    {id:'approach',label:'Approach',location:'Zone A · Admin Field',title:'Keep moving to Zone A',instruction:'Join the CLTE group in Zone A. Keep the approach walkway clear.',photos:[['/assets/fire-route/route-13.webp','Walkway around Admin Field']],prompt:'Where do you stop?',choices:[
+      {id:'zone',label:'Zone A with the CLTE group',feedback:'Gathering in Zone A keeps the approach clear for others and helps CLTE account for everyone.',best:true},
       {id:'walkway',label:'On the covered walkway',feedback:'Continue to the assembly point.',best:false},
       {id:'anywhere',label:'Anywhere on the field',feedback:'Join CLTE in Zone A.',best:false},
     ]},
-    {id:'rollcall',label:'Roll call',location:'Admin Field · Zone A',title:'Report and remain',instruction:'Stay with CLTE for roll call.',photos:[['/assets/fire-route/route-14.webp','Admin Field · assembly point']],prompt:'Someone is missing. What now?',choices:[
-      {id:'report',label:'Tell the warden + remain here',feedback:'Share what you know. Stay until dismissed.',best:true},
+    {id:'rollcall',label:'Roll call',location:'Admin Field · Zone A',title:'Report and remain',instruction:'Stay with CLTE for roll call. Tell the warden if someone is missing; do not go back to search.',photos:[['/assets/fire-route/route-14.webp','Admin Field · assembly point']],prompt:'Someone is missing. What now?',choices:[
+      {id:'report',label:'Tell the warden + remain here',feedback:'Tell the warden who is missing and where they were last seen, if known. Staying here keeps the roll call accurate.',best:true},
       {id:'search',label:'Return to Block 27',feedback:'Never re-enter to search.',best:false},
       {id:'leave',label:'Leave to call them',feedback:'Remain with the group.',best:false},
     ]},
@@ -124,28 +99,13 @@ function EvacuationScene({ onComplete }: { onComplete: () => void }) {
         <div className="pov-scene-thumbnails" style={{gridTemplateColumns:`repeat(${stage.photos.length},minmax(0,1fr))`}}>{stage.photos.map((view,index)=><button key={view[0]} type="button" className={photoIndex===index?'active':''} aria-pressed={photoIndex===index} aria-label={`Show route view ${index+1}: ${view[1]}`} onClick={()=>setPhotoIndex(index)}><img src={view[0]} alt=""/><span>View {index+1}</span></button>)}</div>
       </div>}
       <div className="pov-choices">{stage.choices.map((choice,index)=><button key={choice.id} aria-pressed={answers[routeStage]===choice.id} className={answers[routeStage]===choice.id?`selected ${choice.best?'safe':'risk'}`:''} onClick={()=>setAnswers(value=>({...value,[routeStage]:choice.id}))}><span>{answers[routeStage]===choice.id?(choice.best?<Check/>:<X/>):String.fromCharCode(65+index)}</span><strong>{choice.label}</strong></button>)}</div>
-      {selected&&<div className={`pov-feedback ${selected.best?'good':'consider'}`} aria-live="polite"><Info/><div><strong>{selected.best?'Good call':'Try again'}</strong><p><ReadingText>{selected.feedback}</ReadingText></p></div></div>}
-      <div className="pov-actions"><button disabled={routeStage===0} onClick={()=>selectStage(routeStage-1)}><ArrowRight className="turn"/> Back</button>{allCorrect?<button className="pov-complete-action" onClick={onComplete}>Finish Fire 02 <ArrowRight/></button>:routeStage<routeStages.length-1?<button onClick={()=>selectStage(routeStage+1)}>Next checkpoint <ArrowRight/></button>:<button onClick={reviewNext}>Review missed points <ArrowRight/></button>}</div>
+      {selected&&<div className={`pov-feedback ${selected.best?'good':'consider'}`} aria-live="polite"><Info/><div><strong>{selected.best?'Why this helps':'A safer next step'}</strong><p><ReadingText>{selected.feedback}</ReadingText></p></div></div>}
+      <div className="pov-actions"><button disabled={routeStage===0} onClick={()=>selectStage(routeStage-1)}><ArrowRight className="turn"/> Back</button>{allCorrect?<button className="pov-complete-action" onClick={onComplete}>Finish Fire 02 <ArrowRight/></button>:routeStage<routeStages.length-1?<button onClick={()=>selectStage(routeStage+1)}>Next checkpoint <ArrowRight/></button>:<button onClick={reviewNext}>Review remaining checkpoints <ArrowRight/></button>}</div>
     </aside>
     <div className="pov-stage-rail" role="tablist" aria-label="Actual evacuation route checkpoints">{routeStages.map((item,index)=>{const done=item.choices.find(choice=>choice.id===answers[index])?.best;return <button key={item.id} role="tab" aria-selected={routeStage===index} className={`${routeStage===index?'active':''} ${done?'done':''}`} onClick={()=>selectStage(index)}><span>{done?<Check/>:index+1}</span><strong>{item.label}</strong></button>})}</div>
     {mapOpen&&<div className="pov-map-backdrop" onMouseDown={event=>{if(event.target===event.currentTarget)setMapOpen(false)}}><div className="pov-map-dialog" role="dialog" aria-modal="true" aria-label="Block 27 to Admin Field route map"><button className="sheet-close" onClick={()=>setMapOpen(false)} aria-label="Close route map"><X/></button><img src="/assets/block27-admin-field-route.jpg" alt="Aerial emergency route map from Block 27 to Zone A at Admin Field."/><p><MapPin/><span><strong>Block 27 → Zone A, Admin Field</strong><small><ReadingText>Follow fire wardens and current posted evacuation instructions.</ReadingText></small></span></p></div></div>}
   </section>;
 }
-
-function RoutingScene({ onComplete }: { onComplete: () => void }) {
-  const [active,setActive]=useState(routes[0].id); const [answers,setAnswers]=useState<Record<string,string>>({});
-  const scenario=routes.find(r=>r.id===active)!; const activeIndex=routes.findIndex(route=>route.id===active); const picked=answers[active]; const correct=picked===scenario.correct;
-  const completeCount=routes.filter(route=>answers[route.id]===route.correct).length; const allComplete=completeCount===routes.length;
-  const channels=[{id:'emergency',label:'Emergency',hint:'Urgent help',icon:<Phone/>},{id:'incident',label:'WSH Portal',hint:'Incident / near miss',icon:<ClipboardCheck/>},{id:'fault',label:'Fault report',hint:'Hazard / defect',icon:<Wrench/>}];
-  const routeTo=(channel:string)=>setAnswers(value=>({...value,[active]:channel}));
-  const nextSituation=()=>{const next=routes.find(route=>answers[route.id]!==route.correct&&route.id!==active);if(next)setActive(next.id)};
-  return <section id="reporting" className="chapter reporting">
-    <SceneHeader kicker="05 · Report" title="Choose the right channel" copy="Four situations. One choice each."/>
-    <div className="scene-frame"><img src="/assets/response.webp" alt="Illustrated response desk with a phone, report document and maintenance tool leading to three paths."/></div>
-    <div className="routing-board"><div className="route-stage-head"><div><p className="eyebrow">Situation {activeIndex+1} of {routes.length}</p><h3>{scenario.label}</h3></div><div className="route-progress" aria-label={`${completeCount} of ${routes.length} situations complete`}>{routes.map((route,index)=><i key={route.id} className={`${index===activeIndex?'current':''} ${answers[route.id]===route.correct?'done':''}`}>{answers[route.id]===route.correct?<Check/>:index+1}</i>)}</div></div><p className="route-prompt">Where does it go?</p><div className="channel-board">{channels.map(channel=><button key={channel.id} aria-pressed={picked===channel.id} disabled={correct} className={`channel-drop ${picked===channel.id?'active':''}`} onClick={()=>routeTo(channel.id)}>{channel.icon}<strong>{channel.label}</strong><span>{channel.hint}</span></button>)}</div>{picked&&<div className={`route-feedback ${correct?'good':'consider'}`}><Info/><div><strong>{correct?scenario.channel:'Try again'}</strong><p>{correct?scenario.detail:'Match the channel to the urgency.'}</p></div></div>}<div className="route-actions">{correct&&!allComplete&&<button className="primary" onClick={nextSituation}>Next <ArrowRight/></button>}{allComplete&&<button className="primary route-finish" onClick={onComplete}>Try a report <ArrowRight/></button>}</div></div>
-  </section>;
-}
-
 
 function PocketGuide({ onComplete, reviewing = false }: { onComplete: () => void; reviewing?: boolean }) {
   const [tab,setTab]=useState<'emergency'|'incident'|'hazard'>('emergency');
@@ -198,7 +158,7 @@ export default function App() {
   const startLabel=progress.completion?'Review activity':completed?`Continue: ${resumeLabels[resumeView]}`:'Start online activity';
   const statusText=progress.completion?'Completed · progress saved':completed===0?'':completed<5?`${completed}/5 scenarios completed`:!progress.practice?'5/5 scenarios · report practice remaining':!progress.guide?'Report practice complete · contacts remaining':'Activity complete';
   const headerStatus=completed<5?`${completed}/5 scenarios`:!progress.practice?'5/5 · Report practice':!progress.guide?'5/5 · Contacts':'Activity complete';
-  const resetProgress=()=>{clearGuidedProgress();try{localStorage.removeItem('clte-safety-progress');sessionStorage.removeItem('clte-safety-progress')}catch{/* Storage is optional. */}setProgress(initialProgress);setView('intro');setResetOpen(false)};
-  return <div className="app-shell"><header><button className="logo" onClick={()=>setView('intro')} aria-label="Ngee Ann Polytechnic · CLTE workplace safety online activity · Home"><img src="/assets/np-logo.png" alt="Ngee Ann Polytechnic"/><span className="logo-title">CLTE online activity</span></button><nav className={menu?'open':''} aria-label="Scenarios · open in any order">{chapters.map(({n,id,label})=><button key={id} aria-label={`${n} ${label}`} aria-description={progress[id]?'Completed':'Not yet completed'} aria-current={view===id?'page':undefined} onClick={()=>setView(id)} className={`${view===id?'current':''} ${progress[id]?'done':''}`}>{n}<span>{label}</span></button>)}</nav><div className="header-tools"><span aria-live="polite">{headerStatus}</span><button className="menu" onClick={()=>setMenu(!menu)} aria-label="Toggle navigation" aria-expanded={menu}>{menu?<X/>:<Menu/>}</button></div></header>
-    <main className="experience-stage"><div key={view} className="view-transition">{view==='intro'&&<Intro startLabel={startLabel} statusText={statusText} canReset={completed>0||progress.practice||progress.guide||progress.completion} onReset={()=>setResetOpen(true)} onStart={()=>setView(progress.completion?'completion':resumeView)}/>} {view==='office'&&<OfficeScene onComplete={()=>complete('office','evacuation')}/>} {view==='evacuation'&&<EvacuationScene onComplete={()=>complete('evacuation','walkway')}/>} {view==='walkway'&&<InjuryScene onComplete={()=>complete('walkway','haze')}/>} {view==='haze'&&<HazeScene onComplete={()=>complete('haze','reporting')}/>} {view==='reporting'&&<RoutingScene onComplete={()=>complete('reporting','practice')}/>} {view==='practice'&&<PracticeReport onComplete={()=>complete('practice','guide')}/>} {view==='guide'&&<PocketGuide reviewing={progress.completion} onComplete={()=>{setProgress(value=>({...value,guide:true,completion:true}));setView('completion')}}/>} {view==='completion'&&<Completion onHome={()=>setView('intro')} onReview={setView} onGuide={()=>setView('guide')} onReset={()=>setResetOpen(true)}/>}</div></main><ResetDialog open={resetOpen} onCancel={()=>setResetOpen(false)} onConfirm={resetProgress}/></div>;
+  const resetProgress=()=>{clearGuidedProgress();clearReportingProgress();clearOfficeProgress();try{localStorage.removeItem('clte-safety-progress');sessionStorage.removeItem('clte-safety-progress')}catch{/* Storage is optional. */}setProgress(initialProgress);setView('intro');setResetOpen(false)};
+  return <div className="app-shell"><header><button className="logo" onClick={()=>setView('intro')} aria-label="Ngee Ann Polytechnic · CLTE workplace safety online activity · Home"><img src="/assets/np-logo.png" alt="Ngee Ann Polytechnic"/></button><nav className={menu?'open':''} aria-label="Scenarios · open in any order">{chapters.map(({n,id,label})=><button key={id} aria-label={`${n} ${label}`} aria-description={progress[id]?'Completed':'Not yet completed'} aria-current={view===id?'page':undefined} onClick={()=>setView(id)} className={`${view===id?'current':''} ${progress[id]?'done':''}`}>{n}<span>{label}</span></button>)}</nav><div className="header-tools"><span aria-live="polite">{headerStatus}</span><button className="menu" onClick={()=>setMenu(!menu)} aria-label="Toggle navigation" aria-expanded={menu}>{menu?<X/>:<Menu/>}</button></div></header>
+    <main className="experience-stage"><div key={view} className="view-transition">{view==='intro'&&<Intro startLabel={startLabel} statusText={statusText} canReset={completed>0||progress.practice||progress.guide||progress.completion} onReset={()=>setResetOpen(true)} onStart={()=>setView(progress.completion?'completion':resumeView)}/>} {view==='office'&&<OfficeScene onComplete={()=>complete('office','evacuation')}/>} {view==='evacuation'&&<EvacuationScene onComplete={()=>complete('evacuation','walkway')}/>} {view==='walkway'&&<InjuryScene onComplete={()=>complete('walkway','haze')}/>} {view==='haze'&&<HazeScene onComplete={()=>complete('haze','reporting')}/>} {view==='reporting'&&<ReportingScene onComplete={()=>complete('reporting','practice')}/>} {view==='practice'&&<PracticeReport onComplete={()=>complete('practice','guide')}/>} {view==='guide'&&<PocketGuide reviewing={progress.completion} onComplete={()=>{setProgress(value=>({...value,guide:true,completion:true}));setView('completion')}}/>} {view==='completion'&&<Completion onHome={()=>setView('intro')} onReview={setView} onGuide={()=>setView('guide')} onReset={()=>setResetOpen(true)}/>}</div></main><ResetDialog open={resetOpen} onCancel={()=>setResetOpen(false)} onConfirm={resetProgress}/></div>;
 }

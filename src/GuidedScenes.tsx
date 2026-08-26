@@ -107,7 +107,7 @@ export function InjuryScene({ onComplete }: { onComplete: () => void }) {
 export function HazeScene({ onComplete }: { onComplete: () => void }) {
   const { state, step, setStep, act } = useMoments('haze');
   const done = state.done[step];
-  const titles = ['Give the outdoor plan a rethink', 'Step into cleaner air', 'Breathing difficulty? Get help now.'];
+  const titles = ['Move the activity indoors or postpone it', 'Move together into cleaner air', 'Breathing difficulty? Get help now.'];
   return <section className="guided-scene haze-guided" id="haze">
     <div className="guided-heading"><p className="eyebrow">04 · Haze response</p><h1><span className="reading-phrase">Change the plan.</span>{' '}<span className="reading-phrase">Care for each other.</span></h1><p><ReadingText>It’s hazy and a colleague with asthma feels unwell. Small actions can help.</ReadingText></p></div>
     <MomentNav labels={['Adjust the plan', 'Move indoors', 'Get help']} step={step} done={state.done} onChange={setStep}/>

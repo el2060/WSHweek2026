@@ -89,7 +89,7 @@ async (page) => {
   await page.getByRole('button', { name: /Use the nearest safe exit/ }).click();
   await button('Next checkpoint').click();
   await page.getByRole('button', { name: /Walk steadily/ }).click();
-  assert(await page.locator('.pov-feedback').innerText().then(text => text.includes('Good call')), 'Fire decision flow regressed');
+  assert(await page.locator('.pov-feedback.good').innerText().then(text => text.includes('Why this helps')), 'Fire decision flow regressed');
   for (const label of [/Stay with the group on the walkway/, /Stay on the walkway — do not cross here/, /Walkway \+ zebra crossing/, /Zone A with the CLTE group/, /Tell the warden \+ remain here/]) {
     await button('Next checkpoint').click();
     await page.getByRole('button', { name: label }).click();

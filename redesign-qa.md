@@ -1,5 +1,29 @@
 # CLTE guided scenario redesign — 26 August 2026
 
+## Scenario 01 and all-scenario clarity review
+
+The frontend design direction remains a warm, content-first workspace: one office scene, named hazards, one action per hazard, then the reason it helps. Small marker-to-check and feedback-reveal transitions show progress; reduced motion removes the animation. Reused the existing scene, with corrected coordinates and copy, rather than adding decorative imagery.
+
+Replaced all five three-option quizzes with guided practice. The files example no longer grades “straighten the stack” against “store heavy files lower”; it identifies files leaning at the cabinet edge and lets staff practise secure shelf storage. Each hazard provides a concise, reusable takeaway. Cable practice asks for support rather than requiring staff to unplug equipment. Numbered markers, a named hazard row, next/back controls and persisted progress make completion straightforward. The illustration is explicitly labelled as the starting scene, since it does not depict the post-action changes.
+
+Reviewed all five scenarios and the report practice. Kept Fire’s established flow, clarified the stair/walkway/assembly cues, distinguished the Admin Field crossing from Block 56, and replaced generic feedback headings with “Why this helps” / “A safer next step”. Strengthened the reasons for using the handrail, keeping approaches clear and staying for roll call. Injury already has explicit care/keep-clear/help cues; retained these. Made Haze action headings more direct. Scenario 05 already uses concrete situations and guided actions; retained it. Added brief case-based hints beside the blank report-practice choices, without preselecting any answers.
+
+General housekeeping and cable principles checked against [HSE trip prevention](https://www.hse.gov.uk/SLIPS/preventing-overview.htm) and [HSENI office safety](https://www.hseni.gov.uk/articles/health-and-safety-offices). Campus route details remain based on supplied materials and the route-owner correction; no new route or legal requirements were inferred.
+
+Verification: 60 hazard states at 1920, 1440, 1024, 768, 390 and 320px, covering every action before/after, keyboard use, 44px marker targets, unclipped image coordinates, sequential/free navigation, repeat actions, persistence, reset, invalid saved data and continuation to Fire. The updated all-page reading suite covers 427 states (fewer quiz-answer branches now), including enlarged text. The widescreen suite covers 209 states from 320 to 3778px. Screenshots: `output/playwright/office-guided-*.png`. Desktop and mobile reviewed visually; the phone hazard selector is a consistent five-column row.
+
+All suites passed, along with the existing Injury/Haze, 48-state Reporting and ERC/finish-flow checks. No runtime errors, clipped controls, horizontal overflow or flagged paragraph widows remained. Enlarged-text review caught the longer Drawer label getting cramped; content-aware grid minimums now give it room without reducing font size. Production build and diff checks passed.
+
+## Scenario 05: illustrated practice
+
+Replaced the three-channel MCQ board with four concrete situations and guided practice actions: urgent help, injury after care, a falling-box near miss, and a chair defect. Each supplies the cue before the action, then shows a practice stamp and immediate takeaway. No wrong-answer loops, score, calls or submissions. Navigation stays open; all four practice actions enable the next section. Next/Back bring the new situation into view and focus its heading, including on phones.
+
+Added a relevant illustration for every situation. The near-miss and chair-defect scenes were generated specifically for these stories; the existing help and wet-walkway scenes are reused unchanged. See `output/imagegen/scenario-05-prompts.md` for assets and final prompts. The content-first frontend design approach keeps the illustration in the smaller column beside larger, readable practice text. Generated art contains no operational instructions; all learning content is accessible HTML.
+
+General emergency wording was checked against [SCDF Emergency Medical Services](https://www.scdf.gov.sg/home/about-scdf/emergency-medical-services). Near-miss prevention framing was checked against [LTA Near Miss Reporting](https://www.lta.gov.sg/content/ltagov/en/industry_innovations/industry_matters/safety_health_environment/construction_safety_environment/near_miss_reporting.html). Campus contacts and internal reporting channels remain based on supplied project materials; no statutory reporting rules or unconfirmed links were added.
+
+Focused verification: 48 before/after states at 1920, 1440, 1024, 768, 390 and 320px; four distinct successfully loaded images; no clipped controls or horizontal overflow; main learning text at least 18px; keyboard actions, free navigation, persisted progress, reset, reduced motion, and hand-off to blank report practice. Production build, 209-state wide-screen suite, 497-state all-page reading suite (no flagged widows), and ERC finish-flow regression also passed. Desktop and phone screenshots: `output/playwright/report-guided-*.png`. Visual review caught and corrected an inherited dark footer that reduced progress-text contrast.
+
 ## Design decisions
 
 Visual thesis: a calm, content-first learning space with warm paper surfaces, teal actions, comfortable type and compact supporting scenes.
@@ -70,3 +94,11 @@ The visual direction is content-first: clear, comfortably sized text, quiet supp
 Verification: production build and existing guided/ERC regression suites passed. The reading-layout suite exercises 497 screen states across 1440, 1024, 768, 390 and 320px, with additional 125% root-font checks at 640 and 390px. It checks all hazard choices, all seven Fire checkpoints, every Injury/Haze moment before and after feedback, all routing situations, practice steps/review, all contact tabs, completion and reset. Desktop and phone captures are saved under `output/playwright/layout-*.png`.
 
 Final reading-layout result: PASS, 497 states, no clipped controls, no page overflow, no browser runtime errors, and no flagged single-word endings in the audited headings/paragraphs. Main learning text, choices and report fields were checked at 18px or above. Visual review also caught a legacy small-font override on phone hazard choices and an overlong location placeholder; both were corrected.
+
+## Wide-screen spacing refinement
+
+Visual thesis: a fluid, content-first workspace that feels proportionate at normal browser zoom, rather than a narrow fixed-width strip on a large monitor. Content stays in the order heading → scene and action → feedback. Interaction changes are limited to opening the first hazard, visibly identifying its marker, and retaining the existing short feedback reveals and reduced-motion support. No answers are preselected and no progress is awarded on entry.
+
+Replaced the 1240px workspace ceiling with a viewport-responsive 96rem maximum. Desktop type scales with available width, using a rem-based minimum/maximum so browser font preferences remain respected. The action panel keeps more width than the scene image. Removed the empty panel's forced height, kept heading/content gaps compact, and vertically balanced short tasks on tall monitors. Fire's decision panel no longer stretches to fill unused row space. Practice, contacts and completion widths scale with the same type system. The home illustration follows the action promptly on phones, removing the previous empty gap.
+
+Verification: `verify-workspace.js` passed 209 states at 3778×1870, 2560×1440, 2267×1122, 1920×1080, 1440×900, 1366×768, 1024×768, 900×900, 768×1024, 390×844 and 320×740. At 1920px the hazard workspace is 1805px (94% of viewport, previously 1240px/65%); decision text is approximately 23px. At 2560px it uses 92% of the viewport. The illustration is approximately 44% of the desktop workspace. No overflow, clipped controls or runtime errors were found. The existing 497-state reading suite also passed with no flagged heading/paragraph widows. Desktop and phone screenshots were visually reviewed.

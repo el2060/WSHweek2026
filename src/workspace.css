@@ -1,0 +1,87 @@
+/* Scale the workspace and its type together, instead of leaving a 1240px island
+   on large monitors. Browser text-size preferences and zoom still apply. */
+:root {
+  --activity-width: 96rem;
+  --activity-gutter: max(3vw, calc((100vw - var(--activity-width)) / 2));
+}
+@media (min-width: 1440px) {
+  html { font-size: clamp(1rem, calc(.25rem + .8vw), 1.75rem); }
+}
+@media (min-width: 901px) {
+  .app-shell .chapter,
+  .view-transition>.guided-scene,
+  .app-shell .pov-response {
+    width: 100%; max-width: none;
+    padding-inline: var(--activity-gutter);
+  }
+  .chapter .scene-heading,.office-workspace,.scene-complete {
+    width: 100%; max-width: none;
+  }
+  .office-workspace {
+    grid-template-columns: minmax(0, .9fr) minmax(0, 1.1fr);
+    align-items: start; gap: 2rem; margin: 0;
+  }
+  .office-workspace .scene-frame { align-self: center; box-shadow: none; }
+  .office-workspace .bottom-sheet { min-height: 0; padding: 2rem; }
+  .office-workspace .bottom-sheet h3 { font-size: var(--reading-panel); }
+  .office-workspace .decision-options button { padding: .9rem 1rem; }
+  .office-workspace .decision-empty { min-height: 0; padding-block: .75rem; }
+  .office-workspace .decision-empty>svg { margin-bottom: .75rem; }
+  .guided-workspace { grid-template-columns: minmax(0,.65fr) minmax(0,1.65fr); gap: 2rem; }
+  .supporting-scene img { height: 12rem; }
+  .moment-panel { padding: 1.75rem 2rem; }
+  .pov-response {
+    grid-template-rows: auto 16rem auto auto;
+    align-content: start; gap: 1.5rem 2rem;
+  }
+  .pov-camera { height: 16rem; }
+  .pov-decision { align-self: start; padding: 1.75rem; }
+  .pov-scene-thumbnails button { height: 4.5rem; }
+  .pov-decision-head>span { width: 2.5rem; height: 2.5rem; flex: none; }
+  .pov-stage-rail button { min-height: 3.5rem; }
+  .pov-location>small { max-width: 54ch; }
+  .app-shell .intro { padding-inline: var(--activity-gutter); }
+  .intro .intro-copy { width: min(44rem, 56%); }
+  .intro h1 { font-size: clamp(3rem, 4.6vw, 4.75rem); }
+  .intro .tagline { max-width: 34rem; }
+  .reporting>.scene-heading,.reporting>.scene-frame,.routing-board {
+    width: min(72rem,100%); max-width: 72rem;
+  }
+  .reporting>.scene-frame,.reporting>.scene-frame>img { height: 6.25rem; max-height: 6.25rem; }
+  .mock-report .simulation-banner,.mock-report .practice-case,.mock-report .mock-shell {
+    width: min(76rem,100%); max-width: 76rem;
+  }
+  .mock-shell { grid-template-columns: 13rem minmax(0,1fr); }
+  .interactive-guide .guide-title,.interactive-guide .guide-tabs,.interactive-guide .guide-focus,
+  .completion-review,.personal-takeaway,.review-hub,.completion .completion-actions {
+    width: min(72rem,100%); max-width: 72rem;
+  }
+}
+/* A short task is centred in the available height, not stretched into empty
+   panels. Longer tasks grow normally and remain fully scrollable. */
+@media (min-width: 1500px) and (min-height: 850px) {
+  .app-shell #office,.view-transition>.guided-scene {
+    min-height: 100svh; display: flex; flex-direction: column; justify-content: center;
+  }
+  .app-shell .pov-response { align-content: center; }
+}
+@media (min-width: 1440px) {
+  header { height: 4.5rem; }
+  header .logo img { width: 6rem; height: auto; }
+  header .logo-title { font-size: .9375rem; }
+  header nav button,header nav button span { font-size: .9375rem; }
+  header .header-tools>span { font-size: .875rem; }
+  .hotspot { width: 3.125rem; height: 3.125rem; }
+  .hotspot span { width: 2.125rem; height: 2.125rem; }
+  .hotspot svg { width: 1.125rem; height: 1.125rem; }
+  .scene-counter { font-size: .9375rem; }
+  .app-shell .pov-response { padding-top: 6.5rem; padding-bottom: 2rem; }
+}
+.hotspot.inspecting { outline: 3px solid var(--teal); outline-offset: 4px; animation: none; }
+.hotspot.inspecting:focus-visible { outline-color: #9d5a00; }
+@media (max-width: 900px) {
+  /* Avoid the large blank gap between the home action and its illustration. */
+  .intro .intro-copy { padding-bottom: 2rem; }
+  .intro .wsh-hero-visual { margin-top: 0; flex: 1 0 180px; max-height: 22rem; }
+  .office-workspace .bottom-sheet { min-height: 0; }
+}

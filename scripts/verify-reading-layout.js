@@ -15,6 +15,8 @@ async (page) => {
   const seed = async data => {
     await page.evaluate(value => {
       localStorage.setItem('clte-safety-progress', JSON.stringify(value));
+      localStorage.removeItem('clte-reporting-v1');
+      localStorage.removeItem('clte-office-v1');
       ['injury', 'haze'].forEach(kind => localStorage.removeItem(`clte-guided-v1-${kind}`));
     }, data);
     await page.reload();
@@ -31,7 +33,7 @@ async (page) => {
         const visible = el => el.getBoundingClientRect().width > 0 && el.getBoundingClientRect().height > 0;
         const controls = [...document.querySelectorAll('main button, main a')].filter(visible);
         const clipped = controls.filter(el => el.scrollWidth > el.clientWidth + 2 || el.scrollHeight > el.clientHeight + 2).map(el => el.textContent.trim());
-        const selectors = '.tagline,.scene-heading>p:last-child,.guided-heading>p:last-child,.moment-cue,.moment-takeaway p,.help-practice blockquote,.office-workspace .bottom-sheet>p:not(.decision-label),.decision-options button,.decision-consequence p,.pov-location>p:not(.eyebrow),.pov-choices button>strong,.pov-feedback p,.route-feedback p,.channel-drop>strong,.channel-drop>span,.choice-field button,.mock-input input,.mock-input textarea,.mock-preview dd,.guide-focus li,.practice-case>p,.completion>p:not(.eyebrow),.completion-review p';
+        const selectors = '.tagline,.scene-heading>p:last-child,.guided-heading>p:last-child,.moment-cue,.moment-takeaway p,.help-practice blockquote,.hazard-story,.hazard-cue strong,.hazard-action,.hazard-result p,.practice-choice-cue,.pov-location>p:not(.eyebrow),.pov-choices button>strong,.pov-feedback p,.report-story,.report-cue strong,.report-ticket p,.report-takeaway p,.choice-field button,.mock-input input,.mock-input textarea,.mock-preview dd,.guide-focus li,.practice-case>p,.completion>p:not(.eyebrow),.completion-review p';
         const small = [...document.querySelectorAll(selectors)].filter(visible).filter(el => parseFloat(getComputedStyle(el).fontSize) < 18).map(el => el.textContent);
         // Diagnostic: flag long prose with a single-word final line for manual review.
         const orphans = [...document.querySelectorAll('main p,main h1,main h2,main h3')].filter(visible).flatMap(el => {
@@ -57,7 +59,7 @@ async (page) => {
       widows.push(...result.orphans.map(text => `${key}: ${text}`));
       if (capture && scale === 1 && [1440, 390].includes(width)) {
         await page.evaluate(() => window.scrollTo(0, 0));
-        await page.screenshot({ path: `output/playwright/layout-${label}-${width}.png`, fullPage: true, animations: 'disabled' });
+        await page.screenshot({ path: `output/playwright/report-refine-layout-${label}-${width}.png`, fullPage: true, animations: 'disabled' });
       }
     };
     await audit('home', true);
@@ -69,7 +71,7 @@ async (page) => {
     const hotspots = await page.getByRole('button', { name: /^Inspect:/ }).all();
     for (let index = 0; index < hotspots.length; index++) {
       await hotspots[index].click(); await audit(`hazard-${index}`);
-      for (let choice = 2; choice >= 0; choice--) { await page.locator('.decision-options button').nth(choice).click(); await audit(`hazard-${index}-${choice}`, index === 0 && choice === 0); }
+      await page.locator('.hazard-action').click(); await audit(`hazard-${index}-feedback`, index === 0);
     }
     await nav('02 Fire');
     for (let index = 0; index < 7; index++) {
@@ -86,12 +88,12 @@ async (page) => {
       }
     }
     await nav('05 Report');
-    for (const [index, channel] of [0, 1, 1, 2].entries()) {
+    for (let index = 0; index < 4; index++) {
+      await page.locator('.report-moments button').nth(index).click();
       await audit(`report-${index}`);
-      await page.locator('.channel-drop').nth(channel).click(); await audit(`report-${index}-feedback`, index === 0);
-      if (index < 3) await button('Next').click();
+      await page.locator('.report-action').click(); await audit(`report-${index}-feedback`, index === 0);
     }
-    await button('Try a report').click(); await audit('practice-type', true);
+    await button('Continue to report practice').click(); await audit('practice-type', true);
     await button('Incident').click(); await button('Fall, trip and slip').click(); await audit('practice-type-selected');
     await button('Next').click(); await audit('practice-impact', true);
     await button('Common area').click(); await button('Minor injury').click(); await button('NP Student').click();

@@ -28,11 +28,20 @@ Leave a link as an empty string to hide that action. Only complete, confirmed of
 
 ## Updating scenarios
 
-The CLTE entry point is `src/CLTESafetyApp.tsx`. Office hotspots and reporting routes are structured in `src/config.ts`; the Fire route checkpoints remain in the CLTE app component. Guided Injury and Haze moments live in `src/GuidedScenes.tsx`.
+The CLTE entry point is `src/CLTESafetyApp.tsx`. Office hotspots are structured in `src/config.ts`; the Fire route checkpoints remain in the CLTE app component. Guided Injury and Haze moments live in `src/GuidedScenes.tsx`. Scenario 05 lives in `src/ReportingScene.tsx` with layout styles in `src/reporting.css`.
 
 `src/safety.css` preserves the existing CLTE visual system. `src/guided.css` supplies the content-first layout, larger learning text, smaller illustrations and guided interaction states.
 
 The unrelated AuditLens prototype in `src/App.tsx` and `src/styles.css` is preserved unchanged. It is not imported by the CLTE entry point. The original CLTE base was recovered from commit `d42064d`.
+
+### Guided scenario 01
+
+- `src/OfficeScene.tsx` and `src/office.css` provide a guided scene with five named hazards. Content and marker coordinates live in `src/config.ts`.
+- Each hazard has a concrete description, a simple fix, one practice action, a visible result and a useful takeaway. Removed competing plausible answers and the retry loop. All five remain freely accessible through numbered image markers or named controls; Next hazard supports a quick sequential walkthrough.
+- Corrected image/copy mismatches: files lean on the cabinet beside the laptop, the cable hangs beside the desk, and the drink marker now points at the cup rather than the printer. The original illustration remains visible and is labelled as the starting scene.
+- The files activity teaches secure shelf storage rather than requiring staff to distinguish between straightening a stack and storing it “lower”. Cable guidance asks for support, without telling staff to unplug unfamiliar equipment.
+- Progress uses `clte-office-v1`, survives revisits and is cleared by Reset activity. Main text is at least 18px; markers have 44px minimum tap targets. Trying all five actions enables Continue to Fire.
+- `scripts/verify-office.js` checks 60 before/after states, free and sequential navigation, keyboard actions, marker hit targets, persistence, reset, malformed storage and completion at six widths.
 
 ### Guided scenarios 03 and 04
 
@@ -53,6 +62,15 @@ npx --yes --package @playwright/cli playwright-cli -s=clte-redesign run-code --f
 
 The script resets CLTE progress only in that test browser session. It covers free-order interactions, keyboard actions, persistence, both accepted activity plans, phone layouts, reduced motion and Fire route regression checks.
 
+### Guided scenario 05
+
+- Four illustrated situations: urgent help, an injury after care is arranged, a falling-box near miss, and a damaged chair kept out of use.
+- Each has a concrete story and cue before one practice action. Staff rehearse a help request, apply an Incident or Near miss label, or rehearse a repair request. A visible practice stamp and immediate takeaway replace channel-selection questions and wrong-answer loops.
+- All situations are freely accessible. Trying all four enables Continue to report practice. No calls or reports are actually sent; report-practice fields remain blank until the user enters them.
+- Progress is saved under `clte-reporting-v1` and cleared by the activity reset. Keyboard/touch and reduced motion are supported.
+- Four relevant visuals replace the generic response banner. Two new illustrations and their complete prompts are documented in [the asset manifest](output/imagegen/scenario-05-prompts.md). Text remains accessible HTML; imagery supports rather than replaces the learning cue.
+- Run `scripts/verify-reporting.js` in a dedicated Playwright CLI session. It checks 48 before/after states at six widths, distinct loaded images, free navigation, keyboard actions, persistence, reset and the hand-off to blank report practice.
+
 ### ERC feedback refinements
 
 - Block 56 is a **stay-on-the-walkway checkpoint, not a crossing** (corrected following the route-owner feedback). The title, photo overlay, alt text, choices and feedback all state not to cross here. The later Admin Field approach remains a separate checkpoint.
@@ -65,11 +83,15 @@ Hotspot `x` and `y` values are percentages relative to the scene image. Operatio
 
 ### Reading layout
 
-`src/reading.css` is the final, shared typography/layout layer after the legacy scene styles and `guided.css`. Instructions and feedback use 18–19px body text, with responsive headings, consistent reading widths and full-height wrapping controls. Tablet layouts collapse before the text columns become cramped. No learning text is line-clamped or ellipsized.
+`src/reading.css` is the shared typography/layout layer after the legacy scene styles and `guided.css`. Instructions and feedback start at 18–19px, with responsive headings, consistent reading widths and full-height wrapping controls. Tablet layouts collapse before the text columns become cramped. No learning text is line-clamped or ellipsized.
 
 Short home and chapter-heading phrases stay together. `src/ReadingText.tsx` keeps the final two words of selected learning paragraphs together, while allowing the group to reflow if enlarged text needs more space. Contact numbers remain unbroken. Completion places Back to home immediately after the finish message.
 
 Run `scripts/verify-reading-layout.js` through Playwright CLI in a dedicated test browser. It exercises every screen at 1440, 1024, 768, 390 and 320 CSS pixels, plus 125% text at 640 and 390 pixels; checks body-text size, control clipping, overflow and phrase wrapping; and captures `output/playwright/layout-*.png`. The script resets only that browser's CLTE progress.
+
+`src/workspace.css` is the final responsive sizing layer. Above 1440px, typography scales with the viewport and the main workspace grows up to 96rem. Paragraphs retain readable line lengths, images remain supporting content, and short activities are vertically balanced on tall desktop windows without stretching their panels. Smaller screens retain the stacked layout. The hazard screen opens the first risk without selecting an answer or awarding progress; all markers remain available in any order.
+
+`scripts/verify-workspace.js` checks 209 states over 11 viewport sizes from 320px to 3778px, including 1920/2560px monitors. It asserts usable workspace width, heading-to-content spacing, image/content proportions, minimum text size, overflow, and control clipping. Screenshot evidence is under `output/playwright/spacing-*.png`.
 
 ## Replacing illustrations
 

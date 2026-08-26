@@ -16,35 +16,47 @@ export const officialInfo = {
   },
 };
 
-export type DecisionOption = { id: string; label: string; feedback: string; best: boolean };
-export type Hotspot = { id: string; title: string; body: string; urgency: number; choices: DecisionOption[]; x: number; y: number };
-
-export const officeHotspots: Hotspot[] = [
-  { id: 'bag', title: 'Bag in the walkway', body: 'It blocks a shared route.', urgency: 2, x: 49, y: 80, choices: [
-    { id:'move', label:'Store it safely', feedback:'Clear route. Risk removed.', best:true },
-    { id:'warn', label:'Ask people to step around it', feedback:'The trip hazard is still there.', best:false },
-    { id:'later', label:'Move it after the meeting', feedback:'Waiting leaves people exposed.', best:false },
-  ]},
-  { id: 'drawer', title: 'Open drawer', body: 'It projects into the walkway.', urgency: 2, x: 34, y: 85, choices: [
-    { id:'close', label:'Close it now', feedback:'Obstruction removed.', best:true },
-    { id:'cone', label:'Put a warning beside it', feedback:'Close it instead of marking it.', best:false },
-    { id:'mention', label:'Mention it later', feedback:'The obstruction remains.', best:false },
-  ]},
-  { id: 'cable', title: 'Loose cable', body: 'It crosses the walking route.', urgency: 3, x: 15, y: 76, choices: [
-    { id:'reroute', label:'Unplug and reroute it', feedback:'Trip and cable strain removed.', best:true },
-    { id:'paper', label:'Cover it with paper', feedback:'Hidden is not safe.', best:false },
-    { id:'step', label:'Ask people to step over it', feedback:'The trip hazard remains.', best:false },
-  ]},
-  { id: 'files', title: 'Unstable stack', body: 'Files could fall from the desk.', urgency: 1, x: 29, y: 67, choices: [
-    { id:'store', label:'Store heavy files lower', feedback:'Stack secured.', best:true },
-    { id:'floor', label:'Put the stack on the floor', feedback:'That creates a trip hazard.', best:false },
-    { id:'steady', label:'Straighten the stack', feedback:'It can become unstable again.', best:false },
-  ]},
-  { id: 'drink', title: 'Drink near equipment', body: 'A spill could reach powered equipment.', urgency: 3, x: 94, y: 66, choices: [
-    { id:'move', label:'Move the drink away', feedback:'Liquid and equipment separated.', best:true },
-    { id:'lid', label:'Add a lid', feedback:'Safer, but the exposure remains.', best:false },
-    { id:'equipment', label:'Move the equipment', feedback:'Move the drink, not powered equipment.', best:false },
-  ]},
+export const officeHotspots = [
+  {
+    id: 'bag', label: 'Bag', title: 'Bag in the walkway', x: 49, y: 80,
+    body: 'The tote bag is in the shared walkway. Someone could catch a foot on it.',
+    cue: 'Give the bag a storage spot outside the walking route.',
+    action: 'Move the bag into storage', result: 'Bag stored · walkway clear',
+    takeaway: '“Just for a minute” is still a trip risk.',
+    learning: 'People may not notice a bag while carrying things. Clear the route instead of asking everyone to step around it.',
+  },
+  {
+    id: 'drawer', label: 'Drawer', title: 'Drawer left open', x: 35, y: 85,
+    body: 'The open drawer sticks out from the cabinet into the space people walk through.',
+    cue: 'Check that nobody is using it, then close it fully.',
+    action: 'Close the drawer', result: 'Drawer closed · obstruction removed',
+    takeaway: 'A small habit keeps a shared space clear.',
+    learning: 'Close drawers after use. A warning is not needed when you can safely remove the obstruction straight away.',
+  },
+  {
+    id: 'cable', label: 'Cable', title: 'Cable hanging beside the desk', x: 15, y: 81,
+    body: 'The loose lead hangs down beside the desk, where a foot could catch it.',
+    cue: 'Ask the equipment owner to secure the lead away from feet.',
+    action: 'Ask for the cable to be secured', result: 'Cable support request practised',
+    takeaway: 'You can help without unplugging equipment.',
+    learning: 'Keep people clear while the lead is secured. Don’t unplug unfamiliar equipment or handle a damaged cable; ask for support.',
+  },
+  {
+    id: 'files', label: 'Files', title: 'Files leaning near the edge', x: 29, y: 67,
+    body: 'Beside the laptop, a pile of files leans towards the edge of the cabinet. It could topple.',
+    cue: 'Store the files securely on a shelf, clear of the walkway.',
+    action: 'Store the files on a shelf', result: 'Files stored · edge clear',
+    takeaway: 'Give loose files a stable home.',
+    learning: 'The aim is to stop the pile toppling, not just make it look tidy. Store files securely without creating a new obstacle on the floor.',
+  },
+  {
+    id: 'drink', label: 'Drink', title: 'Drink beside the printer', x: 86.5, y: 71,
+    body: 'The cup is beside the printer. A knock could spill liquid onto the equipment.',
+    cue: 'Move the drink to a separate surface away from equipment.',
+    action: 'Move the drink away from the printer', result: 'Drink moved · equipment kept clear',
+    takeaway: 'Make space between drinks and equipment.',
+    learning: 'A lid helps with splashes, but distance also matters. Moving the drink removes the nearby spill risk without moving the printer.',
+  },
 ];
 
 export const wetDecisions = [
@@ -74,11 +86,4 @@ export const evacuationActions = [
   { id:'assembly', label:'Proceed to Zone A at Admin Field', correct:true, feedback:'Block 27 is allocated to Zone A, where the CLTE group can be accounted for.' },
   { id:'roll', label:'Remain with the group for roll call', correct:true, feedback:'Stay until officially dismissed and report anyone who may be missing.' },
   { id:'leave', label:'Leave once you reach the assembly area', correct:false, feedback:'Leaving before roll call can make someone appear unaccounted for.' },
-];
-
-export const routes = [
-  { id: 'emergency', correct: 'emergency', label: 'Serious injury', channel: `Call ${officialInfo.ambulanceNumber}, then Guard Post`, detail: 'Give the exact location. Guard Post can guide responders in.' },
-  { id: 'incident', correct: 'incident', label: 'Stable injury', channel: 'WSH Portal', detail: 'Report the incident promptly.' },
-  { id: 'near-miss', correct: 'incident', label: 'Falling box; nobody hurt', channel: 'WSH Portal · Near miss', detail: 'Record it so the cause can be fixed.' },
-  { id: 'fault', correct: 'fault', label: 'Hazard or defect', channel: `Call ${officialInfo.faultNumber} or report online`, detail: 'Report it before someone is hurt.' },
 ];

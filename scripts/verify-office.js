@@ -1,0 +1,82 @@
+// Dedicated Playwright CLI browser. Only test-browser local progress is reset.
+async (page) => {
+  const failures = [], errors = [];
+  let states = 0;
+  const assert = (value, label) => { if (!value) failures.push(label); };
+  const button = name => page.getByRole('button', { name, exact: true });
+  page.on('pageerror', error => errors.push(error.message));
+  await page.emulateMedia({ reducedMotion: 'reduce' });
+  const enter = async () => {
+    const menu = button('Toggle navigation');
+    if (await menu.isVisible() && await menu.getAttribute('aria-expanded') !== 'true') await menu.click();
+    await button('01 Hazards').click();
+  };
+  const audit = async label => {
+    states++;
+    const result = await page.evaluate(() => {
+      const root = document.querySelector('#office');
+      const visible = el => el.getBoundingClientRect().height > 0;
+      const markers = [...root.querySelectorAll('.hazard-marker')];
+      const image = root.querySelector('.scene-frame img');
+      const imageBox = image.getBoundingClientRect();
+      return {
+        overflow: document.documentElement.scrollWidth > innerWidth + 1,
+        clips: [...root.querySelectorAll('button')].filter(visible).filter(el => el.scrollWidth > el.clientWidth + 2 || el.scrollHeight > el.clientHeight + 2).map(el => el.textContent),
+        small: [...root.querySelectorAll('.hazard-story,.hazard-cue strong,.hazard-action,.hazard-result p')].some(el => parseFloat(getComputedStyle(el).fontSize) < 18),
+        targets: markers.every(el => { const r = el.getBoundingClientRect(); return r.width >= 44 && r.height >= 44; }),
+        hitTargets: markers.every(el => { const r=el.getBoundingClientRect(); const x=r.x+r.width/2, y=r.y+r.height/2; return y<70 || y>innerHeight || el.contains(document.elementFromPoint(x,y)); }),
+        image: image.complete && image.naturalWidth > 0,
+        ratio: imageBox.width / imageBox.height,
+        motion: root.querySelector('.hazard-result') ? getComputedStyle(root.querySelector('.hazard-result')).animationName : 'none',
+      };
+    });
+    assert(!result.overflow, `${label}: overflow`);
+    assert(!result.clips.length, `${label}: clips ${result.clips.join(',')}`);
+    assert(!result.small, `${label}: small text`);
+    assert(result.targets && result.hitTargets, `${label}: obscured/small markers`);
+    assert(result.image && Math.abs(result.ratio-1672/941)<.01, `${label}: missing/cropped scene`);
+    assert(result.motion === 'none', `${label}: reduced motion ignored`);
+  };
+  for (const width of [1920,1440,1024,768,390,320]) {
+    await page.setViewportSize({width,height:1000});
+    await page.evaluate(() => ['clte-safety-progress','clte-office-v1'].forEach(key => localStorage.removeItem(key)));
+    await page.reload(); await enter(); await page.evaluate(() => document.fonts.ready);
+    await page.locator('.scene-frame img').evaluate(img => img.decode());
+    assert((await page.locator('.scene-counter').innerText()).includes('0/5'), `${width}: pre-awarded progress`);
+    assert(await page.locator('.hazard-result').count() === 0, `${width}: pre-applied action`);
+    await page.locator('.hazard-picker button').last().focus(); await page.keyboard.press('Enter');
+    assert((await page.locator('.hazard-panel h3').innerText()).includes('printer'), `${width}: free navigation`);
+    await button('Try an untried hazard').click();
+    assert((await page.locator('.hazard-panel h3').innerText()).includes('Bag'), `${width}: untried hazard navigation`);
+    for (let index=0; index<5; index++) {
+      if (index>0) await button('Next hazard').click();
+      await audit(`${width}/${index}/before`);
+      assert((await page.locator('.hazard-cue').innerText()).length>25, `${width}/${index}: cue missing`);
+      await page.locator('.hazard-action').focus(); await page.keyboard.press('Space');
+      await audit(`${width}/${index}/after`);
+      assert((await page.locator('.hazard-result').innerText()).length>80, `${width}/${index}: weak feedback`);
+      await page.locator('.hazard-action').click();
+      assert((await page.locator('.scene-counter').innerText()).includes(`${index+1}/5`), `${width}/${index}: duplicate progress`);
+      assert(await page.locator('.hazard-marker.done').count() === index+1, `${width}/${index}: marker not updated`);
+      if ([1440,390].includes(width)) {
+        await page.evaluate(() => window.scrollTo(0,0));
+        await page.screenshot({path:`output/playwright/office-guided-${index}-${width}.png`,fullPage:true,animations:'disabled'});
+      }
+    }
+    assert(await page.locator('.decision-options').count() === 0, `${width}: old quiz remains`);
+    await page.reload(); await enter();
+    assert((await page.locator('.scene-counter').innerText()).includes('5/5'), `${width}: persistence failed`);
+    await button('Continue to Fire').click();
+    assert(await page.locator('#evacuation').isVisible(), `${width}: completion did not lead to Fire`);
+  }
+  await page.setViewportSize({width:1440,height:900});
+  await page.getByRole('button',{name:/Ngee Ann Polytechnic.*Home/}).click();
+  await button('Start again').click(); await button('Reset activity').click(); await enter();
+  assert((await page.locator('.scene-counter').innerText()).includes('0/5'), 'reset failed');
+  await page.evaluate(() => localStorage.setItem('clte-office-v1','{"invalid":true}'));
+  await page.reload(); await enter();
+  assert((await page.locator('.scene-counter').innerText()).includes('0/5'), 'invalid saved state not handled');
+  assert(errors.length===0, `runtime errors: ${errors.join(';')}`);
+  if (failures.length) throw new Error(failures.join('\n'));
+  return {result:'PASS',states,runtimeErrors:errors};
+}

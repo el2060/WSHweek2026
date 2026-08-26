@@ -20,7 +20,7 @@ async (page) => {
     await page.getByRole('button', { name: /Use the zebra crossing in the photo/ }).click();
     assert(await page.locator('.pov-feedback').innerText().then(text => text.includes('Stay on the walkway')), `${width}: incorrect crossing needs correction`);
     await page.getByRole('button', { name: /Stay on the walkway — do not cross here/ }).click();
-    assert(await page.locator('.pov-feedback').innerText().then(text => text.includes('Good call')), `${width}: staying on walkway is correct`);
+    assert(await page.locator('.pov-feedback.good').innerText().then(text => text.includes('Why this helps')), `${width}: staying on walkway is correct`);
     await page.screenshot({ path: `output/playwright/erc-blk56-${width}.png`, fullPage: true, animations: 'disabled' });
 
     await page.evaluate(value => localStorage.setItem('clte-safety-progress', JSON.stringify(value)), fixture);
