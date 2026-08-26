@@ -25,7 +25,7 @@ async (page) => {
   };
   for (const [width,height] of [[3778,1870],[2560,1440],[2267,1122],[1920,1080],[1440,900],[1366,768],[1024,768],[900,900],[768,1024],[390,844],[320,740]]) {
     await page.setViewportSize({ width,height });
-    await page.evaluate(() => ['clte-safety-progress','clte-guided-v1-injury','clte-guided-v1-haze','clte-reporting-v1','clte-office-v2'].forEach(key => localStorage.removeItem(key)));
+    await page.evaluate(() => ['clte-safety-progress','clte-guided-v1-injury','clte-guided-v1-haze','clte-reporting-v1','clte-office-v3'].forEach(key => localStorage.removeItem(key)));
     await page.reload(); await page.evaluate(() => document.fonts.ready);
     await check(`${width}/home`);
     if ([1920,390].includes(width)) await page.screenshot({path:`output/playwright/spacing-home-${width}.png`,fullPage:true});
@@ -50,7 +50,7 @@ async (page) => {
     if ([3778,2267,1920,1366,390].includes(width)) await page.screenshot({path:`output/playwright/spacing-office-${width}.png`,fullPage:true});
     await page.locator('.hazard-picker button').last().click(); await check(`${width}/free-navigation`);
     await page.getByRole('button',{name:'Inspect: Loose cable',exact:true}).click();
-    await button('Equipment owner').click(); await check(`${width}/office-feedback`);
+    await button('Ask for the cable to be secured away from feet').click(); await check(`${width}/office-feedback`);
     for (const chapter of ['02 Fire','03 Injury','04 Haze','05 Report']) {
       await nav(chapter); await check(`${width}/${chapter}`);
       if (chapter === '02 Fire') {

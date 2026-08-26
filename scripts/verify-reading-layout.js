@@ -16,7 +16,7 @@ async (page) => {
     await page.evaluate(value => {
       localStorage.setItem('clte-safety-progress', JSON.stringify(value));
       localStorage.removeItem('clte-reporting-v1');
-      localStorage.removeItem('clte-office-v2');
+      localStorage.removeItem('clte-office-v3');
       ['injury', 'haze'].forEach(kind => localStorage.removeItem(`clte-guided-v1-${kind}`));
     }, data);
     await page.reload();

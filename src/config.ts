@@ -19,42 +19,42 @@ export const officialInfo = {
 export const officeHotspots = [
   {
     id: 'bag', label: 'Bag', title: 'Bag in the walkway', x: 49, y: 80,
-    body: 'Someone could trip over it.', prompt: 'Choose a storage spot',
+    body: 'Someone could trip over it.', prompt: 'What should you do?',
     options: [
-      { id: 'cubby', label: 'Storage cubby', feedback: 'Out of the walkway—even a bag left briefly can trip someone.' },
-      { id: 'hook', label: 'Sturdy bag hook', feedback: 'A suitable hook keeps the bag and its straps off the walking route.' },
+      { id: 'store', label: 'Put the bag in a cupboard', correct: true, feedback: 'Keep bags and straps out of the walkway—even if you are only leaving them for a minute.' },
+      { id: 'leave', label: 'Leave the bag in the walkway', correct: false, feedback: 'Someone could trip. Put the bag in a cupboard so the walkway stays clear.' },
     ],
   },
   {
     id: 'drawer', label: 'Drawer', title: 'Drawer left open', x: 35, y: 85,
-    body: 'It blocks the path. Nobody is using it.', prompt: 'How will you get it closed?',
+    body: 'It blocks the path. Nobody is using it.', prompt: 'What should you do?',
     options: [
-      { id: 'close', label: 'Close it myself', feedback: 'A quick close removes the obstruction. Make it a habit after use.' },
-      { id: 'ask', label: 'Ask a colleague', feedback: 'Ask the nearby colleague to close it. Keep the path clear until it is shut.' },
+      { id: 'close', label: 'Close the drawer fully', correct: true, feedback: 'Close drawers after use so nobody bumps into them or trips.' },
+      { id: 'leave', label: 'Leave the drawer open', correct: false, feedback: 'Someone could walk into it. Close the drawer fully to clear the path.' },
     ],
   },
   {
     id: 'cable', label: 'Cable', title: 'Loose cable', x: 15, y: 81,
-    body: 'A foot could catch this hanging lead.', prompt: 'Who could help secure it?',
+    body: 'Someone could catch their foot on it.', prompt: 'What should you do?',
     options: [
-      { id: 'owner', label: 'Equipment owner', feedback: 'Keep others clear while it is secured. Don’t unplug unfamiliar equipment or handle damaged cables.' },
-      { id: 'facilities', label: 'Facilities team', feedback: 'Ask for help if it needs fixing. Keep others clear; don’t handle damaged cables.' },
+      { id: 'secure', label: 'Ask for the cable to be secured away from feet', correct: true, feedback: 'Keep others clear while help is arranged. Don’t handle damaged cables or unplug unfamiliar equipment.' },
+      { id: 'leave', label: 'Leave the cable hanging and step over it', correct: false, feedback: 'The next person could trip. Ask for the cable to be secured away from feet.' },
     ],
   },
   {
     id: 'files', label: 'Files', title: 'Files leaning near the edge', x: 29, y: 67,
-    body: 'This leaning pile could topple.', prompt: 'Choose a secure home',
+    body: 'The files could fall off.', prompt: 'What should you do?',
     options: [
-      { id: 'shelf', label: 'Shelf with bookends', feedback: 'Bookends support the files. Keep the shelf stable and the walkway clear.' },
-      { id: 'cupboard', label: 'Filing cupboard', feedback: 'Store them securely inside—not in a pile on the floor.' },
+      { id: 'store', label: 'Put the files inside a cupboard', correct: true, feedback: 'Store files inside the cupboard, away from the edge. Keep heavier files on lower shelves.' },
+      { id: 'leave', label: 'Leave the files leaning at the edge', correct: false, feedback: 'The files could fall on someone. Put them inside a cupboard instead.' },
     ],
   },
   {
     id: 'drink', label: 'Drink', title: 'Drink beside the printer', x: 86.5, y: 71,
-    body: 'A spill could reach the equipment.', prompt: 'Choose a separate surface',
+    body: 'A spill could damage the printer.', prompt: 'What should you do?',
     options: [
-      { id: 'table', label: 'Clear side table', feedback: 'A separate surface keeps spills away from the printer. A lid alone does not remove the risk.' },
-      { id: 'pantry', label: 'Pantry counter', feedback: 'Keep it away from appliances there too. Distance from equipment matters.' },
+      { id: 'move', label: 'Move the drink to a table away from the printer', correct: true, feedback: 'Keep drinks away from electrical equipment. A lid helps with spills but does not remove the risk.' },
+      { id: 'leave', label: 'Leave the drink beside the printer', correct: false, feedback: 'A spill could reach the printer. Move the drink to a table away from electrical equipment.' },
     ],
   },
 ];

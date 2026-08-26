@@ -21,9 +21,12 @@
 .hazard-choice { display: flex; align-items: center; justify-content: space-between; gap: .75rem; min-height: 3.25rem; padding: .8rem 1rem; border: 1px solid #819c95; border-radius: .5rem; background: #f4f2e8; color: var(--ink); font-size: var(--reading-body); font-weight: 650; line-height: 1.4; text-align: left; cursor: pointer; }
 .hazard-choice>svg { flex: none; }
 .hazard-choice:hover { border-color: var(--teal); }
-.hazard-choice.selected { background: #dbeee5; border-color: var(--teal); color: #08615c; }
-.hazard-choice-note { font-size: 1rem; line-height: 1.5; margin: .75rem 0 0; }
+.hazard-choice.selected.correct { background: #dbeee5; border-color: #08615c; color: #08615c; }
+.hazard-choice.selected.incorrect { background: #fae9e3; border-color: #9c3927; color: #873321; }
 .hazard-result { margin-top: 1rem; padding-left: 1rem; border-left: 3px solid var(--teal); }
+.hazard-result.incorrect { border-color: #9c3927; }
+.hazard-result strong { display: block; margin-bottom: .25rem; color: #08615c; font-size: var(--reading-body); line-height: 1.4; }
+.hazard-result.incorrect strong { color: #873321; }
 .hazard-result p { font-size: var(--reading-body); line-height: 1.6; margin-bottom: 0; }
 .hazard-footer { display: flex; flex-wrap: wrap; align-items: center; gap: .75rem 1rem; margin-top: 1.5rem; padding-top: 1.25rem; border-top: 1px solid var(--line); }
 .hazard-footer .scene-counter { position: static; max-width: none; width: auto; font-size: 1rem; line-height: 1.5; background: none; padding: 0; margin: 0; border: 0; box-shadow: none; color: var(--ink-2); }

@@ -37,11 +37,11 @@ The unrelated AuditLens prototype in `src/App.tsx` and `src/styles.css` is prese
 ### Guided scenario 01
 
 - `src/OfficeScene.tsx` and `src/office.css` provide a guided scene with five named hazards. Content and marker coordinates live in `src/config.ts`.
-- Each hazard has a one-line situation, two plain choices and one brief, choice-specific feedback paragraph. Both choices are safe alternatives; there is no scoring or retry loop. No drag-and-drop, object movement or decorative choice graphics. All five remain freely accessible through numbered markers or names, with Next hazard for a quick walkthrough.
+- Each hazard has a one-line situation, one clearly safe choice and one clearly unsafe choice, in familiar everyday language. Correct selections show a green check and “Correct”; unsafe selections show a warm red cross and “Not safe — choose again”, with a short explanation. No score, drag-and-drop or object movement. All five remain freely accessible through numbered markers or names, with Next hazard for a quick walkthrough.
 - Corrected image/copy mismatches: files lean on the cabinet beside the laptop, the cable hangs beside the desk, and the drink marker now points at the cup rather than the printer. The original illustration remains visible and is labelled as the starting scene.
-- The files activity teaches secure shelf storage rather than requiring staff to distinguish between straightening a stack and storing it “lower”. Cable guidance asks for support, without telling staff to unplug unfamiliar equipment.
-- Choice progress uses `clte-office-v2`, survives revisits and is cleared by Reset activity (which also clears the legacy v1 key). Earlier completion-only records do not preselect answers in this new version. Main text remains at least 18px; markers have 44px minimum tap targets. Choosing once for each hazard enables Continue to Fire.
-- `scripts/verify-office.js` checks 90 states: before selection and both choices for all five hazards at six widths. It also covers concise feedback, free/sequential navigation, keyboard use, marker hit targets, persistence, reset, malformed storage and completion.
+- The files activity contrasts putting files inside a cupboard with leaving them leaning at the edge. Cable guidance asks for support, without telling staff to unplug unfamiliar equipment.
+- Choice progress uses `clte-office-v3`, survives revisits and is cleared by Reset activity (which also clears legacy v1/v2 keys). Earlier choices do not preselect answers in this version. Main text remains at least 18px; markers have 44px minimum tap targets. Selecting the safe action for each hazard enables Continue to Fire; unsafe choices never receive completion checks.
+- `scripts/verify-office.js` checks 90 states: before selection, unsafe feedback and safe feedback for all five hazards at six widths. It also covers concise copy, free/sequential navigation, keyboard use, marker hit targets, correct-only progress, changing an answer, persistence/resume, reset, malformed/legacy storage and completion.
 
 ### Guided scenarios 03 and 04
 

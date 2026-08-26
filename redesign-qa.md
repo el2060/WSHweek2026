@@ -1,6 +1,16 @@
 # CLTE guided scenario redesign — 26 August 2026
 
-## Concise choices and feedback — latest refinement
+## Clear safe / unsafe choices — latest refinement
+
+Scenario 01 now has one clearly safe action and one clearly unsafe action per hazard, as requested. Replaced unfamiliar labels such as “storage cubby”, “sturdy bag hook” and “choose a secure home” with concrete actions: put the bag in a cupboard, close the drawer, ask for the cable to be secured, put files inside a cupboard, and move the drink away from the printer. Removed “Both options work here”.
+
+Selected safe answers show a green check and “Correct”. Selected unsafe answers show a warm red cross and “Not safe — choose again”. One short feedback paragraph explains the risk or useful takeaway; there is no movement or extra instruction panel. The frontend skill guided keeping the existing content-first layout and large text, rather than adding decorative choice cards.
+
+Only safe choices receive completion checks. Wrong answers remain editable and persist honestly; revisiting resumes at the first unfinished hazard. All hazards remain accessible in any order. New `clte-office-v3` storage avoids treating old two-safe-option selections as answers; reset clears v1/v2/v3. Existing overall scenario completion is preserved.
+
+Verified: production build; 90 focused hazard states across six widths; 462 all-page reading states including enlarged text; 209 responsive workspace states. No runtime errors, text clipping or flagged widows. Visually reviewed desktop unsafe feedback (`output/playwright/office-incorrect-1440.png`) and phone safe feedback (`output/playwright/office-guided-0-390.png`). Keyboard selection, correct-only progress, wrong-answer persistence/resume, legacy state, reset and continuation passed.
+
+## Concise choices and feedback — previous refinement
 
 Following the user's final clarification, Scenario 01 is deliberately simple: a short situation, two plain text choices and a single feedback paragraph. There is no drag/drop, object movement, extra illustration, scoring or retry loop. Both choices are safe alternatives, with feedback that changes according to the selected action. The existing office image and named markers remain. The frontend skill's content hierarchy guided removal of the repeated green instruction panel, duplicate outcome headings, long captions and verbose setup copy; font sizes were not reduced.
 
