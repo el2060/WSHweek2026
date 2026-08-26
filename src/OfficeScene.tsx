@@ -3,7 +3,7 @@ import { ArrowLeft, ArrowRight, Check, X } from 'lucide-react';
 import { officeHotspots } from './config';
 import { ReadingText } from './ReadingText';
 
-// One short situation, one safe choice, one unsafe choice and brief feedback.
+// One everyday situation, a tempting quick fix versus a safer action, and brief feedback.
 // No movement, scoring, drag-and-drop or repeated instruction panel.
 const storageKey = 'clte-office-v3';
 export function clearOfficeProgress() { try { ['clte-office-v1', 'clte-office-v2', storageKey].forEach(key => localStorage.removeItem(key)); } catch { /* Optional storage. */ } }
@@ -53,7 +53,7 @@ export default function OfficeScene({ onComplete }: { onComplete: () => void }) 
             {active.options.map(option => <button className={`hazard-choice ${selected?.id === option.id ? `selected ${option.correct ? 'correct' : 'incorrect'}` : ''}`} key={option.id} aria-pressed={selected?.id === option.id} onClick={() => applyChoice(option.id)}><span>{option.label}</span>{selected?.id === option.id && (option.correct ? <Check size={20} aria-hidden="true"/> : <X size={20} aria-hidden="true"/>)}</button>)}
           </div>
         </div>
-        <div className="hazard-feedback" role="status" aria-live="polite" aria-atomic="true">{selected && <div className={`hazard-result ${selected.correct ? 'correct' : 'incorrect'}`}><strong>{selected.correct ? 'Correct' : 'Not safe — choose again'}</strong><p><ReadingText>{selected.feedback}</ReadingText></p></div>}</div>
+        <div className="hazard-feedback" role="status" aria-live="polite" aria-atomic="true">{selected && <div className={`hazard-result ${selected.correct ? 'correct' : 'incorrect'}`}><strong>{selected.correct ? 'Correct' : 'Not quite — try again'}</strong><p><ReadingText>{selected.feedback}</ReadingText></p></div>}</div>
         <div className="hazard-footer"><p className="scene-counter">{count}/5 completed</p><div>{step > 0 && <button className="text-button" onClick={() => choose(step - 1)}><ArrowLeft size={18}/>Back</button>}{allDone ? <button className="primary" onClick={onComplete}>Continue to Fire <ArrowRight size={19}/></button> : <button className="secondary" onClick={next}>{step < 4 ? 'Next hazard' : 'Review remaining'}<ArrowRight size={19}/></button>}</div></div>
       </div>
     </div>

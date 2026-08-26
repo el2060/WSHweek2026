@@ -1,6 +1,40 @@
 # CLTE guided scenario redesign — 26 August 2026
 
-## Clear safe / unsafe choices — latest refinement
+## All-scenario immersion and concise decisions — 27 August 2026
+
+Reviewed all five scenarios. Retained Scenario 01's meaningful two-choice hazard interactions and on-image markers, and Scenario 02's full-photo route/parallax. Replaced the passive mechanics in Injury, Haze and Reporting with a shared illustrated decision scene. Each now has one short setup, two practical options, and one immediate explanation. Removed duplicated headings/cues, both-valid plan buttons, token movement, keep-clear toggle, scripted call blocks, pre-labelled report destinations and reveal-only stamps. Report-practice hints are now optional disclosures; fields still start blank.
+
+Visual thesis: the campus scene fills the workspace, with one compact, high-contrast decision panel. Content plan: small scenario heading, one situation/question, two choices, feedback, next and free step navigation. Interaction thesis: stable scenes and immediate selection feedback; no decorative motion or forced sequence. The frontend skill informed the image-led composition and removal of repeated UI. Reused all four relevant illustrations without generating or changing assets.
+
+New `clte-decisions-v1-{injury,haze,reporting}` records store actual choices; prior passive completions cannot preselect new answers. Only correct choices count, but every step remains accessible. Incorrect answers persist honestly; revisits find the first unfinished decision. Reset clears both storage generations. No real calls, uploads or report submissions are introduced.
+
+Safety wording checked against [HealthHub / MOH haze guidance](https://www.healthhub.sg/highlights-and-insights/health-safety-advisory/how-to-protect-yourself-against-haze) and [SCDF emergency medical services](https://www.scdf.gov.sg/home/about-scdf/emergency-medical-services). The asthma case encourages prompt medical advice for symptoms, not waiting for them to persist. Breathing difficulty directs to 995 without waiting for an air-quality reading. Campus Guard Post/fault contacts and reporting channels remain as supplied in project configuration. Longer guidance and official links remain available through Quick reference.
+
+Verified: 231 focused illustrated-decision states, 546 all-page reading states and 209 responsive workspace states, including enlarged text and widths from 320 to 3778px. Initial decision panels contain at most 39 words; feedback is capped at 28 words. Correct/incorrect choices, keyboard use, free navigation, persisted answers, legacy records, reset and continuation all passed with no runtime errors. ERC regressions passed for the Block 56 warning, blank practice answers and final completion flow. Production build and diff checks passed.
+
+Visually reviewed desktop Injury, Haze, falling-box and chair scenes plus phone layouts. The people, fallen box and cracked chair leg remain visible beside the decision panel. Fixed mobile navigation staying open when selecting the current scenario. Changing Reporting situations on phones now brings the new illustration into view, rather than jumping past it. Final captures: `output/playwright/breezy-{injury,haze,reporting}-*-{1440,390}.png`.
+
+## Scenario 02 immersive photo restoration — 27 August 2026
+
+Visual thesis: the real evacuation route fills the screen, with calm, high-contrast reading surfaces layered over it. Content plan: compact route status, location/context and photo views, one decision panel, then checkpoint navigation. Interaction thesis: gentle cursor-following photo depth, a short photo fade between views, and stable text/controls. This follows the frontend skill's image-led composition while respecting the user's preference for readable choices and minimal clutter.
+
+`src/fire.css` restores edge-to-edge photography below the fixed header, replacing the small photo / large quiz split. Thumbnails now sit beside the route context. The cream decision panel is limited to 30rem on desktop; grid flow lets feedback and enlarged text expand without overlap. Phones/tablets use a full-width photo stage followed by the decision panel and wrapped checkpoint navigation. Photo and text remain accessible; the Block 56 keep-to-walkway warning is retained prominently.
+
+The original pointer handlers were present but later CSS set the photo transform to none. Restored a bounded desktop-only movement (±9px / ±6px, ±0.4° tilt) with overscan to prevent exposed image edges. Reduced motion and coarse/touch pointers disable the effect; controls never move. Review remaining checkpoints now also resets the photo index, preventing a previous gallery view from carrying into another checkpoint. Route wording, choices, map and learning takeaways are unchanged apart from shorter interface labels.
+
+Verified: 281 focused Fire states, including 112 photo loads (all 14 photos across eight viewport/text-size settings), correct/incorrect responses, keyboard gallery selection, route map, completion, full-width image geometry, stable panels during parallax and reduced-motion/mobile stillness. Also passed 462 all-page reading states and 209 workspace states. Fixed an enlarged-text “Approach” label overflow with content-sized wrapping navigation; the last phone row fills its available width. Removed the Fire page-entry slide so only its photo moves. Production build passed. Final previews: `output/playwright/fire-immersive-start-1440.png` and `fire-immersive-start-390.png`; Block 56 and roll-call captures are alongside them.
+
+## Everyday shortcuts versus safer actions — latest refinement
+
+The user found the literal “fix it / leave it” choices too obvious. All five hazards now offer a plausible shortcut and a safer action, with one short context cue: the bag owner returns soon; another file is needed shortly; the cable’s equipment is unfamiliar; the files are heavy; the drink is beside an ongoing print job. Each feedback explains the overlooked risk, not just whether the answer is right. The safer answer appears first for Bag/Files and second for Drawer/Cable/Drink, with stable ordering and no randomisation.
+
+Design thesis: retain the calm, warm office workspace and large text. Content plan: one context sentence, two brief actions, one takeaway, then Next. Interaction thesis: retain static check/cross and immediate feedback; add no motion, dragging or extra panels, as requested. The frontend skill informed restraint and scan-friendly wording rather than a visual overhaul. Wrong-choice feedback is gently labelled “Not quite — try again”.
+
+Completion and free navigation are unchanged. Existing safe-answer IDs remain valid; replaced shortcut IDs do not inherit old selections. No reset of overall scenario progress.
+
+Verified all five questions and both options: 90 focused hazard states, 462 all-page reading states (including enlarged text), and 209 responsive workspace states passed, with no runtime errors, clipping or flagged widows. Production build and diff checks passed. Visually reviewed the updated desktop Drawer/Files and phone Cable/Drink feedback screens; the existing large-text layout accommodates the new wording without extra UI.
+
+## Clear safe / unsafe choices — previous refinement
 
 Scenario 01 now has one clearly safe action and one clearly unsafe action per hazard, as requested. Replaced unfamiliar labels such as “storage cubby”, “sturdy bag hook” and “choose a secure home” with concrete actions: put the bag in a cupboard, close the drawer, ask for the cable to be secured, put files inside a cupboard, and move the drink away from the printer. Removed “Both options work here”.
 

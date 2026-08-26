@@ -1,6 +1,8 @@
 // Dedicated Playwright CLI browser. Only test-browser local progress is reset.
 async (page) => {
   const failures = [], errors = [];
+  // Explicit expected positions: do not assume the first answer is always correct.
+  const correctPositions = [0,1,1,0,1];
   let states = 0;
   const assert = (value, label) => { if (!value) failures.push(label); };
   const button = name => page.getByRole('button', { name, exact: true });
@@ -61,7 +63,7 @@ async (page) => {
         await page.screenshot({path:`output/playwright/office-concise-cable-before-${width}.png`,fullPage:true});
       }
       let priorFeedback = '';
-      for (const option of [1,0]) {
+      for (const option of [1-correctPositions[index],correctPositions[index]]) {
         await page.locator('.hazard-choice').nth(option).focus(); await page.keyboard.press('Space');
         await audit(`${width}/${index}/choice-${option}`);
         const feedback = await page.locator('.hazard-result p').innerText();
@@ -70,8 +72,8 @@ async (page) => {
         priorFeedback=feedback;
         assert(await page.locator('[draggable="true"],.hazard-placed-token,.hazard-cue').count()===0, `${width}/${index}: unnecessary interaction or duplicate instruction remains`);
         assert(await page.locator('.hazard-choice').nth(option).getAttribute('aria-pressed')==='true', `${width}/${index}: choice not selected`);
-        const correct = option===0;
-        assert((await page.locator('.hazard-result strong').innerText())===(correct?'Correct':'Not safe — choose again'), `${width}/${index}: feedback label`);
+        const correct = option===correctPositions[index];
+        assert((await page.locator('.hazard-result strong').innerText())===(correct?'Correct':'Not quite — try again'), `${width}/${index}: feedback label`);
         assert(await page.locator(`.hazard-choice.selected.${correct?'correct':'incorrect'} svg.lucide-${correct?'check':'x'}`).count()===1, `${width}/${index}: missing right/wrong icon`);
         assert((await page.locator('.scene-counter').innerText()).includes(`${index+(correct?1:0)}/5`), `${width}/${index}: incorrect progress awarded`);
         assert(await page.locator('.hazard-marker.done').count()===index+(correct?1:0), `${width}/${index}: wrong choice marked done`);
@@ -89,14 +91,14 @@ async (page) => {
     }
     assert(await page.locator('.decision-options').count() === 0, `${width}: old quiz remains`);
     // Changing a correct answer must not leave stale completion or green markers.
-    await page.locator('.hazard-choice').nth(1).click();
+    await page.locator('.hazard-choice').nth(1-correctPositions[4]).click();
     assert(await button('Continue to Fire').count()===0, `${width}: wrong answer can complete`);
     await page.reload(); await enter();
     assert((await page.locator('.hazard-panel h3').innerText()).includes('printer'), `${width}: resume did not find remaining hazard`);
     assert((await page.locator('.scene-counter').innerText()).includes('4/5'), `${width}: persisted wrong answer counted`);
     assert(await page.locator('.hazard-choice.selected.incorrect').count()===1, `${width}: persisted wrong answer lost`);
     await button('Review remaining').click();
-    await page.locator('.hazard-choice').first().click();
+    await page.locator('.hazard-choice').nth(correctPositions[4]).click();
     await page.reload(); await enter();
     assert((await page.locator('.scene-counter').innerText()).includes('5/5'), `${width}: persistence failed`);
     await button('Continue to Fire').click();
@@ -116,6 +118,10 @@ async (page) => {
   await page.reload(); await enter();
   assert((await page.locator('.scene-counter').innerText()).includes('0/5'), 'legacy choices pre-awarded progress');
   assert(await page.locator('.hazard-choice[aria-pressed="true"]').count()===0, 'legacy choices pre-selected');
+  await page.evaluate(() => localStorage.setItem('clte-office-v3',JSON.stringify({bag:'leave',drawer:'close',cable:'leave',files:'store',drink:'leave'})));
+  await page.reload(); await enter();
+  assert((await page.locator('.scene-counter').innerText()).includes('2/5'), 'valid safe answers should survive copy updates');
+  assert(await page.locator('.hazard-choice[aria-pressed="true"]').count()===0, 'replaced shortcuts should not inherit an old answer');
   assert(errors.length===0, `runtime errors: ${errors.join(';')}`);
   if (failures.length) throw new Error(failures.join('\n'));
   return {result:'PASS',states,runtimeErrors:errors};

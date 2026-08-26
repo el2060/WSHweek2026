@@ -1,0 +1,136 @@
+/* Scenario 02: real route photography is the canvas, not a thumbnail beside a quiz.
+   Keep copy in normal grid flow so feedback and enlarged text never overlap. */
+.view-transition:has(>.pov-response) { animation: none; }
+.app-shell .pov-response {
+  --fire-header: 72px;
+  --fire-gutter: max(3vw, calc((100vw - 96rem) / 2));
+  --tilt-x: 0deg;
+  --tilt-y: 0deg;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(24rem, 30rem);
+  grid-template-rows: auto minmax(24rem, 1fr) auto;
+  grid-template-areas: 'hud hud' 'context decision' 'rail rail';
+  align-content: stretch;
+  gap: 1.5rem 3rem;
+  min-height: 100svh;
+  width: 100%;
+  max-width: none;
+  padding: calc(var(--fire-header) + 1.5rem) var(--fire-gutter) 1.25rem;
+  background: #0b242a;
+}
+.pov-response .pov-camera,
+.pov-response .pov-shade {
+  position: absolute;
+  grid-area: auto;
+  inset: var(--fire-header) 0 0;
+  width: auto;
+  height: auto;
+  border-radius: 0;
+  pointer-events: none;
+}
+.pov-response .pov-camera { z-index: 0; perspective: 1400px; }
+.pov-response .pov-camera img {
+  display: block;
+  width: 100%; height: 100%; margin: 0;
+  object-fit: cover; object-position: center;
+  filter: none; transform: none;
+  animation: firePhotoIn .4s ease-out both;
+  transition: transform .65s ease-out;
+}
+.pov-response .pov-shade {
+  display: block; z-index: 1;
+  background: linear-gradient(180deg, #061a2080 0%, #061a201a 25%, transparent 45%, #061a20a6 100%),
+    linear-gradient(90deg, #061a2026, transparent 70%);
+}
+.pov-response .pov-hud { position: relative; inset: auto; z-index: 3; align-items: start; gap: 1rem; }
+.pov-response .pov-status { max-width: 27rem; padding: .625rem 1rem; border-left: 2px solid #8be5d7; background: #09252ddb; border-radius: 0 .5rem .5rem 0; }
+.pov-response .pov-status>span { color: #b8eee2; letter-spacing: .1em; }
+.pov-response .pov-status>small { display: block; color: #e0eeeb; }
+.pov-response .pov-tools button { width: auto; min-height: 44px; padding: .65rem 1rem; background: #09252de8; font-size: 1rem; }
+.pov-context {
+  position: relative; z-index: 3; grid-area: context;
+  align-self: end; min-width: 0; max-width: 34rem;
+  padding: 1.25rem;
+  border-radius: .75rem;
+  background: #082128e6;
+}
+.pov-response .pov-location { position: static; width: auto; min-width: 0; text-shadow: none; }
+.pov-response .pov-location h2 { font-size: clamp(2rem, 3.2vw, 3.25rem); line-height: 1.12; letter-spacing: -.04em; margin-bottom: .75rem; }
+.pov-response .pov-location .eyebrow { color: #b8eee2; margin-bottom: .625rem; }
+.pov-response .pov-location>p:not(.eyebrow) { display: block; max-width: 42ch; color: #f4f6f2; font-size: var(--reading-body); line-height: 1.5; font-weight: 500; }
+.pov-response .route-photo-cue { position: static; margin: 0 0 1rem; padding: .625rem .75rem; border-radius: .375rem; font-size: 1rem; }
+.pov-response .pov-scene-gallery { border: 0; padding: 1rem 0 0; max-width: 27rem; }
+.pov-response .pov-scene-gallery-head,
+.pov-response .pov-scene-gallery-head small { color: #e0eeeb; font-size: .9375rem; line-height: 1.4; }
+.pov-response .pov-scene-thumbnails { margin-top: .625rem; gap: .625rem; }
+.pov-response .pov-scene-thumbnails button { height: 4.25rem; border-radius: .375rem; border-color: #ffffff80; }
+.pov-response .pov-scene-thumbnails button.active { border-color: #9effe8; box-shadow: 0 0 0 2px #09252d; }
+.pov-response .pov-scene-thumbnails button span { font-size: .8125rem; }
+.pov-response .pov-decision {
+  position: relative; inset: auto; z-index: 3; grid-area: decision;
+  align-self: end; width: 100%; min-height: 0; max-height: none;
+  padding: 1.5rem; overflow: visible;
+  border: 1px solid #ffffff80; border-radius: .875rem;
+  background: #fffdf7; color: var(--ink);
+  box-shadow: 0 8px 36px #061a2033;
+}
+.pov-response .pov-decision-head { grid-template-columns: 2.5rem minmax(0, 1fr); gap: .75rem; padding-bottom: 1rem; }
+.pov-response .pov-decision-head>span { width: 2.5rem; height: 2.5rem; }
+.pov-response .pov-decision-head p { font-size: .8125rem; }
+.pov-response .pov-decision-head h3 { font-size: var(--reading-panel); line-height: 1.2; }
+.pov-response .pov-choices button { min-height: 3.5rem; grid-template-columns: 1.75rem minmax(0, 1fr); gap: .75rem; padding: .875rem .25rem; transition: background .15s ease; }
+.pov-response .pov-choices button>span { width: 1.75rem; height: 1.75rem; }
+.pov-response .pov-choices button>strong { font-size: var(--reading-body); line-height: 1.45; }
+.pov-response .pov-choices button:hover:not(.selected) { background: #f0ede4; }
+.pov-response .pov-feedback { margin-top: 1rem; padding: .875rem; }
+.pov-response .pov-feedback>div { min-width: 0; }
+.pov-response .pov-feedback p { font-size: var(--reading-body); line-height: 1.5; }
+.pov-response .pov-actions { position: static; margin: 1.125rem 0 0; padding: 0; flex-wrap: wrap; gap: .75rem; background: none; }
+.pov-response .pov-actions button { font-size: 1.0625rem; min-height: 3rem; height: auto; }
+.pov-response .pov-stage-rail { position: relative; inset: auto; z-index: 3; grid-area: rail; height: auto; margin: 0; gap: .5rem; overflow: visible; }
+.pov-response .pov-stage-rail button { height: auto; min-height: 3.25rem; min-width: 0; gap: .5rem; padding: .625rem; background: #09252de8; border-color: #ffffff73; border-radius: .5rem; transform: none; }
+.pov-response .pov-stage-rail button.active { background: #08665e; border-color: #b8eee2; }
+.pov-response .pov-stage-rail button strong { font-size: 1rem; line-height: 1.4; }
+.pov-response button:focus-visible { outline: 3px solid #fff0a7; outline-offset: 3px; }
+.pov-response .pov-decision button:focus-visible { outline-color: #8a5100; }
+@keyframes firePhotoIn { from { opacity: .6; } to { opacity: 1; } }
+@media(min-width: 1440px) { .app-shell .pov-response { --fire-header: 4.5rem; } }
+/* Only the photograph moves. Copy, navigation and choices stay stable. */
+@media(min-width: 1101px) and (hover: hover) and (pointer: fine) and (prefers-reduced-motion: no-preference) {
+  .pov-response .pov-camera img { transform: translate3d(var(--look-x), var(--look-y), 0) rotateX(var(--tilt-x)) rotateY(var(--tilt-y)) scale(1.045); will-change: transform; }
+}
+/* On smaller screens the full-width photograph spans the HUD and context rows.
+   Decisions sit below it, with natural page scrolling instead of an inner scrollbox. */
+@media(max-width: 1100px) {
+  .app-shell .pov-response {
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-rows: auto minmax(23rem, auto) auto auto;
+    grid-template-areas: 'hud' 'context' 'decision' 'rail';
+    padding: var(--fire-header) 0 0; gap: 0;
+  }
+  .pov-response .pov-camera,.pov-response .pov-shade { grid-area: 1 / 1 / 3 / 2; inset: 0; }
+  .pov-response .pov-camera img { object-position: 46% center; transform: none; }
+  .pov-response .pov-shade { background: linear-gradient(180deg, #061a20b3, transparent 35%, #061a2099 100%); }
+  .pov-response .pov-hud { margin: 1.25rem; }
+  .pov-context { margin: 1.25rem; width: calc(100% - 2.5rem); max-width: 36rem; padding: 1rem; }
+  .pov-response .pov-decision { padding: 1.5rem max(1.25rem, calc((100vw - 46rem) / 2)); border-radius: 0; border: 0; box-shadow: none; }
+  .pov-response .pov-stage-rail { display: flex; flex-wrap: wrap; padding: 1rem 1.25rem; gap: .5rem; }
+  .pov-response .pov-stage-rail button { flex: 1 1 6rem; min-width: min(100%,6rem); flex-direction: column; padding: .625rem .25rem; }
+}
+@media(max-width: 850px) { .app-shell .pov-response { --fire-header: 64px; } }
+@media(max-width: 600px) {
+  .app-shell .pov-response { grid-template-rows: auto minmax(22rem, auto) auto auto; }
+  .pov-response .pov-hud { margin: 1rem; flex-wrap: wrap; }
+  .pov-response .pov-status { padding: .5rem .75rem; }
+  .pov-response .pov-status>span,.pov-response .pov-status>small { font-size: .8125rem; }
+  .pov-response .pov-status>strong { font-size: 1.125rem; }
+  .pov-response .pov-tools button { padding: .5rem .75rem; font-size: .9375rem; }
+  .pov-context { margin: 1rem; width: calc(100% - 2rem); }
+  .pov-response .pov-location h2 { font-size: 2rem; }
+  .pov-response .pov-decision { padding: 1.5rem 1.125rem; }
+  .pov-response .pov-stage-rail { padding: 1rem; }
+  .pov-response .pov-stage-rail button strong { font-size: .875rem; }
+}
+@media(prefers-reduced-motion: reduce) {
+  .pov-response .pov-camera img { animation: none; transition: none; transform: none; }
+}

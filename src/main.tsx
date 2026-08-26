@@ -7,6 +7,8 @@ import './reading.css';
 import './workspace.css';
 import './reporting.css';
 import './office.css';
+import './fire.css';
+import './journey.css';
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode><App /></React.StrictMode>,

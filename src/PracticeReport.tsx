@@ -36,12 +36,12 @@ export default function PracticeReport({ onComplete }: { onComplete: () => void 
     previewRef.current?.focus({ preventScroll: true });
     previewRef.current?.scrollIntoView({ behavior: 'instant', block: 'start' });
   }, [review]);
-  const choices = (label: string, key: keyof typeof data, items: string[]) => <fieldset className="choice-field" aria-describedby={`practice-hint-${key}`}><legend>{label}</legend><p id={`practice-hint-${key}`} className="practice-choice-cue"><ReadingText>{choiceHints[key]}</ReadingText></p><div>{items.map(item => <button type="button" key={item} aria-pressed={data[key] === item} className={data[key] === item ? 'selected' : ''} onClick={() => choose(key, item)}>{data[key] === item && <Check/>}<span>{item}</span></button>)}</div></fieldset>;
+  const choices = (label: string, key: keyof typeof data, items: string[]) => <fieldset className="choice-field"><legend>{label}</legend><div>{items.map(item => <button type="button" key={item} aria-pressed={data[key] === item} className={data[key] === item ? 'selected' : ''} onClick={() => choose(key, item)}>{data[key] === item && <Check/>}<span>{item}</span></button>)}</div><details className="practice-hint"><summary>Hint</summary><p className="practice-choice-cue"><ReadingText>{choiceHints[key]}</ReadingText></p></details></fieldset>;
   const exampleButton = (key: keyof typeof examples, label: string) => <button type="button" className="text-button practice-example" onClick={() => choose(key, examples[key])}>Use example {label}</button>;
   const display = (value: string) => value.trim() || 'Not entered yet';
 
   return <section className="practice mock-report" id="practice">
-    <div className="simulation-banner"><Info/><span><strong>Practice only</strong> · Nothing is submitted. Use the case details below.</span></div>
+    <div className="simulation-banner"><Info/><span><strong>Practice only</strong> · Nothing is submitted.</span></div>
     <div className="practice-case"><strong>Your practice case</strong><p><ReadingText>27 April, wet weather: a student slips on the walkway beside Block 73 and has a minor injury. You check on them, keep others clear and arrange first-aid support.</ReadingText></p><span>Use these case details. No names or personal contact details needed.</span></div>
     <div className="mock-shell">
       <aside className="mock-steps"><p className="eyebrow">Quick report</p><h3>Wet walkway</h3>{['Type', 'Impact', 'Details'].map((label, index) => <button key={label} aria-current={step === index ? 'step' : undefined} onClick={() => changeStep(index)} className={`${step === index ? 'current' : ''} ${stepReady[index] ? 'done' : ''}`}><span>{stepReady[index] ? <Check/> : index + 1}</span>{label}</button>)}</aside>

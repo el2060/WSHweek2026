@@ -15,9 +15,9 @@ async (page) => {
   const seed = async data => {
     await page.evaluate(value => {
       localStorage.setItem('clte-safety-progress', JSON.stringify(value));
-      localStorage.removeItem('clte-reporting-v1');
+      localStorage.removeItem('clte-decisions-v1-reporting');
       localStorage.removeItem('clte-office-v3');
-      ['injury', 'haze'].forEach(kind => localStorage.removeItem(`clte-guided-v1-${kind}`));
+      ['injury', 'haze'].forEach(kind => localStorage.removeItem(`clte-decisions-v1-${kind}`));
     }, data);
     await page.reload();
   };
@@ -34,7 +34,7 @@ async (page) => {
         const controls = [...document.querySelectorAll('main button, main a')].filter(visible);
         const clipped = controls.filter(el => el.scrollWidth > el.clientWidth + 2 || el.scrollHeight > el.clientHeight + 2).map(el => el.textContent.trim());
         const selectors = '.tagline,.scene-heading>p:last-child,.guided-heading>p:last-child,.moment-cue,.moment-takeaway p,.help-practice blockquote,.hazard-story,.hazard-prompt,.hazard-choice,.hazard-result p,.practice-choice-cue,.pov-location>p:not(.eyebrow),.pov-choices button>strong,.pov-feedback p,.report-story,.report-cue strong,.report-ticket p,.report-takeaway p,.choice-field button,.mock-input input,.mock-input textarea,.mock-preview dd,.guide-focus li,.practice-case>p,.completion>p:not(.eyebrow),.completion-review p';
-        const small = [...document.querySelectorAll(selectors)].filter(visible).filter(el => parseFloat(getComputedStyle(el).fontSize) < 18).map(el => el.textContent);
+        const small = [...document.querySelectorAll(selectors+',.journey-story,.journey-choices button,.journey-feedback p,.journey-reference li')].filter(visible).filter(el => parseFloat(getComputedStyle(el).fontSize) < 18).map(el => el.textContent);
         // Diagnostic: flag long prose with a single-word final line for manual review.
         const orphans = [...document.querySelectorAll('main p,main h1,main h2,main h3')].filter(visible).flatMap(el => {
           if (el.textContent.trim().split(/\s+/).length < 7) return [];
@@ -79,19 +79,23 @@ async (page) => {
       await page.locator('.pov-choices button').first().click(); await audit(`fire-${index}-feedback`, [0, 3].includes(index));
     }
     await button('Route map').click(); await audit('route-map'); await button('Close route map').click();
-    for (const [chapter, prefix] of [['03 Injury', 'injury'], ['04 Haze', 'haze']]) {
+    for (const [chapter, prefix, correct] of [['03 Injury', 'injury', [1,0,1]], ['04 Haze', 'haze', [0,1,0]]]) {
       await nav(chapter);
       for (let index = 0; index < 3; index++) {
-        await page.locator('.moment-nav button').nth(index).click(); await audit(`${prefix}-${index}`, index === 0);
-        const action = page.locator('.check-in-action,.keep-clear-control,.practice-action,.plan-controls button,.shelter-interaction button').first();
-        await action.click(); await audit(`${prefix}-${index}-feedback`, index === 2);
+        await page.locator('.journey-nav button').nth(index).click(); await audit(`${prefix}-${index}`, index === 0);
+        await page.locator('.journey-choices button').nth(1-correct[index]).click(); await audit(`${prefix}-${index}-incorrect`);
+        await page.locator('.journey-choices button').nth(correct[index]).click(); await audit(`${prefix}-${index}-feedback`, index === 2);
       }
+      await page.locator('.journey-reference summary').click(); await audit(`${prefix}-reference`);
+      await page.locator('.journey-reference summary').click();
     }
     await nav('05 Report');
     for (let index = 0; index < 4; index++) {
-      await page.locator('.report-moments button').nth(index).click();
+      await page.locator('.journey-nav button').nth(index).click();
       await audit(`report-${index}`);
-      await page.locator('.report-action').click(); await audit(`report-${index}-feedback`, index === 0);
+      const correct = [0,1,0,1][index];
+      await page.locator('.journey-choices button').nth(1-correct).click(); await audit(`report-${index}-incorrect`);
+      await page.locator('.journey-choices button').nth(correct).click(); await audit(`report-${index}-feedback`, index === 0);
     }
     await button('Continue to report practice').click(); await audit('practice-type', true);
     await button('Incident').click(); await button('Fall, trip and slip').click(); await audit('practice-type-selected');
