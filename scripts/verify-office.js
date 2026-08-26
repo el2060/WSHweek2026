@@ -22,7 +22,7 @@ async (page) => {
       return {
         overflow: document.documentElement.scrollWidth > innerWidth + 1,
         clips: [...root.querySelectorAll('button')].filter(visible).filter(el => el.scrollWidth > el.clientWidth + 2 || el.scrollHeight > el.clientHeight + 2).map(el => el.textContent),
-        small: [...root.querySelectorAll('.hazard-story,.hazard-cue strong,.hazard-action,.hazard-result p')].some(el => parseFloat(getComputedStyle(el).fontSize) < 18),
+        small: [...root.querySelectorAll('.hazard-story,.hazard-prompt,.hazard-choice,.hazard-result p')].some(el => parseFloat(getComputedStyle(el).fontSize) < 18),
         targets: markers.every(el => { const r = el.getBoundingClientRect(); return r.width >= 44 && r.height >= 44; }),
         hitTargets: markers.every(el => { const r=el.getBoundingClientRect(); const x=r.x+r.width/2, y=r.y+r.height/2; return y<70 || y>innerHeight || el.contains(document.elementFromPoint(x,y)); }),
         image: image.complete && image.naturalWidth > 0,
@@ -39,7 +39,7 @@ async (page) => {
   };
   for (const width of [1920,1440,1024,768,390,320]) {
     await page.setViewportSize({width,height:1000});
-    await page.evaluate(() => ['clte-safety-progress','clte-office-v1'].forEach(key => localStorage.removeItem(key)));
+    await page.evaluate(() => ['clte-safety-progress','clte-office-v2'].forEach(key => localStorage.removeItem(key)));
     await page.reload(); await enter(); await page.evaluate(() => document.fonts.ready);
     await page.locator('.scene-frame img').evaluate(img => img.decode());
     assert((await page.locator('.scene-counter').innerText()).includes('0/5'), `${width}: pre-awarded progress`);
@@ -51,11 +51,26 @@ async (page) => {
     for (let index=0; index<5; index++) {
       if (index>0) await button('Next hazard').click();
       await audit(`${width}/${index}/before`);
-      assert((await page.locator('.hazard-cue').innerText()).length>25, `${width}/${index}: cue missing`);
-      await page.locator('.hazard-action').focus(); await page.keyboard.press('Space');
-      await audit(`${width}/${index}/after`);
-      assert((await page.locator('.hazard-result').innerText()).length>80, `${width}/${index}: weak feedback`);
-      await page.locator('.hazard-action').click();
+      assert((await page.locator('.hazard-prompt').innerText()).length>10, `${width}/${index}: prompt missing`);
+      assert(await page.locator('.hazard-choice').count() === 2, `${width}/${index}: meaningful alternatives missing`);
+      assert(await page.locator('.hazard-choice[aria-pressed="true"]').count() === 0, `${width}/${index}: preselected answer`);
+      const panelWords = (await page.locator('.hazard-panel').innerText()).trim().split(/\s+/).length;
+      assert(panelWords <= 65, `${width}/${index}: wordy initial panel (${panelWords})`);
+      if ([1440,390].includes(width) && index===2) {
+        await page.evaluate(() => window.scrollTo(0,0));
+        await page.screenshot({path:`output/playwright/office-concise-cable-before-${width}.png`,fullPage:true});
+      }
+      let priorFeedback = '';
+      for (let option=0; option<2; option++) {
+        await page.locator('.hazard-choice').nth(option).focus(); await page.keyboard.press('Space');
+        await audit(`${width}/${index}/choice-${option}`);
+        const feedback = await page.locator('.hazard-result p').innerText();
+        assert(feedback.length>35 && feedback.trim().split(/\s+/).length<=26, `${width}/${index}: feedback should be useful and brief`);
+        assert(feedback!==priorFeedback, `${width}/${index}: choice did not change feedback`);
+        priorFeedback=feedback;
+        assert(await page.locator('[draggable="true"],.hazard-placed-token,.hazard-cue').count()===0, `${width}/${index}: unnecessary interaction or duplicate instruction remains`);
+        assert(await page.locator('.hazard-choice').nth(option).getAttribute('aria-pressed')==='true', `${width}/${index}: choice not selected`);
+      }
       assert((await page.locator('.scene-counter').innerText()).includes(`${index+1}/5`), `${width}/${index}: duplicate progress`);
       assert(await page.locator('.hazard-marker.done').count() === index+1, `${width}/${index}: marker not updated`);
       if ([1440,390].includes(width)) {
@@ -73,7 +88,7 @@ async (page) => {
   await page.getByRole('button',{name:/Ngee Ann Polytechnic.*Home/}).click();
   await button('Start again').click(); await button('Reset activity').click(); await enter();
   assert((await page.locator('.scene-counter').innerText()).includes('0/5'), 'reset failed');
-  await page.evaluate(() => localStorage.setItem('clte-office-v1','{"invalid":true}'));
+  await page.evaluate(() => localStorage.setItem('clte-office-v2','{"invalid":true}'));
   await page.reload(); await enter();
   assert((await page.locator('.scene-counter').innerText()).includes('0/5'), 'invalid saved state not handled');
   assert(errors.length===0, `runtime errors: ${errors.join(';')}`);

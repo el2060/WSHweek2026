@@ -16,21 +16,14 @@
 .hazard-panel>.eyebrow { margin-bottom: .75rem; }
 .hazard-panel h3 { font-size: var(--reading-panel); line-height: 1.25; margin: 0 0 .875rem; scroll-margin-top: 6rem; }
 .hazard-story { font-size: var(--reading-body); line-height: 1.6; margin-bottom: 1.25rem; }
-.hazard-cue { display: flex; align-items: start; gap: .75rem; border-left: 3px solid var(--teal); padding: .875rem 1rem; background: #e7f0e8; margin-bottom: 1.25rem; }
-.hazard-cue>svg { flex: none; color: var(--teal); margin-top: .2rem; }
-.hazard-cue>div { min-width: 0; }
-.hazard-cue div>span { display: block; font-size: .9375rem; margin-bottom: .3rem; }
-.hazard-cue strong { font-size: var(--reading-body); line-height: 1.5; }
-.hazard-action { display: flex; align-items: center; gap: .75rem; width: 100%; padding: .9rem 1rem; min-height: 3.5rem; border: 1px solid var(--teal); border-radius: .625rem; background: var(--teal); color: white; text-align: left; font-size: var(--reading-body); font-weight: 700; line-height: 1.5; cursor: pointer; transition: background .18s; }
-.hazard-action>span { flex: 1; min-width: 0; }
-.hazard-action>svg { flex: none; }
-.hazard-action:hover { background: #046b65; }
-.hazard-action.practised { width: auto; min-height: 3rem; padding: .5rem .75rem; background: transparent; color: var(--teal); }
-.hazard-action.practised:hover { background: #e7f0e8; }
-.hazard-result { margin-top: 1.25rem; padding-top: 1.25rem; border-top: 1px solid var(--line); animation: hazard-reveal .2s ease-out; }
-.hazard-result-label { display: flex; gap: .5rem; align-items: center; color: #08615c; font-weight: 650; font-size: 1rem; line-height: 1.5; }
-.hazard-result-label>svg { flex: none; }
-.hazard-result h4 { font-size: var(--reading-body); line-height: 1.5; margin: .875rem 0 .35rem; }
+.hazard-prompt { font-size: var(--reading-body); font-weight: 700; margin: 0 0 .75rem; }
+.hazard-destinations { display: grid; gap: .625rem; margin-top: .75rem; }
+.hazard-choice { display: flex; align-items: center; justify-content: space-between; gap: .75rem; min-height: 3.25rem; padding: .8rem 1rem; border: 1px solid #819c95; border-radius: .5rem; background: #f4f2e8; color: var(--ink); font-size: var(--reading-body); font-weight: 650; line-height: 1.4; text-align: left; cursor: pointer; }
+.hazard-choice>svg { flex: none; }
+.hazard-choice:hover { border-color: var(--teal); }
+.hazard-choice.selected { background: #dbeee5; border-color: var(--teal); color: #08615c; }
+.hazard-choice-note { font-size: 1rem; line-height: 1.5; margin: .75rem 0 0; }
+.hazard-result { margin-top: 1rem; padding-left: 1rem; border-left: 3px solid var(--teal); }
 .hazard-result p { font-size: var(--reading-body); line-height: 1.6; margin-bottom: 0; }
 .hazard-footer { display: flex; flex-wrap: wrap; align-items: center; gap: .75rem 1rem; margin-top: 1.5rem; padding-top: 1.25rem; border-top: 1px solid var(--line); }
 .hazard-footer .scene-counter { position: static; max-width: none; width: auto; font-size: 1rem; line-height: 1.5; background: none; padding: 0; margin: 0; border: 0; box-shadow: none; color: var(--ink-2); }
@@ -38,7 +31,6 @@
 .hazard-footer button { font-size: 1.0625rem; }
 .hazard-safety-note { margin-top: 1.5rem; }
 .hazard-guided button:focus-visible { outline: 3px solid #9d5a00; outline-offset: 3px; }
-@keyframes hazard-reveal { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: none; } }
 @media(max-width:900px) {
   .hazard-guided .office-context { max-width: 36rem; width: 100%; margin-inline: auto; }
   .hazard-panel { padding: 1.5rem; }
@@ -47,9 +39,7 @@
   .hazard-panel { padding: 1.25rem 1.125rem; }
   .hazard-picker { display: grid; grid-template-columns: repeat(5,minmax(max-content,1fr)); gap: .25rem; }
   .hazard-picker button { flex-direction: column; justify-content: center; padding: .5rem 0; gap: .25rem; font-size: 1rem; }
-  .hazard-cue { padding: .875rem; gap: .5rem; }
-  .hazard-action { padding: .75rem; gap: .5rem; }
+  .hazard-destinations { gap: .625rem; }
   .hazard-footer>div { width: 100%; justify-content: space-between; }
   .hazard-footer>div>button:last-child { margin-left: auto; }
 }
-@media(prefers-reduced-motion:reduce) { .hazard-result { animation: none; } .hazard-action { transition: none; } }

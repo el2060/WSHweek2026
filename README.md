@@ -37,11 +37,11 @@ The unrelated AuditLens prototype in `src/App.tsx` and `src/styles.css` is prese
 ### Guided scenario 01
 
 - `src/OfficeScene.tsx` and `src/office.css` provide a guided scene with five named hazards. Content and marker coordinates live in `src/config.ts`.
-- Each hazard has a concrete description, a simple fix, one practice action, a visible result and a useful takeaway. Removed competing plausible answers and the retry loop. All five remain freely accessible through numbered image markers or named controls; Next hazard supports a quick sequential walkthrough.
+- Each hazard has a one-line situation, two plain choices and one brief, choice-specific feedback paragraph. Both choices are safe alternatives; there is no scoring or retry loop. No drag-and-drop, object movement or decorative choice graphics. All five remain freely accessible through numbered markers or names, with Next hazard for a quick walkthrough.
 - Corrected image/copy mismatches: files lean on the cabinet beside the laptop, the cable hangs beside the desk, and the drink marker now points at the cup rather than the printer. The original illustration remains visible and is labelled as the starting scene.
 - The files activity teaches secure shelf storage rather than requiring staff to distinguish between straightening a stack and storing it “lower”. Cable guidance asks for support, without telling staff to unplug unfamiliar equipment.
-- Progress uses `clte-office-v1`, survives revisits and is cleared by Reset activity. Main text is at least 18px; markers have 44px minimum tap targets. Trying all five actions enables Continue to Fire.
-- `scripts/verify-office.js` checks 60 before/after states, free and sequential navigation, keyboard actions, marker hit targets, persistence, reset, malformed storage and completion at six widths.
+- Choice progress uses `clte-office-v2`, survives revisits and is cleared by Reset activity (which also clears the legacy v1 key). Earlier completion-only records do not preselect answers in this new version. Main text remains at least 18px; markers have 44px minimum tap targets. Choosing once for each hazard enables Continue to Fire.
+- `scripts/verify-office.js` checks 90 states: before selection and both choices for all five hazards at six widths. It also covers concise feedback, free/sequential navigation, keyboard use, marker hit targets, persistence, reset, malformed storage and completion.
 
 ### Guided scenarios 03 and 04
 

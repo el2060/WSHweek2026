@@ -19,43 +19,43 @@ export const officialInfo = {
 export const officeHotspots = [
   {
     id: 'bag', label: 'Bag', title: 'Bag in the walkway', x: 49, y: 80,
-    body: 'The tote bag is in the shared walkway. Someone could catch a foot on it.',
-    cue: 'Give the bag a storage spot outside the walking route.',
-    action: 'Move the bag into storage', result: 'Bag stored · walkway clear',
-    takeaway: '“Just for a minute” is still a trip risk.',
-    learning: 'People may not notice a bag while carrying things. Clear the route instead of asking everyone to step around it.',
+    body: 'Someone could trip over it.', prompt: 'Choose a storage spot',
+    options: [
+      { id: 'cubby', label: 'Storage cubby', feedback: 'Out of the walkway—even a bag left briefly can trip someone.' },
+      { id: 'hook', label: 'Sturdy bag hook', feedback: 'A suitable hook keeps the bag and its straps off the walking route.' },
+    ],
   },
   {
     id: 'drawer', label: 'Drawer', title: 'Drawer left open', x: 35, y: 85,
-    body: 'The open drawer sticks out from the cabinet into the space people walk through.',
-    cue: 'Check that nobody is using it, then close it fully.',
-    action: 'Close the drawer', result: 'Drawer closed · obstruction removed',
-    takeaway: 'A small habit keeps a shared space clear.',
-    learning: 'Close drawers after use. A warning is not needed when you can safely remove the obstruction straight away.',
+    body: 'It blocks the path. Nobody is using it.', prompt: 'How will you get it closed?',
+    options: [
+      { id: 'close', label: 'Close it myself', feedback: 'A quick close removes the obstruction. Make it a habit after use.' },
+      { id: 'ask', label: 'Ask a colleague', feedback: 'Ask the nearby colleague to close it. Keep the path clear until it is shut.' },
+    ],
   },
   {
-    id: 'cable', label: 'Cable', title: 'Cable hanging beside the desk', x: 15, y: 81,
-    body: 'The loose lead hangs down beside the desk, where a foot could catch it.',
-    cue: 'Ask the equipment owner to secure the lead away from feet.',
-    action: 'Ask for the cable to be secured', result: 'Cable support request practised',
-    takeaway: 'You can help without unplugging equipment.',
-    learning: 'Keep people clear while the lead is secured. Don’t unplug unfamiliar equipment or handle a damaged cable; ask for support.',
+    id: 'cable', label: 'Cable', title: 'Loose cable', x: 15, y: 81,
+    body: 'A foot could catch this hanging lead.', prompt: 'Who could help secure it?',
+    options: [
+      { id: 'owner', label: 'Equipment owner', feedback: 'Keep others clear while it is secured. Don’t unplug unfamiliar equipment or handle damaged cables.' },
+      { id: 'facilities', label: 'Facilities team', feedback: 'Ask for help if it needs fixing. Keep others clear; don’t handle damaged cables.' },
+    ],
   },
   {
     id: 'files', label: 'Files', title: 'Files leaning near the edge', x: 29, y: 67,
-    body: 'Beside the laptop, a pile of files leans towards the edge of the cabinet. It could topple.',
-    cue: 'Store the files securely on a shelf, clear of the walkway.',
-    action: 'Store the files on a shelf', result: 'Files stored · edge clear',
-    takeaway: 'Give loose files a stable home.',
-    learning: 'The aim is to stop the pile toppling, not just make it look tidy. Store files securely without creating a new obstacle on the floor.',
+    body: 'This leaning pile could topple.', prompt: 'Choose a secure home',
+    options: [
+      { id: 'shelf', label: 'Shelf with bookends', feedback: 'Bookends support the files. Keep the shelf stable and the walkway clear.' },
+      { id: 'cupboard', label: 'Filing cupboard', feedback: 'Store them securely inside—not in a pile on the floor.' },
+    ],
   },
   {
     id: 'drink', label: 'Drink', title: 'Drink beside the printer', x: 86.5, y: 71,
-    body: 'The cup is beside the printer. A knock could spill liquid onto the equipment.',
-    cue: 'Move the drink to a separate surface away from equipment.',
-    action: 'Move the drink away from the printer', result: 'Drink moved · equipment kept clear',
-    takeaway: 'Make space between drinks and equipment.',
-    learning: 'A lid helps with splashes, but distance also matters. Moving the drink removes the nearby spill risk without moving the printer.',
+    body: 'A spill could reach the equipment.', prompt: 'Choose a separate surface',
+    options: [
+      { id: 'table', label: 'Clear side table', feedback: 'A separate surface keeps spills away from the printer. A lid alone does not remove the risk.' },
+      { id: 'pantry', label: 'Pantry counter', feedback: 'Keep it away from appliances there too. Distance from equipment matters.' },
+    ],
   },
 ];
 

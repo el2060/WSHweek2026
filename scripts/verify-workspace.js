@@ -25,19 +25,19 @@ async (page) => {
   };
   for (const [width,height] of [[3778,1870],[2560,1440],[2267,1122],[1920,1080],[1440,900],[1366,768],[1024,768],[900,900],[768,1024],[390,844],[320,740]]) {
     await page.setViewportSize({ width,height });
-    await page.evaluate(() => ['clte-safety-progress','clte-guided-v1-injury','clte-guided-v1-haze','clte-reporting-v1','clte-office-v1'].forEach(key => localStorage.removeItem(key)));
+    await page.evaluate(() => ['clte-safety-progress','clte-guided-v1-injury','clte-guided-v1-haze','clte-reporting-v1','clte-office-v2'].forEach(key => localStorage.removeItem(key)));
     await page.reload(); await page.evaluate(() => document.fonts.ready);
     await check(`${width}/home`);
     if ([1920,390].includes(width)) await page.screenshot({path:`output/playwright/spacing-home-${width}.png`,fullPage:true});
     await nav('01 Hazards'); await check(`${width}/office`);
-    assert(await page.locator('.hazard-action').count() === 1, `${width}: first risk should be ready to try`);
+    assert(await page.locator('.hazard-choice').count() === 2, `${width}: first risk should be ready to try`);
     assert(await page.locator('.hazard-result').count() === 0, `${width}: no answer should be preselected`);
     assert((await page.locator('.scene-counter').innerText()).includes('0/5'), `${width}: no progress should be awarded on entry`);
     const measure = await page.evaluate(() => {
       const panel = document.querySelector('.office-workspace').getBoundingClientRect();
       const heading = document.querySelector('.scene-heading').getBoundingClientRect();
       const image = document.querySelector('.office-workspace .scene-frame').getBoundingClientRect();
-      const type = document.querySelector('.hazard-action');
+      const type = document.querySelector('.hazard-choice');
       return {width:innerWidth,workspace:panel.width,usage:panel.width/innerWidth,gap:panel.top-heading.bottom,imageShare:image.width/panel.width,font:parseFloat(getComputedStyle(type).fontSize),root:parseFloat(getComputedStyle(document.documentElement).fontSize)};
     });
     measurements.push(measure);
@@ -49,8 +49,8 @@ async (page) => {
     assert(measure.font >= 18, `${width}: small decision text`);
     if ([3778,2267,1920,1366,390].includes(width)) await page.screenshot({path:`output/playwright/spacing-office-${width}.png`,fullPage:true});
     await page.locator('.hazard-picker button').last().click(); await check(`${width}/free-navigation`);
-    await page.getByRole('button',{name:'Inspect: Cable hanging beside the desk',exact:true}).click();
-    await button('Ask for the cable to be secured').click(); await check(`${width}/office-feedback`);
+    await page.getByRole('button',{name:'Inspect: Loose cable',exact:true}).click();
+    await button('Equipment owner').click(); await check(`${width}/office-feedback`);
     for (const chapter of ['02 Fire','03 Injury','04 Haze','05 Report']) {
       await nav(chapter); await check(`${width}/${chapter}`);
       if (chapter === '02 Fire') {

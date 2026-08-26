@@ -1,5 +1,17 @@
 # CLTE guided scenario redesign — 26 August 2026
 
+## Concise choices and feedback — latest refinement
+
+Following the user's final clarification, Scenario 01 is deliberately simple: a short situation, two plain text choices and a single feedback paragraph. There is no drag/drop, object movement, extra illustration, scoring or retry loop. Both choices are safe alternatives, with feedback that changes according to the selected action. The existing office image and named markers remain. The frontend skill's content hierarchy guided removal of the repeated green instruction panel, duplicate outcome headings, long captions and verbose setup copy; font sizes were not reduced.
+
+The new `clte-office-v2` state stores the actual selection for each hazard. Old v1 completion-only records are not treated as answers. Reset clears both keys; overall completed-scenario progress remains unchanged.
+
+Trimmed repeated navigation notes, context slogans and practice labels in Injury/Haze. Reporting no longer repeats story details in image captions, repeats the practice disclaimer beside the action, or adds a task label that duplicates its button. Kept distinct classification cues, real emergency instructions, campus numbers and report-practice hints.
+
+Updated verification checks both choices, distinct feedback (at most 26 words), no preselected answers, no drag controls or redundant hazard cue panel, and a 65-word ceiling on the initial hazard panel. Visual evidence: `output/playwright/office-concise-cable-before-1440.png` and `office-concise-cable-before-390.png`, plus the per-hazard feedback captures.
+
+Passed: 90 focused hazard states, 462 all-page reading states (including enlarged text; no flagged widows), 209 widescreen states, Injury/Haze regression and 48 Reporting states. Production build and diff checks passed. Final visual review removed the green hover fill so an unchosen answer cannot look preselected on touch screens.
+
 ## Scenario 01 and all-scenario clarity review
 
 The frontend design direction remains a warm, content-first workspace: one office scene, named hazards, one action per hazard, then the reason it helps. Small marker-to-check and feedback-reveal transitions show progress; reduced motion removes the animation. Reused the existing scene, with corrected coordinates and copy, rather than adding decorative imagery.

@@ -16,7 +16,7 @@ async (page) => {
     await page.evaluate(value => {
       localStorage.setItem('clte-safety-progress', JSON.stringify(value));
       localStorage.removeItem('clte-reporting-v1');
-      localStorage.removeItem('clte-office-v1');
+      localStorage.removeItem('clte-office-v2');
       ['injury', 'haze'].forEach(kind => localStorage.removeItem(`clte-guided-v1-${kind}`));
     }, data);
     await page.reload();
@@ -33,7 +33,7 @@ async (page) => {
         const visible = el => el.getBoundingClientRect().width > 0 && el.getBoundingClientRect().height > 0;
         const controls = [...document.querySelectorAll('main button, main a')].filter(visible);
         const clipped = controls.filter(el => el.scrollWidth > el.clientWidth + 2 || el.scrollHeight > el.clientHeight + 2).map(el => el.textContent.trim());
-        const selectors = '.tagline,.scene-heading>p:last-child,.guided-heading>p:last-child,.moment-cue,.moment-takeaway p,.help-practice blockquote,.hazard-story,.hazard-cue strong,.hazard-action,.hazard-result p,.practice-choice-cue,.pov-location>p:not(.eyebrow),.pov-choices button>strong,.pov-feedback p,.report-story,.report-cue strong,.report-ticket p,.report-takeaway p,.choice-field button,.mock-input input,.mock-input textarea,.mock-preview dd,.guide-focus li,.practice-case>p,.completion>p:not(.eyebrow),.completion-review p';
+        const selectors = '.tagline,.scene-heading>p:last-child,.guided-heading>p:last-child,.moment-cue,.moment-takeaway p,.help-practice blockquote,.hazard-story,.hazard-prompt,.hazard-choice,.hazard-result p,.practice-choice-cue,.pov-location>p:not(.eyebrow),.pov-choices button>strong,.pov-feedback p,.report-story,.report-cue strong,.report-ticket p,.report-takeaway p,.choice-field button,.mock-input input,.mock-input textarea,.mock-preview dd,.guide-focus li,.practice-case>p,.completion>p:not(.eyebrow),.completion-review p';
         const small = [...document.querySelectorAll(selectors)].filter(visible).filter(el => parseFloat(getComputedStyle(el).fontSize) < 18).map(el => el.textContent);
         // Diagnostic: flag long prose with a single-word final line for manual review.
         const orphans = [...document.querySelectorAll('main p,main h1,main h2,main h3')].filter(visible).flatMap(el => {
@@ -71,7 +71,7 @@ async (page) => {
     const hotspots = await page.getByRole('button', { name: /^Inspect:/ }).all();
     for (let index = 0; index < hotspots.length; index++) {
       await hotspots[index].click(); await audit(`hazard-${index}`);
-      await page.locator('.hazard-action').click(); await audit(`hazard-${index}-feedback`, index === 0);
+      for (let option=0; option<2; option++) { await page.locator('.hazard-choice').nth(option).click(); await audit(`hazard-${index}-choice-${option}`, index === 0); }
     }
     await nav('02 Fire');
     for (let index = 0; index < 7; index++) {
