@@ -18,43 +18,43 @@ export const officialInfo = {
 
 export const officeHotspots = [
   {
-    id: 'bag', label: 'Bag', title: 'Bag in the walkway', x: 49, y: 80,
-    body: 'Its owner will be back in a minute.', prompt: 'Which is the safer option?',
+    id: 'bag', label: 'Bag', title: 'Bag blocks the walkway', x: 49, y: 80,
+    body: '', prompt: 'Where should the bag go?',
     options: [
-      { id: 'store', label: 'Put the bag in a cupboard', correct: true, feedback: 'Even a quick stop can cause a trip. Keep bags and straps completely out of the walkway.' },
-      { id: 'side', label: 'Move it to the side of the walkway', correct: false, feedback: 'The side is still part of the walkway. Put the bag in a cupboard so the whole path stays clear.' },
+      { id: 'store', label: 'In a cupboard', correct: true, feedback: 'That’s it. Keep bags and straps fully off the walkway.' },
+      { id: 'side', label: 'At the side of the walkway', correct: false, feedback: 'Still a trip risk. Store it fully off the walkway.' },
     ],
   },
   {
     id: 'drawer', label: 'Drawer', title: 'Drawer left open', x: 35, y: 85,
-    body: 'You’ll need another file in a minute.', prompt: 'Which is the safer option?',
+    body: '', prompt: 'You need it again soon. What now?',
     options: [
-      { id: 'halfway', label: 'Push it halfway in for now', correct: false, feedback: 'Half-open drawers still stick into the path. Close it fully, even if you’ll need it again shortly.' },
-      { id: 'close', label: 'Close it fully and reopen it when needed', correct: true, feedback: 'Close drawers between uses. Even a partly open drawer can catch someone walking past.' },
+      { id: 'halfway', label: 'Leave it half-open', correct: false, feedback: 'It still sticks into the path. Close it between uses.' },
+      { id: 'close', label: 'Close it fully', correct: true, feedback: 'Right. Close drawers between uses.' },
     ],
   },
   {
     id: 'cable', label: 'Cable', title: 'Loose cable', x: 15, y: 81,
-    body: 'You don’t know what this cable is connected to.', prompt: 'Which is the safer option?',
+    body: '', prompt: 'You don’t know what it powers. What now?',
     options: [
-      { id: 'unplug', label: 'Unplug it to clear the path straight away', correct: false, feedback: 'Unplugging could interrupt equipment in use. Keep others clear and ask the colleague using it to secure the cable.' },
-      { id: 'secure', label: 'Keep others clear and ask for the cable to be secured', correct: true, feedback: 'Clear the trip risk without unplugging unfamiliar equipment. Ask the colleague using it to arrange a safe fix.' },
+      { id: 'unplug', label: 'Unplug it now', correct: false, feedback: 'Don’t unplug unknown equipment. Keep people clear and ask for help.' },
+      { id: 'secure', label: 'Keep people clear and ask for help', correct: true, feedback: 'Good call. Protect the area and get the cable secured safely.' },
     ],
   },
   {
-    id: 'files', label: 'Files', title: 'Files leaning near the edge', x: 29, y: 67,
-    body: 'These heavy files need a safer storage spot.', prompt: 'Which is the safer option?',
+    id: 'files', label: 'Files', title: 'Heavy files near the edge', x: 29, y: 67,
+    body: '', prompt: 'Where should the files go?',
     options: [
-      { id: 'store', label: 'Put them on a lower shelf inside the cupboard', correct: true, feedback: 'Store heavy files low. They are easier to lift and less likely to fall from height.' },
-      { id: 'high', label: 'Put them on top of the cupboard to free up space', correct: false, feedback: 'Heavy files overhead are harder to lift and could fall. Use a lower shelf inside the cupboard instead.' },
+      { id: 'store', label: 'On a low cupboard shelf', correct: true, feedback: 'Yes. Heavy files are safer stored low.' },
+      { id: 'high', label: 'On top of the cupboard', correct: false, feedback: 'They could fall from height. Store heavy files low.' },
     ],
   },
   {
     id: 'drink', label: 'Drink', title: 'Drink beside the printer', x: 86.5, y: 71,
-    body: 'You’re waiting for a large print job.', prompt: 'Which is the safer option?',
+    body: '', prompt: 'Where should the drink go?',
     options: [
-      { id: 'lid', label: 'Put a lid on it and keep it beside the printer', correct: false, feedback: 'A lid helps, but the drink can still spill. Move it to a table away from the printer.' },
-      { id: 'move', label: 'Put it on a table away from the printer', correct: true, feedback: 'Distance protects the printer from spills. A lid alone does not remove the risk.' },
+      { id: 'lid', label: 'Beside the printer, with a lid', correct: false, feedback: 'A lid can still leak. Move the drink away from equipment.' },
+      { id: 'move', label: 'On a table away from the printer', correct: true, feedback: 'Exactly. Distance keeps spills away from equipment.' },
     ],
   },
 ];
