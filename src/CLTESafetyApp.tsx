@@ -2,6 +2,7 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 import { ArrowDown, ArrowRight, Check, ExternalLink, Eye, Flame, HeartHandshake, Info, MapPin, Menu, Phone, RotateCcw, Sparkles, Wrench, X } from 'lucide-react';
 import { officialInfo } from './config';
 import OfficeScene, { clearOfficeProgress } from './OfficeScene';
+import ExperimentRoomScene, { clearExperimentRoomProgress } from './ExperimentRoomScene';
 import { InjuryScene, HazeScene, clearGuidedProgress } from './GuidedScenes';
 import PracticeReport from './PracticeReport';
 import ReportingScene, { clearReportingProgress } from './ReportingScene';
@@ -38,6 +39,13 @@ function Intro({ onStart, onReset, startLabel, statusText, canReset }: { onStart
       <img src="/assets/wsh-week-hero.png" alt=""/>
     </div>
   </section>;
+}
+
+function HazardsExperience({ onComplete }: { onComplete: () => void }) {
+  const [part,setPart]=useState<'office'|'experiment'>(()=>{try{return localStorage.getItem('clte-hazards-part')==='experiment'?'experiment':'office'}catch{return'office'}});
+  const showExperiment=()=>{setPart('experiment');try{localStorage.setItem('clte-hazards-part','experiment')}catch{/* Optional local progress. */}};
+  const showOffice=()=>{setPart('office');try{localStorage.setItem('clte-hazards-part','office')}catch{/* Optional local progress. */}};
+  return part==='office'?<OfficeScene onComplete={showExperiment} nextLabel="Enter Experiment Room"/>:<ExperimentRoomScene onBack={showOffice} onComplete={onComplete}/>;
 }
 
 function EvacuationScene({ onComplete }: { onComplete: () => void }) {
@@ -163,7 +171,7 @@ export default function App() {
   const startLabel=progress.completion?'Review activity':completed?`Continue: ${resumeLabels[resumeView]}`:'Start activity';
   const statusText=progress.completion?'Completed · progress saved':completed===0?'':completed<5?`${completed}/5 scenarios completed`:!progress.practice?'5/5 scenarios · report practice remaining':!progress.guide?'Report practice complete · contacts remaining':'Activity complete';
   const headerStatus=completed<5?`${completed}/5 scenarios`:!progress.practice?'5/5 · Report practice':!progress.guide?'5/5 · Contacts':'Activity complete';
-  const resetProgress=()=>{clearGuidedProgress();clearReportingProgress();clearOfficeProgress();try{localStorage.removeItem('clte-safety-progress');sessionStorage.removeItem('clte-safety-progress')}catch{/* Storage is optional. */}setProgress(initialProgress);setView('intro');setResetOpen(false)};
+  const resetProgress=()=>{clearGuidedProgress();clearReportingProgress();clearOfficeProgress();clearExperimentRoomProgress();try{localStorage.removeItem('clte-hazards-part');localStorage.removeItem('clte-safety-progress');sessionStorage.removeItem('clte-safety-progress')}catch{/* Storage is optional. */}setProgress(initialProgress);setView('intro');setResetOpen(false)};
   return <div className="app-shell"><header><button className="logo" onClick={()=>{setMenu(false);setView('intro')}} aria-label="Ngee Ann Polytechnic · CLTE workplace safety activity · Home"><img src="/assets/np-logo.png" alt="Ngee Ann Polytechnic"/></button><nav className={menu?'open':''} aria-label="Scenarios · open in any order">{chapters.map(({n,id,label})=><button key={id} aria-label={`${n} ${label}`} aria-description={progress[id]?'Completed':'Not yet completed'} aria-current={view===id?'page':undefined} onClick={()=>{setMenu(false);setView(id)}} className={`${view===id?'current':''} ${progress[id]?'done':''}`}>{n}<span>{label}</span></button>)}</nav><div className="header-tools"><span aria-live="polite">{headerStatus}</span><button className="menu" onClick={()=>setMenu(!menu)} aria-label="Toggle navigation" aria-expanded={menu}>{menu?<X/>:<Menu/>}</button></div></header>
-    <main className="experience-stage"><div key={view} className="view-transition">{view==='intro'&&<Intro startLabel={startLabel} statusText={statusText} canReset={completed>0||progress.practice||progress.guide||progress.completion} onReset={()=>setResetOpen(true)} onStart={()=>setView(progress.completion?'completion':resumeView)}/>} {view==='office'&&<OfficeScene onComplete={()=>complete('office','evacuation')}/>} {view==='evacuation'&&<EvacuationScene onComplete={()=>complete('evacuation','walkway')}/>} {view==='walkway'&&<InjuryScene onComplete={()=>complete('walkway','haze')}/>} {view==='haze'&&<HazeScene onComplete={()=>complete('haze','reporting')}/>} {view==='reporting'&&<ReportingScene onComplete={()=>complete('reporting','practice')}/>} {view==='practice'&&<PracticeReport onComplete={()=>complete('practice','guide')}/>} {view==='guide'&&<PocketGuide reviewing={progress.completion} onComplete={()=>{setProgress(value=>({...value,guide:true,completion:true}));setView('completion')}}/>} {view==='completion'&&<Completion onHome={()=>setView('intro')} onReview={setView} onGuide={()=>setView('guide')} onReset={()=>setResetOpen(true)}/>}</div></main><ResetDialog open={resetOpen} onCancel={()=>setResetOpen(false)} onConfirm={resetProgress}/></div>;
+    <main className="experience-stage"><div key={view} className="view-transition">{view==='intro'&&<Intro startLabel={startLabel} statusText={statusText} canReset={completed>0||progress.practice||progress.guide||progress.completion} onReset={()=>setResetOpen(true)} onStart={()=>setView(progress.completion?'completion':resumeView)}/>} {view==='office'&&<HazardsExperience onComplete={()=>complete('office','evacuation')}/>} {view==='evacuation'&&<EvacuationScene onComplete={()=>complete('evacuation','walkway')}/>} {view==='walkway'&&<InjuryScene onComplete={()=>complete('walkway','haze')}/>} {view==='haze'&&<HazeScene onComplete={()=>complete('haze','reporting')}/>} {view==='reporting'&&<ReportingScene onComplete={()=>complete('reporting','practice')}/>} {view==='practice'&&<PracticeReport onComplete={()=>complete('practice','guide')}/>} {view==='guide'&&<PocketGuide reviewing={progress.completion} onComplete={()=>{setProgress(value=>({...value,guide:true,completion:true}));setView('completion')}}/>} {view==='completion'&&<Completion onHome={()=>setView('intro')} onReview={setView} onGuide={()=>setView('guide')} onReset={()=>setResetOpen(true)}/>}</div></main><ResetDialog open={resetOpen} onCancel={()=>setResetOpen(false)} onConfirm={resetProgress}/></div>;
 }

@@ -15,7 +15,7 @@ function readChoices(): Record<string, string> {
   } catch { /* Optional storage. */ }
   return {};
 }
-export default function OfficeScene({ onComplete }: { onComplete: () => void }) {
+export default function OfficeScene({ onComplete, nextLabel = 'Continue to Fire' }: { onComplete: () => void; nextLabel?: string }) {
   const [choices, setChoices] = useState(readChoices);
   const [step, setStep] = useState(() => Math.max(0, officeHotspots.findIndex(item => !isCorrect(item, choices))));
   const heading = useRef<HTMLHeadingElement>(null);
@@ -41,7 +41,7 @@ export default function OfficeScene({ onComplete }: { onComplete: () => void }) 
   };
   const next = () => choose(step < officeHotspots.length - 1 ? step + 1 : Math.max(0, officeHotspots.findIndex(item => !isCorrect(item, choices))));
   return <section id="office" className="chapter hazard-guided office-immersive" data-active-hazard={active.id}>
-    <div className="scene-heading"><h1>01 · Spot hazards</h1><p>Choose a marker, then the safest action.</p></div>
+    <div className="scene-heading"><h1>01A · Fictional office</h1><p>Choose a marker, then the safest action.</p></div>
     <div className="office-workspace" ref={workspace}>
       <div className="office-context">
         <div className="scene-frame">
@@ -64,7 +64,7 @@ export default function OfficeScene({ onComplete }: { onComplete: () => void }) 
           </div>
         </div>
         <div className="hazard-feedback" role="status" aria-live="polite" aria-atomic="true">{selected && <div className={`hazard-result ${selected.correct ? 'correct' : 'incorrect'}`}><strong>{selected.correct ? 'Why this helps' : 'Try this instead'}</strong><p><ReadingText>{selected.feedback}</ReadingText></p></div>}</div>
-        <div className="hazard-footer"><div>{step > 0 && <button className="text-button" onClick={() => choose(step - 1)}><ArrowLeft size={18}/>Back</button>}{allDone ? <button className="primary" onClick={onComplete}>Continue to Fire <ArrowRight size={19}/></button> : <button className="secondary" onClick={next}>{selected?.correct ? 'Next' : 'Skip for now'}<ArrowRight size={19}/></button>}</div></div>
+        <div className="hazard-footer"><div>{step > 0 && <button className="text-button" onClick={() => choose(step - 1)}><ArrowLeft size={18}/>Back</button>}{allDone ? <button className="primary" onClick={onComplete}>{nextLabel} <ArrowRight size={19}/></button> : <button className="secondary" onClick={next}>{selected?.correct ? 'Next' : 'Skip for now'}<ArrowRight size={19}/></button>}</div></div>
       </div>
     </div>
     <div className="office-footnote"><p className="hazard-safety-note"><ReadingText>Not safe to fix? Keep clear and ask for help.</ReadingText></p></div>
