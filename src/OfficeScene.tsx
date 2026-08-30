@@ -1,4 +1,4 @@
-import { useEffect, useLayoutEffect, useRef, useState } from 'react';
+import { useEffect, useLayoutEffect, useRef, useState, type CSSProperties } from 'react';
 import { ArrowLeft, ArrowRight, Check, X } from 'lucide-react';
 import { officeHotspots } from './config';
 import { ReadingText } from './ReadingText';
@@ -40,8 +40,8 @@ export default function OfficeScene({ onComplete, nextLabel = 'Continue to Fire'
     requestAnimationFrame(() => { heading.current?.focus({ preventScroll: true }); if (window.matchMedia('(max-width: 900px)').matches) heading.current?.scrollIntoView({ block: 'start', behavior: 'instant' }); });
   };
   const next = () => choose(step < officeHotspots.length - 1 ? step + 1 : Math.max(0, officeHotspots.findIndex(item => !isCorrect(item, choices))));
-  return <section id="office" className="chapter hazard-guided office-immersive" data-active-hazard={active.id}>
-    <div className="scene-heading"><h1>01A · Fictional office</h1><p>Choose a marker, then the safest action.</p></div>
+  return <section id="office" className="chapter hazard-guided office-immersive" data-active-hazard={active.id} style={{'--focus-x':`${active.x}%`,'--focus-y':`${active.y}%`} as CSSProperties}>
+    <div className="scene-heading"><h1>01A · Office workspace</h1><p>Choose a marker, then the safest action.</p></div>
     <div className="office-workspace" ref={workspace}>
       <div className="office-context">
         <div className="scene-frame">

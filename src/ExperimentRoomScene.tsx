@@ -90,7 +90,7 @@ export default function ExperimentRoomScene({ onComplete, onBack }: { onComplete
     requestAnimationFrame(() => titleRef.current?.focus({ preventScroll: true }));
   };
   return <section className="experiment-room" data-view={viewId}>
-    <div className="experiment-camera"><Suspense fallback={<div className="experiment-loading">Building the room…</div>}><ExperimentRoom3D jumpTo={viewId} jumpSignal={jumpSignal} solvedIds={hazards.filter(isDone).map(hazard => hazard.id)} onInspect={(id) => { const hazard=hazards.find(item=>item.id===id); if(hazard) inspect(hazard); }}/></Suspense></div>
+    <div className="experiment-camera"><Suspense fallback={<div className="experiment-loading">Building the room…</div>}><ExperimentRoom3D jumpTo={viewId} jumpSignal={jumpSignal} activeId={activeId} solvedIds={hazards.filter(isDone).map(hazard => hazard.id)} onInspect={(id) => { const hazard=hazards.find(item=>item.id===id); if(hazard) inspect(hazard); }}/></Suspense></div>
     <div className="experiment-shade" aria-hidden="true"/>
     <div className="experiment-heading"><p>01B · Actual CLTE space</p><h1>Experiment Room</h1><span><MapPin/> Block 31 · Level 2</span></div>
     <div className="experiment-score" aria-live="polite"><strong>{count}/{hazards.length}</strong><span>made safe</span></div>
@@ -108,6 +108,6 @@ export default function ExperimentRoomScene({ onComplete, onBack }: { onComplete
       </>}
     </aside>
     <div className="experiment-view-nav" role="group" aria-label="Walkthrough viewpoints">{views.map((item, index) => <button key={item.id} aria-current={viewId === item.id ? 'step' : undefined} onClick={() => selectView(item.id)}><span>{String(index + 1).padStart(2,'0')}</span>{item.label}<small>{hazards.filter(hazard => hazard.view === item.id && isDone(hazard)).length}/2</small></button>)}</div>
-    <button className="experiment-back" onClick={onBack}><ArrowLeft/> Fictional office</button>
+    <button className="experiment-back" onClick={onBack}><ArrowLeft/> Office workspace</button>
   </section>;
 }
