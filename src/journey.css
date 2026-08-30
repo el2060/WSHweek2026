@@ -37,7 +37,7 @@
 .journey-feedback p { font-size: var(--reading-body); line-height: 1.5; margin: .375rem 0 0; }
 .journey-actions { display: flex; align-items: center; flex-wrap: wrap; gap: .75rem; margin-top: 1.25rem; padding-top: 1rem; border-top: 1px solid var(--line); }
 .journey-count { font-size: .9375rem; line-height: 1.5; color: var(--ink-2); }
-.journey-actions>div { display: flex; flex-wrap: wrap; align-items: center; justify-content: end; gap: .75rem; margin-left: auto; }
+.journey-actions>div { display: flex; width: 100%; flex-wrap: wrap; align-items: center; justify-content: end; gap: .75rem; margin-left: auto; }
 .app-shell .journey-actions button { font-size: 1rem; }
 .journey-reference { margin-top: 1rem; font-size: 1rem; line-height: 1.55; }
 .journey-reference summary { padding-block: .5rem; min-height: 44px; color: #087a71; cursor: pointer; width: fit-content; }
@@ -49,7 +49,7 @@
 .journey-nav button { display: flex; flex: 1 1 7rem; min-width: min(100%,7rem); align-items: center; justify-content: center; gap: .5rem; min-height: 3rem; padding: .625rem .75rem; background: #10383dea; color: white; border: 1px solid #9fc2ba; border-radius: .5rem; font-size: 1rem; font-weight: 650; line-height: 1.4; cursor: pointer; }
 .journey-nav button[aria-current] { background: #08665e; border-color: #b8eee2; }
 .journey-nav button>span:first-child { display: grid; place-items: center; flex: none; width: 1.5rem; height: 1.5rem; border: 1px solid #ffffff8c; border-radius: 50%; font-size: .8125rem; }
-.journey-footnote { grid-area: note; display: flex; flex-wrap: wrap; justify-content: space-between; gap: .375rem 1rem; }
+.journey-footnote { grid-area: note; display: flex; flex-wrap: wrap; justify-content: flex-end; gap: .375rem 1rem; }
 .journey-footnote p { margin: 0; font-size: .9375rem; line-height: 1.5; color: #fff; background: #10383dd9; padding: .25rem .5rem; border-radius: .25rem; }
 .decision-journey button:focus-visible,.decision-journey summary:focus-visible,.decision-journey a:focus-visible { outline: 3px solid #fce89d; outline-offset: 3px; }
 .journey-panel button:focus-visible,.journey-panel summary:focus-visible,.journey-panel a:focus-visible { outline-color: #8a5100; }

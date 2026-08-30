@@ -49,7 +49,7 @@ export default function DecisionJourney({ kind, onComplete }: { kind: JourneyKin
     <div className="journey-shade" aria-hidden="true"/>
     <div className="journey-heading"><h1>{definition.heading}</h1></div>
     <div className="journey-panel" ref={panel}>
-      <p className="journey-step">Decision {step + 1} of {definition.moments.length}</p>
+      <p className="journey-step">{moment.label} · {step + 1} of {definition.moments.length}</p>
       <h2 ref={heading} tabIndex={-1}><ReadingText>{moment.title}</ReadingText></h2>
       <p className="journey-story"><ReadingText>{moment.story}</ReadingText></p>
       <div className="journey-choices" role="group" aria-label={moment.title}>
@@ -57,14 +57,14 @@ export default function DecisionJourney({ kind, onComplete }: { kind: JourneyKin
           <span>{choice.label}</span>{selected?.id === choice.id && (choice.correct ? <Check size={21} aria-hidden="true"/> : <X size={21} aria-hidden="true"/>)}
         </button>)}
       </div>
-      <div className="journey-feedback" role="status" aria-live="polite" aria-atomic="true">{selected && <div className={selected.correct ? 'correct' : 'incorrect'}><strong>{selected.correct ? 'Good choice' : 'Not quite — try again'}</strong><p><ReadingText>{selected.feedback}</ReadingText></p></div>}</div>
-      <div className="journey-actions"><span className="journey-count">{count}/{definition.moments.length} completed</span><div>
+      <div className="journey-feedback" role="status" aria-live="polite" aria-atomic="true">{selected && <div className={selected.correct ? 'correct' : 'incorrect'}><strong>{selected.correct ? 'Why this helps' : 'Try this instead'}</strong><p><ReadingText>{selected.feedback}</ReadingText></p></div>}</div>
+      <div className="journey-actions"><div>
         {step > 0 && <button className="text-button" onClick={() => moveTo(step - 1)}><ArrowLeft size={18}/>Back</button>}
         {allDone ? <button className="primary" onClick={onComplete}>Continue to {definition.next}<ArrowRight size={19}/></button> : <button className="secondary" onClick={next}>{step < definition.moments.length - 1 ? 'Next' : 'Review remaining'}<ArrowRight size={19}/></button>}
       </div></div>
       <details className="journey-reference" key={step}><summary>Quick reference</summary><ul>{definition.reference.map(item => <li key={item}><ReadingText>{item}</ReadingText></li>)}</ul><div>{definition.links.map(link => <a key={link.href} href={link.href} target="_blank" rel="noreferrer">{link.label}</a>)}</div></details>
     </div>
     <div className="journey-nav" role="group" aria-label="Situations — explore in any order">{definition.moments.map((item, index) => <button key={item.id} aria-current={step === index ? 'step' : undefined} onClick={() => moveTo(index)}><span>{isDone(index) ? <Check size={18} aria-hidden="true"/> : index + 1}</span>{item.label}{isDone(index) && <span className="sr-only"> — completed</span>}</button>)}</div>
-    <div className="journey-footnote">{definition.safety && <p>{definition.safety}</p>}<p>Practice only · no calls or reports sent.</p></div>
+    <div className="journey-footnote"><p>{definition.safety ? `${definition.safety} This activity does not place calls or submit reports.` : 'Practice only · Nothing is submitted.'}</p></div>
   </section>;
 }

@@ -21,7 +21,7 @@ export const officeHotspots = [
     id: 'bag', label: 'Bag', title: 'Bag blocks the walkway', x: 49, y: 80,
     body: '', prompt: 'Where should the bag go?',
     options: [
-      { id: 'store', label: 'In a cupboard', correct: true, feedback: 'That’s it. Keep bags and straps fully off the walkway.' },
+      { id: 'store', label: 'In a cupboard', correct: true, feedback: 'Keep bags and straps fully off the walkway.' },
       { id: 'side', label: 'At the side of the walkway', correct: false, feedback: 'Still a trip risk. Store it fully off the walkway.' },
     ],
   },
@@ -30,7 +30,7 @@ export const officeHotspots = [
     body: '', prompt: 'You need it again soon. What now?',
     options: [
       { id: 'halfway', label: 'Leave it half-open', correct: false, feedback: 'It still sticks into the path. Close it between uses.' },
-      { id: 'close', label: 'Close it fully', correct: true, feedback: 'Right. Close drawers between uses.' },
+      { id: 'close', label: 'Close it fully', correct: true, feedback: 'Close drawers between uses so they do not project into the path.' },
     ],
   },
   {
@@ -38,14 +38,14 @@ export const officeHotspots = [
     body: '', prompt: 'You don’t know what it powers. What now?',
     options: [
       { id: 'unplug', label: 'Unplug it now', correct: false, feedback: 'Don’t unplug unknown equipment. Keep people clear and ask for help.' },
-      { id: 'secure', label: 'Keep people clear and ask for help', correct: true, feedback: 'Good call. Protect the area and get the cable secured safely.' },
+      { id: 'secure', label: 'Keep people clear and ask for help', correct: true, feedback: 'Protect the area and get the cable secured safely.' },
     ],
   },
   {
     id: 'files', label: 'Files', title: 'Heavy files near the edge', x: 29, y: 67,
     body: '', prompt: 'Where should the files go?',
     options: [
-      { id: 'store', label: 'On a low cupboard shelf', correct: true, feedback: 'Yes. Heavy files are safer stored low.' },
+      { id: 'store', label: 'On a low cupboard shelf', correct: true, feedback: 'Heavy files are safer stored low and away from edges.' },
       { id: 'high', label: 'On top of the cupboard', correct: false, feedback: 'They could fall from height. Store heavy files low.' },
     ],
   },
@@ -54,7 +54,7 @@ export const officeHotspots = [
     body: '', prompt: 'Where should the drink go?',
     options: [
       { id: 'lid', label: 'Beside the printer, with a lid', correct: false, feedback: 'A lid can still leak. Move the drink away from equipment.' },
-      { id: 'move', label: 'On a table away from the printer', correct: true, feedback: 'Exactly. Distance keeps spills away from equipment.' },
+      { id: 'move', label: 'On a table away from the printer', correct: true, feedback: 'Distance keeps spills away from electrical equipment.' },
     ],
   },
 ];

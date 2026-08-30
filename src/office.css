@@ -26,10 +26,10 @@
 .hazard-choice:hover { border-color: var(--teal); }
 .hazard-choice.selected.correct { background: #dbeee5; border-color: #08615c; color: #08615c; }
 .hazard-choice.selected.incorrect { background: #fae9e3; border-color: #9c3927; color: #873321; }
-.hazard-result { display: grid; grid-template-columns: auto 1fr; gap: .25rem .45rem; margin-top: .75rem; padding: .7rem .8rem; border-left: 3px solid var(--teal); background: #edf6f1; border-radius: 0 .4rem .4rem 0; }
+.hazard-result { display: block; margin-top: .75rem; padding: .7rem .8rem; border-left: 3px solid var(--teal); background: #edf6f1; border-radius: 0 .4rem .4rem 0; }
 .hazard-result.incorrect { border-color: #9c3927; }
 .hazard-result.incorrect { background: #fbefeb; }
-.hazard-result strong { display: block; margin: 0; color: #08615c; font-size: .9375rem; line-height: 1.45; }
+.hazard-result strong { display: block; margin: 0 0 .2rem; color: #08615c; font-size: .9375rem; line-height: 1.45; }
 .hazard-result.incorrect strong { color: #873321; }
 .hazard-result p { font-size: .9375rem; line-height: 1.45; margin: 0; }
 .hazard-footer { display: flex; flex-wrap: wrap; align-items: center; gap: .75rem 1rem; margin-top: 1.5rem; padding-top: 1.25rem; border-top: 1px solid var(--line); }
@@ -106,7 +106,7 @@
 }
 .office-immersive .hazard-picker button { flex: 1; justify-content: center; min-height: 3rem; padding: .625rem .75rem; background: #10383dea; border-color: #9fc2ba; color: white; }
 .office-immersive .hazard-picker button[aria-current] { background: #08665e; border-color: #b8eee2; color: white; }
-.office-footnote { position: absolute; z-index: 2; bottom: 1rem; inset-inline: var(--activity-gutter); display: flex; flex-wrap: wrap; justify-content: space-between; gap: .375rem 1rem; }
+.office-footnote { position: absolute; z-index: 2; bottom: 1rem; inset-inline: var(--activity-gutter); display: flex; flex-wrap: wrap; justify-content: flex-end; gap: .375rem 1rem; }
 .office-footnote p { font-size: .9375rem; line-height: 1.5; color: white; background: #10383dd9; padding: .25rem .5rem; border-radius: .25rem; margin: 0; }
 .office-immersive .hazard-marker:focus-visible,.office-immersive .hazard-picker button:focus-visible { outline-color: #fce89d; }
 @media(min-width:1440px) { .app-shell #office.office-immersive { --office-header: 4.5rem; } }

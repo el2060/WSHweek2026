@@ -41,7 +41,7 @@ export default function OfficeScene({ onComplete }: { onComplete: () => void }) 
   };
   const next = () => choose(step < officeHotspots.length - 1 ? step + 1 : Math.max(0, officeHotspots.findIndex(item => !isCorrect(item, choices))));
   return <section id="office" className="chapter hazard-guided office-immersive" data-active-hazard={active.id}>
-    <div className="scene-heading"><h1>01 · Spot 5 hazards</h1><p>Choose a marker, then the safest action.</p></div>
+    <div className="scene-heading"><h1>01 · Spot hazards</h1><p>Choose a marker, then the safest action.</p></div>
     <div className="office-workspace" ref={workspace}>
       <div className="office-context">
         <div className="scene-frame">
@@ -55,7 +55,7 @@ export default function OfficeScene({ onComplete }: { onComplete: () => void }) 
           {officeHotspots.map((item, index) => <button key={item.id} aria-current={index === step ? 'step' : undefined} onClick={() => choose(index)}><span>{isCorrect(item, choices) ? <Check size={17} aria-hidden="true"/> : index + 1}</span>{item.label}{isCorrect(item, choices) && <span className="sr-only"> — completed</span>}</button>)}
         </div>
       <div className="hazard-panel" ref={panel}>
-        <div className="hazard-panel-meta"><p className="eyebrow">Hazard {step + 1} of 5</p><p>{count} done</p></div>
+        <div className="hazard-panel-meta"><p className="eyebrow">{active.label} · {step + 1} of 5</p></div>
         <h3 ref={heading} tabIndex={-1}><ReadingText>{active.title}</ReadingText></h3>
         <div className="hazard-workbench" key={active.id}>
           <p className="hazard-prompt" id={`hazard-prompt-${active.id}`}><ReadingText>{active.prompt}</ReadingText></p>
@@ -63,10 +63,10 @@ export default function OfficeScene({ onComplete }: { onComplete: () => void }) 
             {active.options.map(option => <button className={`hazard-choice ${selected?.id === option.id ? `selected ${option.correct ? 'correct' : 'incorrect'}` : ''}`} key={option.id} aria-pressed={selected?.id === option.id} onClick={() => applyChoice(option.id)}><span>{option.label}</span>{selected?.id === option.id && (option.correct ? <Check size={20} aria-hidden="true"/> : <X size={20} aria-hidden="true"/>)}</button>)}
           </div>
         </div>
-        <div className="hazard-feedback" role="status" aria-live="polite" aria-atomic="true">{selected && <div className={`hazard-result ${selected.correct ? 'correct' : 'incorrect'}`}><strong>{selected.correct ? 'Nice.' : 'Try again.'}</strong><p><ReadingText>{selected.feedback}</ReadingText></p></div>}</div>
+        <div className="hazard-feedback" role="status" aria-live="polite" aria-atomic="true">{selected && <div className={`hazard-result ${selected.correct ? 'correct' : 'incorrect'}`}><strong>{selected.correct ? 'Why this helps' : 'Try this instead'}</strong><p><ReadingText>{selected.feedback}</ReadingText></p></div>}</div>
         <div className="hazard-footer"><div>{step > 0 && <button className="text-button" onClick={() => choose(step - 1)}><ArrowLeft size={18}/>Back</button>}{allDone ? <button className="primary" onClick={onComplete}>Continue to Fire <ArrowRight size={19}/></button> : <button className="secondary" onClick={next}>{selected?.correct ? 'Next' : 'Skip for now'}<ArrowRight size={19}/></button>}</div></div>
       </div>
     </div>
-    <div className="office-footnote"><p className="hazard-scene-note">5 everyday hazards</p><p className="hazard-safety-note"><ReadingText>Not safe to fix? Keep clear and ask for help.</ReadingText></p></div>
+    <div className="office-footnote"><p className="hazard-safety-note"><ReadingText>Not safe to fix? Keep clear and ask for help.</ReadingText></p></div>
   </section>;
 }
