@@ -69,7 +69,7 @@ export default function ExperimentRoomScene({ onComplete, onBack }: { onComplete
   const resetPhoto = () => { sceneRef.current?.style.setProperty('--room-look-x', '0px'); sceneRef.current?.style.setProperty('--room-look-y', '0px'); };
 
   return <section ref={sceneRef} className={`experiment-room ${active ? 'has-focus' : ''}`} data-focus-side={active && active.x < 48 ? 'left' : 'right'} style={focusStyle} onPointerMove={movePhoto} onPointerLeave={resetPhoto}>
-    <div className="experiment-camera"><img src="/assets/experiment-room/training-composite.webp?v=hazards-1" alt="Experiment Room training scene with four added safety hazards: a damaged cable, overloaded power strip, detached chair caster and liquid spill."/></div>
+    <div className="experiment-camera"><img src="/assets/experiment-room/training-composite-avatars-v3.webp" alt="Stylized 3D avatars taking part in a hands-on Experiment Room workshop, with laptops, training kits, refreshments and four safety hazards to inspect."/></div>
     <div className="experiment-shade" aria-hidden="true"/><div className="experiment-focus" aria-hidden="true"/>
     <div className="experiment-heading"><p>01B · CLTE space</p><h1>Experiment Room</h1><span><MapPin/> Block 31 · Level 2</span></div>
     <div className="experiment-score" aria-live="polite"><strong>{count}/{hazards.length}</strong><span>made safe</span></div>
