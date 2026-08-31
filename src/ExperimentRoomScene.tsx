@@ -1,5 +1,5 @@
 import { type CSSProperties, useEffect, useRef, useState } from 'react';
-import { ArrowLeft, ArrowRight, Check, Eye, MapPin, X } from 'lucide-react';
+import { ArrowLeft, ArrowRight, Check, Eye, MapPin, TriangleAlert, X, Zap } from 'lucide-react';
 
 type RoomChoice = { id: string; label: string; correct: boolean; feedback: string };
 type RoomHazard = { id: string; x: number; y: number; label: string; title: string; story: string; choices: RoomChoice[] };
@@ -12,7 +12,7 @@ export function clearExperimentRoomProgress() {
 const hazards: RoomHazard[] = [
   { id: 'aisle-cable', x: 18, y: 60, label: 'Damage', title: 'Damaged cable insulation', story: 'The cable crossing the floor has split insulation and exposed wiring.', choices: [
     { id: 'small-tape', label: 'Cover the damaged section with tape', correct: false, feedback: 'Tape is not a reliable repair for damaged electrical insulation. Stop using the cable and keep people clear.' },
-    { id: 'reroute', label: 'Isolate it and report the damaged cable', correct: true, feedback: 'Stop anyone using or touching it, isolate the supply if safe, and arrange replacement by an authorised person.' },
+    { id: 'reroute', label: 'Isolate it, place a warning sign and report it', correct: true, feedback: 'Keep people clear with an electrical-hazard warning sign, isolate the supply if safe, and arrange replacement by an authorised person.' },
   ]},
   { id: 'aisle-bag', x: 92, y: 91, label: 'Caster', title: 'Detached chair caster', story: 'A caster has come away from the front-right chair, leaving it unstable.', choices: [
     { id: 'under-table', label: 'Keep the chair out of use and report it', correct: true, feedback: 'Move the chair aside without sitting on it, label it clearly and arrange a proper repair or replacement.' },
@@ -73,12 +73,16 @@ export default function ExperimentRoomScene({ onComplete, onBack }: { onComplete
     <div className="experiment-shade" aria-hidden="true"/><div className="experiment-focus" aria-hidden="true"/>
     <div className="experiment-heading"><p>01B · CLTE space</p><h1>Experiment Room</h1><span><MapPin/> Block 31 · Level 2</span></div>
     <div className="experiment-score" aria-live="polite"><strong>{count}/{hazards.length}</strong><span>made safe</span></div>
+    {isDone(hazards[0]) && <div className="experiment-warning-sign" role="status" aria-label="Electrical hazard warning sign placed. Keep clear.">
+      <span className="experiment-warning-symbol"><TriangleAlert/><Zap/></span>
+      <strong>Electrical hazard</strong><small>Keep clear</small>
+    </div>}
     <div className="experiment-hotspots" aria-label="Guided room hazards">{hazards.map(hazard => <button key={hazard.id} style={{left:`${hazard.x}%`,top:`${hazard.y}%`}} className={`${activeId === hazard.id ? 'active' : ''} ${isDone(hazard) ? 'done' : ''}`} aria-label={`Inspect ${hazard.title}`} onClick={() => inspect(hazard)}>{isDone(hazard) ? <Check/> : <><span/><small>{hazard.label}</small></>}</button>)}</div>
     <aside className={`experiment-panel ${active ? 'has-hazard' : 'is-brief'}`}>
       {!active ? <div className="experiment-brief"><Eye/><p>Part 2 of 2 · Photo walkthrough</p><h2>Look around the room.</h2><span>Follow the soft pulse to inspect each hazard.</span></div> : <>
         <p className="experiment-meta">{active.label} · {hazards.indexOf(active) + 1} of {hazards.length}</p><h2 ref={titleRef} tabIndex={-1}>{active.title}</h2><p className="experiment-story">{active.story}</p>
         <div className="experiment-choices" role="group" aria-label={active.title}>{active.choices.map(choice => <button key={choice.id} aria-pressed={selected?.id === choice.id} className={selected?.id === choice.id ? (choice.correct ? 'correct' : 'incorrect') : ''} onClick={() => setChoices(current => ({...current,[active.id]:choice.id}))}><span>{choice.label}</span>{selected?.id === choice.id && (choice.correct ? <Check/> : <X/>)}</button>)}</div>
-        {selected && <div className={`experiment-feedback ${selected.correct ? 'correct' : 'incorrect'}`} role="status"><strong>{selected.correct ? 'Why this helps' : 'Try this instead'}</strong><p>{selected.feedback}</p></div>}
+        {selected && <div className={`experiment-feedback ${selected.correct ? 'correct' : 'incorrect'}`} role="status"><strong>{selected.correct ? 'Why this helps' : 'Try this instead'}</strong><p>{selected.feedback}</p>{active.id === 'aisle-cable' && selected.correct && <span className="experiment-sign-confirmation"><TriangleAlert/> Warning sign placed · Keep clear</span>}</div>}
         <div className="experiment-actions">{allDone ? <button className="primary" onClick={onComplete}>Continue to Fire <ArrowRight/></button> : <button className="secondary" onClick={nextHazard}>{selected?.correct ? 'Next hazard' : 'Skip for now'} <ArrowRight/></button>}</div>
       </>}
     </aside>
