@@ -283,3 +283,8 @@ nav{gap:.45rem}nav button{min-height:42px;padding:.55rem .78rem;font-size:.95rem
 }
 
 @media(max-width:420px){.pov-scene-thumbnails{gap:.35rem}.pov-scene-thumbnails button{height:72px}.pov-scene-thumbnails button span{font-size:.66rem}}
+
+/* Two-part Hazards route in the global scenario navigation */
+header nav{align-items:center;gap:1.15rem}.hazards-nav-group{display:flex;align-items:center;gap:.45rem}.hazards-subnav{display:flex;align-items:center;gap:.2rem;padding-left:.55rem;border-left:1px solid var(--line)}.hazards-subnav button{min-height:36px;padding:.4rem .58rem;border-radius:100px;font-size:.68rem;letter-spacing:0;text-transform:none;white-space:nowrap;opacity:.62}.hazards-subnav button span{display:grid;width:18px;height:18px;place-items:center;border:1px solid currentColor;border-radius:50%;font-size:.58rem}.hazards-subnav button[aria-pressed=true]{background:var(--teal-light);color:var(--teal);opacity:1}.hazards-subnav button[aria-pressed=true] span{background:var(--teal);border-color:var(--teal);color:white}
+@media(max-width:1100px) and (min-width:851px){header nav{gap:.45rem}.hazards-nav-group{gap:.2rem}.hazards-subnav{gap:0;padding-left:.25rem}.hazards-subnav button{padding:.35rem .4rem;font-size:.62rem}.hazards-subnav button span{display:none}}
+@media(max-width:850px){nav .hazards-nav-group{display:grid;gap:.15rem}.hazards-nav-group>button{justify-self:start}.hazards-subnav{display:grid;grid-template-columns:1fr 1fr;gap:.4rem;padding:.1rem 0 .55rem 2.65rem;border:0}.hazards-subnav button{min-height:48px;justify-content:flex-start;padding:.6rem .75rem;border:1px solid var(--line);border-radius:10px;font-size:.86rem}.hazards-subnav button span{display:grid;font-size:.62rem}}
