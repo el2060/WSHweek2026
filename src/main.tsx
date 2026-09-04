@@ -10,6 +10,9 @@ import './office.css';
 import './experiment-room.css';
 import './fire.css';
 import './journey.css';
+import { initializeScorm } from './scorm';
+
+initializeScorm();
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode><App /></React.StrictMode>,

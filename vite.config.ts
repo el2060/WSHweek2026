@@ -17,4 +17,7 @@ const staticSiteWorker = () => ({
   },
 });
 
-export default defineConfig({ plugins: [react(), sites(), staticSiteWorker()] });
+export default defineConfig(({ mode }) => ({
+  base: mode === 'scorm' ? './' : '/',
+  plugins: mode === 'scorm' ? [react()] : [react(), sites(), staticSiteWorker()],
+}));

@@ -1,5 +1,7 @@
 node_modules/
 dist/
+scorm-build/
+output/scorm/
 tmp/
 .playwright-cli/
 *.tsbuildinfo

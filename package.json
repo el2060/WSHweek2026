@@ -6,6 +6,8 @@
   "scripts": {
     "dev": "vite",
     "build": "tsc -b && vite build",
+    "build:scorm": "tsc -b && vite build --mode scorm --outDir scorm-build --emptyOutDir && node scripts/prepare-scorm.mjs",
+    "verify:scorm": "node scripts/verify-scorm.mjs",
     "preview": "vite preview",
     "check": "tsc -b --pretty false"
   },

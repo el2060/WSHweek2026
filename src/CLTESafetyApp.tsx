@@ -8,6 +8,7 @@ import { InjuryScene, HazeScene, clearGuidedProgress } from './GuidedScenes';
 import PracticeReport from './PracticeReport';
 import ReportingScene, { clearReportingProgress } from './ReportingScene';
 import { ReadingText } from './ReadingText';
+import { isScormActive, readScormProgress, saveScormProgress } from './scorm';
 
 type Progress = { office: boolean; walkway: boolean; haze: boolean; evacuation: boolean; reporting: boolean; practice: boolean; guide: boolean; completion: boolean };
 type View = 'intro' | 'office' | 'walkway' | 'haze' | 'evacuation' | 'reporting' | 'practice' | 'guide' | 'completion';
@@ -16,9 +17,10 @@ const initialProgress: Progress = { office: false, walkway: false, haze: false, 
 
 function useSavedProgress() {
   const [progress, setProgress] = useState<Progress>(() => {
+    if (isScormActive()) return { ...initialProgress, ...(readScormProgress<Progress>() ?? {}) };
     try { return { ...initialProgress, ...JSON.parse(localStorage.getItem('clte-safety-progress') || sessionStorage.getItem('clte-safety-progress') || '') } as Progress; } catch { return initialProgress; }
   });
-  useEffect(() => { try { localStorage.setItem('clte-safety-progress', JSON.stringify(progress)); } catch { /* Progress can remain in memory. */ } }, [progress]);
+  useEffect(() => { try { localStorage.setItem('clte-safety-progress', JSON.stringify(progress)); } catch { /* Progress can remain in memory. */ } saveScormProgress(progress); }, [progress]);
   return [progress, setProgress] as const;
 }
 
