@@ -46,6 +46,7 @@
 .pov-response .pov-status { max-width: 27rem; padding: .625rem 1rem; border-left: 2px solid #8be5d7; background: #09252ddb; border-radius: 0 .5rem .5rem 0; }
 .pov-response .pov-status>span { color: #b8eee2; letter-spacing: .1em; }
 .pov-response .pov-status>small { display: block; color: #e0eeeb; }
+.pov-response .pov-tools { display: flex; flex-wrap: wrap; justify-content: flex-end; gap: .5rem; }
 .pov-response .pov-tools button { width: auto; min-height: 44px; padding: .65rem 1rem; background: #09252de8; font-size: 1rem; }
 .pov-context {
   position: relative; z-index: 3; grid-area: context;
@@ -85,6 +86,7 @@
 .pov-response .pov-feedback p { font-size: var(--reading-body); line-height: 1.5; }
 .pov-response .pov-actions { position: static; margin: 1.125rem 0 0; padding: 0; flex-wrap: wrap; gap: .75rem; background: none; }
 .pov-response .pov-actions button { font-size: 1.0625rem; min-height: 3rem; height: auto; }
+.pov-response .pov-actions .pov-recap-action { color: #075f5b; border-color: #69aaa0; background: #e7f5f0; }
 .pov-response .pov-stage-rail { position: relative; inset: auto; z-index: 3; grid-area: rail; height: auto; margin: 0; gap: .5rem; overflow: visible; }
 .pov-response .pov-stage-rail button { height: auto; min-height: 3.25rem; min-width: 0; gap: .5rem; padding: .625rem; background: #09252de8; border-color: #ffffff73; border-radius: .5rem; transform: none; }
 .pov-response .pov-stage-rail button.active { background: #08665e; border-color: #b8eee2; }
@@ -92,6 +94,20 @@
 .pov-response button:focus-visible { outline: 3px solid #fff0a7; outline-offset: 3px; }
 .pov-response .pov-decision button:focus-visible { outline-color: #8a5100; }
 @keyframes firePhotoIn { from { opacity: .6; } to { opacity: 1; } }
+.fire-protocol-backdrop { position: fixed; inset: 0; z-index: 400; display: grid; place-items: center; padding: 1.25rem; background: #061a20d9; backdrop-filter: blur(10px); }
+.fire-protocol-dialog { width: min(62rem,100%); max-height: calc(100svh - 2.5rem); overflow: auto; padding: 1.25rem; border: 1px solid #ffffff52; border-radius: 1.25rem; background: #fffdf7; color: var(--ink); box-shadow: 0 30px 90px #00000066; }
+.fire-protocol-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 1.5rem; padding: .25rem .25rem 1rem; }
+.fire-protocol-head .eyebrow { margin-bottom: .35rem; color: #bc4e38; }
+.fire-protocol-head h2 { margin: 0; font: 800 clamp(1.55rem,3vw,2.35rem)/1.05 'Manrope',sans-serif; letter-spacing: -.035em; }
+.fire-protocol-head p:last-child { margin: .55rem 0 0; color: var(--ink-2); font-size: 1rem; line-height: 1.5; }
+.fire-protocol-close { flex: none; display: grid; place-items: center; width: 44px; height: 44px; border: 1px solid var(--line); border-radius: 50%; background: white; color: var(--ink); }
+.fire-protocol-close svg { width: 20px; }
+.fire-protocol-dialog video { display: block; width: 100%; aspect-ratio: 16/9; border-radius: .875rem; background: #102b34; box-shadow: 0 12px 34px #0b242a24; }
+.fire-protocol-summary { display: grid; grid-template-columns: repeat(4,1fr); gap: .5rem; margin-top: 1rem; }
+.fire-protocol-summary>* { padding: .75rem; border-radius: .5rem; background: #e6eeea; color: #164e4b; text-align: center; font-size: .95rem; font-weight: 800; }
+.fire-protocol-summary strong { background: #f06d4f; color: white; }
+.fire-protocol-note { display: flex; align-items: flex-start; gap: .5rem; margin: 1rem .25rem .15rem; color: var(--ink-2); font-size: .9rem; line-height: 1.45; }
+.fire-protocol-note svg { flex: none; width: 18px; }
 @media(min-width: 1440px) { .app-shell .pov-response { --fire-header: 4.5rem; } }
 /* Only the photograph moves. Copy, navigation and choices stay stable. */
 @media(min-width: 1101px) and (hover: hover) and (pointer: fine) and (prefers-reduced-motion: no-preference) {
@@ -123,10 +139,15 @@
   .pov-response .pov-status>span,.pov-response .pov-status>small { font-size: .8125rem; }
   .pov-response .pov-status>strong { font-size: 1.125rem; }
   .pov-response .pov-tools button { padding: .5rem .75rem; font-size: .9375rem; }
+  .pov-response .pov-tools { justify-content: flex-start; }
   .pov-context { margin: 1rem; width: calc(100% - 2rem); }
   .pov-response .pov-decision { padding: 1.5rem 1.125rem; }
   .pov-response .pov-stage-rail { padding: 1rem; }
   .pov-response .pov-stage-rail button strong { font-size: .875rem; }
+  .fire-protocol-backdrop { padding: 0; align-items: end; }
+  .fire-protocol-dialog { max-height: 94svh; padding: 1rem; border-radius: 1.25rem 1.25rem 0 0; }
+  .fire-protocol-head p:last-child { font-size: .9rem; }
+  .fire-protocol-summary { grid-template-columns: repeat(2,1fr); }
 }
 @media(prefers-reduced-motion: reduce) {
   .pov-response .pov-camera img { animation: none; transition: none; transform: none; }
