@@ -6,7 +6,7 @@
   "scripts": {
     "studio": "remotion studio src/index.ts --no-open",
     "render": "remotion render src/index.ts FireEmergencyProtocol ../public/assets/fire-emergency-protocol.mp4 --codec=h264 --crf=18",
-    "still": "remotion still src/index.ts FireEmergencyProtocol ../output/remotion/fire-protocol-cover.png --frame=45"
+    "still": "remotion still src/index.ts FireEmergencyProtocol ../public/assets/fire-emergency-protocol-cover.png --frame=45"
   },
   "dependencies": {
     "@remotion/cli": "4.0.520",
