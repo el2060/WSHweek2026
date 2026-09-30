@@ -163,6 +163,7 @@ header nav button:not(.current):not(.done){color:#52676b;opacity:1}
 .pov-actions button:last-child{color:white}
 .pov-stage-rail{position:static;grid-area:rail;display:grid;grid-template-columns:repeat(7,minmax(0,1fr));height:auto;overflow:visible;gap:8px;background:none}
 .pov-stage-rail button{height:56px;min-width:0;flex-direction:row;border:1px solid #78928c;border-radius:8px;gap:8px}
+.pov-stage-rail button:disabled{opacity:.4;cursor:not-allowed}
 .pov-stage-rail button strong{font-size:15px}
 .pov-stage-rail button>span{font-size:13px}
 .pov-tools button{font-size:15px;min-height:44px}

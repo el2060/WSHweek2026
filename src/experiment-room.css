@@ -32,6 +32,7 @@
 .experiment-hotspots button svg { width: 19px; }
 .experiment-hotspots button.active { outline: 3px solid #f3c563; outline-offset: 5px; animation: roomFocusPulse 1.7s ease-in-out infinite; }
 .experiment-hotspots button.done { background: #0a655d; animation: none; box-shadow: 0 0 0 6px #9fe1d11f; }
+.experiment-hotspots button:disabled { opacity: .4; cursor: not-allowed; animation: none; box-shadow: none; }
 .experiment-room.has-focus .experiment-hotspots button:not(.active) { opacity: 0; transform: translate(-50%,-50%) scale(.82); pointer-events: none; }
 .experiment-panel { position: absolute; z-index: 4; left: var(--activity-gutter); bottom: 5.8rem; width: min(28rem,36vw); padding: 1.35rem; border-radius: .9rem; background: #fffdf7f2; color: var(--ink); backdrop-filter: blur(14px); box-shadow: 0 18px 60px #04171d59; }
 .experiment-room[data-focus-side="left"] .experiment-panel { left: auto; right: var(--activity-gutter); }

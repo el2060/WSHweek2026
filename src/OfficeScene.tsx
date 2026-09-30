@@ -1,5 +1,5 @@
 import { useEffect, useLayoutEffect, useRef, useState, type CSSProperties } from 'react';
-import { ArrowLeft, ArrowRight, Check, X } from 'lucide-react';
+import { ArrowLeft, ArrowRight, Check, Lock, X } from 'lucide-react';
 import { pantryHotspots } from './config';
 import { ReadingText } from './ReadingText';
 import { hasAnswer } from './activityProgress';
@@ -26,6 +26,8 @@ export default function OfficeScene({ onComplete, nextLabel = 'Finish & return h
   const selected = active.options.find(option => option.id === choices[active.id]);
   const count = pantryHotspots.filter(item => isAnswered(item, choices)).length;
   const allDone = count === pantryHotspots.length;
+  const firstUnanswered = pantryHotspots.findIndex(item => !isAnswered(item, choices));
+  const openIndex = firstUnanswered === -1 ? pantryHotspots.length - 1 : firstUnanswered;
   const applyChoice = (id: string) => setChoices(current => ({ ...current, [active.id]: id }));
   useEffect(() => { try { localStorage.setItem(storageKey, JSON.stringify(choices)); } catch { /* Optional storage. */ } }, [choices]);
   useLayoutEffect(() => {
@@ -48,12 +50,12 @@ export default function OfficeScene({ onComplete, nextLabel = 'Finish & return h
         <div className="scene-frame">
           <img src="/assets/clte-pantry-hazards.png" alt="Illustrated CLTE pantry practice scene: spilled water, a bag and strap in the aisle, a trailing air purifier cable, a hot mug at the table edge and an open cupboard door."/>
           <svg className="pantry-mug-leader" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true"><line x1="43" y1="41" x2="40" y2="48"/></svg>
-          {pantryHotspots.map((item, index) => <button key={item.id} data-hazard={item.id} className={`hazard-marker ${index === step ? 'current' : ''} ${isAnswered(item, choices) ? 'done' : ''}`} style={{ left: `var(--hazard-marker-left, ${item.x}%)`, top: `var(--hazard-marker-top, ${item.y}%)` }} aria-label={`Inspect: ${item.title}`} aria-current={index === step ? 'step' : undefined} onClick={() => choose(index)}>{isAnswered(item, choices) ? <Check size={20} aria-hidden="true"/> : index + 1}</button>)}
+          {pantryHotspots.map((item, index) => { const locked = index > openIndex; return <button key={item.id} data-hazard={item.id} disabled={locked} aria-disabled={locked} className={`hazard-marker ${index === step ? 'current' : ''} ${isAnswered(item, choices) ? 'done' : ''}`} style={{ left: `var(--hazard-marker-left, ${item.x}%)`, top: `var(--hazard-marker-top, ${item.y}%)` }} aria-label={`Inspect: ${item.title}`} aria-current={index === step ? 'step' : undefined} onClick={() => choose(index)}>{isAnswered(item, choices) ? <Check size={20} aria-hidden="true"/> : locked ? <Lock size={16} aria-hidden="true"/> : index + 1}</button>; })}
         </div>
       </div>
       <div className="office-scene-shade" aria-hidden="true"/>
-      <div className="hazard-picker" role="group" aria-label="Five hazards — explore in any order">
-          {pantryHotspots.map((item, index) => <button key={item.id} aria-current={index === step ? 'step' : undefined} onClick={() => choose(index)}><span>{isAnswered(item, choices) ? <Check size={17} aria-hidden="true"/> : index + 1}</span>{item.label}{isAnswered(item, choices) && <span className="sr-only"> — completed</span>}</button>)}
+      <div className="hazard-picker" role="group" aria-label="Five hazards, in order">
+          {pantryHotspots.map((item, index) => { const locked = index > openIndex; return <button key={item.id} disabled={locked} aria-disabled={locked} aria-current={index === step ? 'step' : undefined} onClick={() => choose(index)}><span>{isAnswered(item, choices) ? <Check size={17} aria-hidden="true"/> : locked ? <Lock size={15} aria-hidden="true"/> : index + 1}</span>{item.label}{isAnswered(item, choices) && <span className="sr-only"> — completed</span>}</button>; })}
         </div>
       <div className="hazard-panel" ref={panel}>
         <div className="hazard-panel-meta"><p className="eyebrow">{active.label} · {step + 1} of 5</p></div>

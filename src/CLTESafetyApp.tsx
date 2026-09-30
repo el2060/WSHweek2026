@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
-import { ArrowDown, ArrowRight, Check, CirclePlay, ExternalLink, Eye, Flame, HeartHandshake, Info, MapPin, Menu, Phone, RotateCcw, Sparkles, Wrench, X } from 'lucide-react';
+import { ArrowDown, ArrowRight, Check, CirclePlay, ExternalLink, Eye, Flame, HeartHandshake, Info, Lock, MapPin, Menu, Phone, RotateCcw, Sparkles, Wrench, X } from 'lucide-react';
 import { officialInfo } from './config';
 import OfficeScene, { clearOfficeProgress } from './OfficeScene';
 import ExperimentRoomScene, { clearExperimentRoomProgress } from './ExperimentRoomScene';
@@ -104,7 +104,9 @@ function EvacuationScene({ onComplete }: { onComplete: () => void }) {
   const stage=routeStages[routeStage]; const photo=stage.photos[photoIndex]||stage.photos[0]; const selected=stage.choices.find(choice=>choice.id===answers[routeStage]);
   useEffect(()=>{try{localStorage.setItem('clte-fire-answers-v1',JSON.stringify(answers))}catch{/* Optional storage. */}},[answers]);
   const completeCount=routeStages.filter((item,index)=>hasAnswer(item.choices,answers[index])).length; const allAnswered=completeCount===routeStages.length;
-  const reviewNext=()=>{const next=routeStages.findIndex((item,index)=>!hasAnswer(item.choices,answers[index]));selectStage(next<0?0:next)};
+  const firstUnanswered=routeStages.findIndex((item,index)=>!hasAnswer(item.choices,answers[index]));
+  const openIndex=firstUnanswered===-1?routeStages.length-1:firstUnanswered;
+  const reviewNext=()=>selectStage(firstUnanswered<0?0:firstUnanswered);
   const selectStage=(index:number)=>{setRouteStage(index);setPhotoIndex(0);setMapOpen(false)};
   const moveCamera=(event:React.PointerEvent<HTMLElement>)=>{
     if(mapOpen||protocolOpen||event.pointerType!=='mouse'||!window.matchMedia('(min-width: 1101px) and (hover: hover) and (pointer: fine) and (prefers-reduced-motion: no-preference)').matches)return;
@@ -137,7 +139,7 @@ function EvacuationScene({ onComplete }: { onComplete: () => void }) {
       {selected&&<div className={`pov-feedback ${selected.best?'good':'consider'}`} aria-live="polite"><Info/><div><strong>{selected.best?'Why this helps':'A safer next step'}</strong><p><ReadingText>{selected.feedback}</ReadingText></p></div></div>}
       <div className="pov-actions"><button disabled={routeStage===0} onClick={()=>selectStage(routeStage-1)}><ArrowRight className="turn"/> Back</button>{allAnswered?<><button className="pov-recap-action" onClick={()=>setProtocolOpen(true)}><CirclePlay/> Watch recap</button><button className="pov-complete-action" onClick={onComplete}>Finish & return home <ArrowRight/></button></>:routeStage<routeStages.length-1?<button disabled={!selected} onClick={()=>selectStage(routeStage+1)}>Next checkpoint <ArrowRight/></button>:<button disabled={!selected} onClick={reviewNext}>Next unanswered checkpoint <ArrowRight/></button>}</div>
     </aside>
-    <div className="pov-stage-rail" role="tablist" aria-label="Actual evacuation route checkpoints">{routeStages.map((item,index)=>{const done=hasAnswer(item.choices,answers[index]);return <button key={item.id} role="tab" aria-selected={routeStage===index} className={`${routeStage===index?'active':''} ${done?'done':''}`} onClick={()=>selectStage(index)}><span>{done?<Check/>:index+1}</span><strong>{item.label}</strong></button>})}</div>
+    <div className="pov-stage-rail" role="tablist" aria-label="Evacuation checkpoints, in order">{routeStages.map((item,index)=>{const done=hasAnswer(item.choices,answers[index]);const locked=index>openIndex;return <button key={item.id} role="tab" aria-selected={routeStage===index} aria-disabled={locked} disabled={locked} className={`${routeStage===index?'active':''} ${done?'done':''}`} onClick={()=>selectStage(index)}><span>{done?<Check/>:locked?<Lock size={14}/>:index+1}</span><strong>{item.label}</strong></button>})}</div>
     {mapOpen&&<div className="pov-map-backdrop" onMouseDown={event=>{if(event.target===event.currentTarget)setMapOpen(false)}}><div className="pov-map-dialog" role="dialog" aria-modal="true" aria-label="Block 27 to Admin Field route map"><button className="sheet-close" onClick={()=>setMapOpen(false)} aria-label="Close route map"><X/></button><img src="/assets/block27-admin-field-route.jpg" alt="Aerial emergency route map from Block 27 to Zone A at Admin Field."/><p><MapPin/><span><strong>Block 27 → Zone A, Admin Field</strong><small><ReadingText>Follow fire wardens and current posted evacuation instructions.</ReadingText></small></span></p></div></div>}
     <FireProtocolDialog open={protocolOpen} recap={allAnswered} onClose={()=>setProtocolOpen(false)}/>
   </section>;

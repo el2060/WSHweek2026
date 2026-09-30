@@ -90,6 +90,7 @@
 .pov-response .pov-stage-rail { position: relative; inset: auto; z-index: 3; grid-area: rail; height: auto; margin: 0; gap: .5rem; overflow: visible; }
 .pov-response .pov-stage-rail button { height: auto; min-height: 3.25rem; min-width: 0; gap: .5rem; padding: .625rem; background: #09252de8; border-color: #ffffff73; border-radius: .5rem; transform: none; }
 .pov-response .pov-stage-rail button.active { background: #08665e; border-color: #b8eee2; }
+.pov-response .pov-stage-rail button:disabled { opacity: .4; cursor: not-allowed; }
 .pov-response .pov-stage-rail button strong { font-size: 1rem; line-height: 1.4; }
 .pov-response button:focus-visible { outline: 3px solid #fff0a7; outline-offset: 3px; }
 .pov-response .pov-decision button:focus-visible { outline-color: #8a5100; }

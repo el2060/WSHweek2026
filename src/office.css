@@ -7,9 +7,11 @@
 .hazard-marker { position: absolute; transform: translate(-50%,-50%); width: 2.75rem; height: 2.75rem; min-width: 44px; min-height: 44px; display: grid; place-items: center; padding: 0; border-radius: 50%; border: 2px solid var(--teal); background: var(--white); color: var(--ink); font-size: 1.125rem; font-weight: 800; cursor: pointer; box-shadow: 0 2px 8px #132b3433; }
 .hazard-marker.current { background: var(--teal); color: white; outline: 3px solid white; outline-offset: 2px; }
 .hazard-marker.done:not(.current) { background: #d7ebe2; }
+.hazard-marker:disabled { opacity: .5; cursor: not-allowed; box-shadow: none; animation: none; }
 .hazard-picker { display: flex; flex-wrap: wrap; gap: .375rem .5rem; margin-top: .875rem; }
 .hazard-picker button { display: flex; align-items: center; gap: .4rem; background: transparent; border: 1px solid transparent; border-radius: .5rem; min-height: 44px; padding: .5rem .625rem; color: var(--ink-2); font-size: 1rem; font-weight: 650; cursor: pointer; }
 .hazard-picker button[aria-current] { border-color: var(--teal); background: #e4eee6; color: #08615c; }
+.hazard-picker button:disabled { opacity: .45; cursor: not-allowed; }
 .hazard-picker button>span:first-child { width: 1.25rem; height: 1.25rem; line-height: 1.25rem; display: grid; place-items: center; }
 .hazard-scene-note,.hazard-safety-note { font-size: 1rem; line-height: 1.55; margin: .875rem 0 0; text-wrap: pretty; }
 .hazard-panel { padding: 1.75rem; background: var(--white); border: 1px solid var(--line); border-radius: 1rem; }

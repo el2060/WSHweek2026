@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
-import { ArrowLeft, ArrowRight, Check, X } from 'lucide-react';
+import { ArrowLeft, ArrowRight, Check, Lock, X } from 'lucide-react';
 import { journeys, type JourneyDefinition, type JourneyKind } from './journeyData';
 import { ReadingText } from './ReadingText';
 import { hasAnswer } from './activityProgress';
@@ -30,6 +30,8 @@ export default function DecisionJourney({ kind, onComplete }: { kind: JourneyKin
   const selected = moment.choices.find(choice => choice.id === choices[moment.id]);
   const count = definition.moments.filter((_, index) => isDone(index)).length;
   const allDone = count === definition.moments.length;
+  const firstUnansweredIndex = definition.moments.findIndex((_, index) => !isDone(index));
+  const openIndex = firstUnansweredIndex === -1 ? definition.moments.length - 1 : firstUnansweredIndex;
   useEffect(() => { try { localStorage.setItem(storageKey(kind), JSON.stringify(choices)); } catch { /* Optional storage. */ } }, [kind, choices]);
   const moveTo = (index: number) => {
     const imageChanges = definition.moments[index].image !== moment.image;
@@ -63,7 +65,7 @@ export default function DecisionJourney({ kind, onComplete }: { kind: JourneyKin
       </div></div>
       <details className="journey-reference" key={step}><summary>Quick reference</summary><ul>{definition.reference.map(item => <li key={item}><ReadingText>{item}</ReadingText></li>)}</ul><div>{definition.links.map(link => <a key={link.href} href={link.href} target="_blank" rel="noreferrer">{link.label}</a>)}</div></details>
     </div>
-    <div className="journey-nav" role="group" aria-label="Situations — explore in any order">{definition.moments.map((item, index) => <button key={item.id} aria-current={step === index ? 'step' : undefined} onClick={() => moveTo(index)}><span>{isDone(index) ? <Check size={18} aria-hidden="true"/> : index + 1}</span>{item.label}{isDone(index) && <span className="sr-only"> — completed</span>}</button>)}</div>
+    <div className="journey-nav" role="group" aria-label="Situations, in order">{definition.moments.map((item, index) => { const locked = index > openIndex; return <button key={item.id} disabled={locked} aria-disabled={locked} aria-current={step === index ? 'step' : undefined} onClick={() => moveTo(index)}><span>{isDone(index) ? <Check size={18} aria-hidden="true"/> : locked ? <Lock size={16} aria-hidden="true"/> : index + 1}</span>{item.label}{isDone(index) && <span className="sr-only"> — completed</span>}</button>; })}</div>
     <div className="journey-footnote"><p>{definition.safety ? `${definition.safety} This activity doesn’t place calls or submit reports.` : 'Practice only · Nothing is submitted.'}</p></div>
   </section>;
 }

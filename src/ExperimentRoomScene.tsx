@@ -1,5 +1,5 @@
 import { type CSSProperties, useEffect, useRef, useState } from 'react';
-import { ArrowLeft, ArrowRight, Check, Eye, MapPin, TriangleAlert, X, Zap } from 'lucide-react';
+import { ArrowLeft, ArrowRight, Check, Eye, Lock, MapPin, TriangleAlert, X, Zap } from 'lucide-react';
 
 import { hasAnswer } from './activityProgress';
 
@@ -51,6 +51,8 @@ export default function ExperimentRoomScene({ onComplete, onBack }: { onComplete
   const isDone = (hazard: RoomHazard) => hasAnswer(hazard.choices, choices[hazard.id]);
   const count = hazards.filter(isDone).length;
   const allDone = count === hazards.length;
+  const firstUnfinishedIndex = hazards.findIndex(hazard => !isDone(hazard));
+  const openIndex = firstUnfinishedIndex === -1 ? hazards.length - 1 : firstUnfinishedIndex;
   const focusStyle = active ? ({ '--room-focus-x': `${active.x}%`, '--room-focus-y': `${active.y}%` } as CSSProperties) : undefined;
 
   useEffect(() => { try { localStorage.setItem(storageKey, JSON.stringify(choices)); } catch { /* Optional local progress. */ } }, [choices]);
@@ -79,7 +81,7 @@ export default function ExperimentRoomScene({ onComplete, onBack }: { onComplete
       <span className="experiment-warning-symbol"><TriangleAlert/><Zap/></span>
       <strong>Electrical hazard</strong><small>Keep clear</small>
     </div>}
-    <div className="experiment-hotspots" aria-label="Guided room hazards">{hazards.map(hazard => <button key={hazard.id} style={{left:`${hazard.x}%`,top:`${hazard.y}%`}} className={`${activeId === hazard.id ? 'active' : ''} ${isDone(hazard) ? 'done' : ''}`} aria-label={`Inspect ${hazard.title}`} onClick={() => inspect(hazard)}>{isDone(hazard) ? <Check/> : <><span/><small>{hazard.label}</small></>}</button>)}</div>
+    <div className="experiment-hotspots" aria-label="Guided room hazards, in order">{hazards.map((hazard, index) => { const locked = index > openIndex; return <button key={hazard.id} style={{left:`${hazard.x}%`,top:`${hazard.y}%`}} disabled={locked} aria-disabled={locked} className={`${activeId === hazard.id ? 'active' : ''} ${isDone(hazard) ? 'done' : ''}`} aria-label={`Inspect ${hazard.title}`} onClick={() => inspect(hazard)}>{isDone(hazard) ? <Check/> : locked ? <Lock size={16}/> : <><span/><small>{hazard.label}</small></>}</button>; })}</div>
     <aside className={`experiment-panel ${active ? 'has-hazard' : 'is-brief'}`}>
       {!active ? <div className="experiment-brief"><Eye/><p>Photo walkthrough</p><h2>Look around the room.</h2><span>Follow the soft pulse to find each hazard.</span></div> : <>
         <p className="experiment-meta">{active.label} · {hazards.indexOf(active) + 1} of {hazards.length}</p><h2 ref={titleRef} tabIndex={-1}>{active.title}</h2><p className="experiment-story">{active.story}</p>
