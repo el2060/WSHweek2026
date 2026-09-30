@@ -125,7 +125,7 @@ function EvacuationScene({ onComplete }: { onComplete: () => void }) {
     </div>
     <div className="pov-context">
       {stage.photos.length>1&&<div className="pov-scene-gallery" aria-label="Real route views">
-        <div className="pov-scene-gallery-head"><span><Eye/> Route photos</span><small>{photoIndex+1} of {stage.photos.length}</small></div>
+        <div className="pov-scene-gallery-head"><span><Eye/> Route photos</span><small>{stage.photos.length} views</small></div>
         <div className="pov-scene-thumbnails" style={{gridTemplateColumns:`repeat(${stage.photos.length},minmax(0,1fr))`}}>{stage.photos.map((view,index)=><button key={view[0]} type="button" className={photoIndex===index?'active':''} aria-pressed={photoIndex===index} aria-label={`Show route view ${index+1}: ${view[1]}`} onClick={()=>setPhotoIndex(index)}><img src={view[0]} alt=""/><span>View {index+1}</span></button>)}</div>
         <p className="pov-photo-caption" aria-live="polite">{photo[1]}</p>
       </div>}
@@ -137,7 +137,7 @@ function EvacuationScene({ onComplete }: { onComplete: () => void }) {
       <div className="pov-decision-head"><h3>{stage.prompt}</h3></div>
       <div className="pov-choices">{stage.choices.map((choice,index)=><button key={choice.id} aria-pressed={answers[routeStage]===choice.id} className={answers[routeStage]===choice.id?`selected ${choice.best?'safe':'risk'}`:''} onClick={()=>setAnswers(value=>({...value,[routeStage]:choice.id}))}><span>{answers[routeStage]===choice.id?(choice.best?<Check/>:<X/>):String.fromCharCode(65+index)}</span><strong>{choice.label}</strong></button>)}</div>
       {selected&&<div className={`pov-feedback ${selected.best?'good':'consider'}`} aria-live="polite"><Info/><div><strong>{selected.best?'Why this helps':'A safer next step'}</strong><p><ReadingText>{selected.feedback}</ReadingText></p></div></div>}
-      <div className="pov-actions"><button disabled={routeStage===0} onClick={()=>selectStage(routeStage-1)}><ArrowRight className="turn"/> Back</button>{allAnswered?<><button className="pov-recap-action" onClick={()=>setProtocolOpen(true)}><CirclePlay/> Watch recap</button><button className="pov-complete-action" onClick={onComplete}>Finish & return home <ArrowRight/></button></>:routeStage<routeStages.length-1?<button disabled={!selected} onClick={()=>selectStage(routeStage+1)}>Next checkpoint <ArrowRight/></button>:<button disabled={!selected} onClick={reviewNext}>Next unanswered checkpoint <ArrowRight/></button>}</div>
+      <div className="pov-actions"><button disabled={routeStage===0} onClick={()=>selectStage(routeStage-1)}><ArrowRight className="turn"/> Back</button>{allAnswered?<><button className="pov-recap-action" onClick={()=>setProtocolOpen(true)}><CirclePlay/> Watch recap</button><button className="pov-complete-action" onClick={onComplete}>Finish & return home <ArrowRight/></button></>:routeStage<routeStages.length-1?<button disabled={!selected} onClick={()=>selectStage(routeStage+1)}>Next checkpoint <ArrowRight/></button>:<button disabled={!selected} onClick={reviewNext}>Next unanswered <ArrowRight/></button>}</div>
     </aside>
     <div className="pov-stage-rail" role="tablist" aria-label="Evacuation checkpoints, in order">{routeStages.map((item,index)=>{const done=hasAnswer(item.choices,answers[index]);const locked=index>openIndex;return <button key={item.id} role="tab" aria-selected={routeStage===index} aria-disabled={locked} disabled={locked} className={`${routeStage===index?'active':''} ${done?'done':''}`} onClick={()=>selectStage(index)}><span>{done?<Check/>:locked?<Lock size={14}/>:index+1}</span><strong>{item.label}</strong></button>})}</div>
     {mapOpen&&<div className="pov-map-backdrop" onMouseDown={event=>{if(event.target===event.currentTarget)setMapOpen(false)}}><div className="pov-map-dialog" role="dialog" aria-modal="true" aria-label="Block 27 to Admin Field route map"><button className="sheet-close" onClick={()=>setMapOpen(false)} aria-label="Close route map"><X/></button><img src="/assets/block27-admin-field-route.jpg" alt="Aerial emergency route map from Block 27 to Zone A at Admin Field."/><p><MapPin/><span><strong>Block 27 → Zone A, Admin Field</strong><small><ReadingText>Follow fire wardens and current posted evacuation instructions.</ReadingText></small></span></p></div></div>}
@@ -151,14 +151,14 @@ function PocketGuide({ onComplete }: { onComplete: () => void }) {
   const moveTab=(event:React.KeyboardEvent<HTMLButtonElement>,current:typeof tab)=>{if(!['ArrowRight','ArrowLeft','Home','End'].includes(event.key))return;event.preventDefault();const tablist=event.currentTarget.parentElement;const index=tabs.indexOf(current);const next=event.key==='Home'?0:event.key==='End'?tabs.length-1:event.key==='ArrowRight'?(index+1)%tabs.length:(index-1+tabs.length)%tabs.length;setTab(tabs[next]);requestAnimationFrame(()=>tablist?.querySelectorAll<HTMLButtonElement>('[role="tab"]')[next]?.focus())};
   const tabButton=(id:typeof tab,label:string,icon:React.ReactNode)=><button id={`guide-tab-${id}`} role="tab" aria-selected={tab===id} aria-controls={`guide-panel-${id}`} tabIndex={tab===id?0:-1} onKeyDown={event=>moveTab(event,id)} onClick={()=>setTab(id)}>{icon}<span>{label}</span></button>;
   return <section id="guide" className="guide interactive-guide">
-    <div className="guide-title"><p className="eyebrow">Keep this handy</p><h2>WSH contacts</h2><p>What to do. Who to call.</p></div>
+    <div className="guide-title"><p className="eyebrow">Keep this handy</p><h2>WSH contacts</h2><p>Who to call, and what to do.</p></div>
     <div className="guide-tabs" role="tablist" aria-label="WSH contact categories">{tabButton('emergency','Emergency',<Phone/>)}{tabButton('incident','Incident / near miss',<HeartHandshake/>)}{tabButton('hazard','Hazard / defect',<Wrench/>)}</div>
     <div id={`guide-panel-${tab}`} role="tabpanel" aria-labelledby={`guide-tab-${tab}`} className="guide-focus reveal" key={tab}>
       {tab==='emergency'&&<article><p className="eyebrow">Serious medical injury</p><h3>Call <span className="reading-number">{officialInfo.ambulanceNumber}</span></h3><ul><li>Give the exact location</li><li>Call Guard Post: <strong className="reading-number">{officialInfo.emergencyNumber}</strong></li><li>Stay with the person until help arrives</li></ul><div className="guide-actions"><ActionLink href={officialInfo.links.emergencyInfo}>Emergency info</ActionLink><ActionLink href={officialInfo.links.oneMap}>Zone A map</ActionLink></div></article>}
       {tab==='incident'&&<article><p className="eyebrow">Incident or near miss</p><h3>Care. Control. Report.</h3><ul><li>Help the person and make the area safe</li><li>Student case? Call SAS: <strong className="reading-number">{officialInfo.sasNumber}</strong></li><li>Report promptly in the WSH Portal</li></ul><div className="guide-actions"><ActionLink href={officialInfo.links.wshPortal}>WSH Portal</ActionLink><ActionLink href={officialInfo.links.studentInsurance}>Student insurance</ActionLink></div></article>}
       {tab==='hazard'&&<article><p className="eyebrow">Hazard or defect</p><h3>Call <span className="reading-number">{officialInfo.faultNumber}</span></h3><ul><li>Make the area safer if you can</li><li>Alert the person in charge</li><li>Report the fault</li></ul><ActionLink href={officialInfo.links.faultReport}>Report a fault</ActionLink></article>}
     </div>
-    <button className="primary guide-finish" onClick={onComplete}>Back to home <ArrowRight/></button>
+    <button className="primary guide-finish" onClick={onComplete}>Home <ArrowRight/></button>
   </section>;
 }
 
@@ -191,7 +191,7 @@ export default function App() {
   const complete=(key:ScenarioId|'guide')=>{
     setProgress(current=>completeActivity(current,key));
     const title=scenarios.find(scenario=>scenario.id===key)?.title;
-    setNotice(title?`${title} complete. Choose another scenario anytime.`:'Contacts reviewed—come back anytime.');
+    setNotice(title?`${title} complete.`:'Contacts reviewed.');
     setView('intro');
   };
   const resetProgress=()=>{

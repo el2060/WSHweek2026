@@ -61,11 +61,11 @@ export default function DecisionJourney({ kind, onComplete }: { kind: JourneyKin
       <div className="journey-feedback" role="status" aria-live="polite" aria-atomic="true">{selected && <div className={selected.correct ? 'correct' : 'incorrect'}><strong>{selected.correct ? 'Why this helps' : 'A safer next step'}</strong><p><ReadingText>{selected.feedback}</ReadingText></p></div>}</div>
       <div className="journey-actions"><div>
         {step > 0 && <button className="text-button" onClick={() => moveTo(step - 1)}><ArrowLeft size={18}/>Back</button>}
-        {allDone ? <button className="primary" onClick={onComplete}>Finish & return home<ArrowRight size={19}/></button> : <button className="secondary" disabled={!selected} onClick={next}>{step < definition.moments.length - 1 ? 'Next' : 'Next unanswered decision'}<ArrowRight size={19}/></button>}
+        {allDone ? <button className="primary" onClick={onComplete}>Finish<ArrowRight size={19}/></button> : <button className="secondary" disabled={!selected} onClick={next}>{step < definition.moments.length - 1 ? 'Next' : 'Next unanswered'}<ArrowRight size={19}/></button>}
       </div></div>
       <details className="journey-reference" key={step}><summary>Quick reference</summary><ul>{definition.reference.map(item => <li key={item}><ReadingText>{item}</ReadingText></li>)}</ul><div>{definition.links.map(link => <a key={link.href} href={link.href} target="_blank" rel="noreferrer">{link.label}</a>)}</div></details>
     </div>
     <div className="journey-nav" role="group" aria-label="Situations, in order">{definition.moments.map((item, index) => { const locked = index > openIndex; return <button key={item.id} disabled={locked} aria-disabled={locked} aria-current={step === index ? 'step' : undefined} onClick={() => moveTo(index)}><span>{isDone(index) ? <Check size={18} aria-hidden="true"/> : locked ? <Lock size={16} aria-hidden="true"/> : index + 1}</span>{item.label}{isDone(index) && <span className="sr-only"> — completed</span>}</button>; })}</div>
-    <div className="journey-footnote"><p>{definition.safety ? `${definition.safety} This activity doesn’t place calls or submit reports.` : 'Practice only · Nothing is submitted.'}</p></div>
+    <div className="journey-footnote"><p>{definition.safety ? `${definition.safety} Practice only. Nothing is sent.` : 'Practice only · Nothing is submitted.'}</p></div>
   </section>;
 }

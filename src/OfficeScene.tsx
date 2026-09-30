@@ -16,7 +16,7 @@ function readChoices(): Record<string, string> {
   } catch { /* Optional storage. */ }
   return {};
 }
-export default function OfficeScene({ onComplete, nextLabel = 'Finish & return home' }: { onComplete: () => void; nextLabel?: string }) {
+export default function OfficeScene({ onComplete, nextLabel = 'Finish' }: { onComplete: () => void; nextLabel?: string }) {
   const [choices, setChoices] = useState(readChoices);
   const [step, setStep] = useState(() => Math.max(0, pantryHotspots.findIndex(item => !isAnswered(item, choices))));
   const heading = useRef<HTMLHeadingElement>(null);
@@ -44,7 +44,7 @@ export default function OfficeScene({ onComplete, nextLabel = 'Finish & return h
   };
   const next = () => choose(step < pantryHotspots.length - 1 ? step + 1 : Math.max(0, pantryHotspots.findIndex(item => !isAnswered(item, choices))));
   return <section id="office" className="chapter hazard-guided office-immersive" data-active-hazard={active.id} style={{'--focus-x':`${active.x}%`,'--focus-y':`${active.y}%`} as CSSProperties}>
-    <div className="scene-heading"><h1>Pantry hazards</h1><p>Choose an answer, read the feedback, then move on.</p></div>
+    <div className="scene-heading"><h1>Pantry hazards</h1></div>
     <div className="office-workspace" ref={workspace}>
       <div className="office-context">
         <div className="scene-frame">
