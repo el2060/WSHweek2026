@@ -28,7 +28,7 @@ Leave a link as an empty string to hide that action. Only complete, confirmed of
 
 ## Updating scenarios
 
-The CLTE entry point is `src/CLTESafetyApp.tsx`. Office hotspots are structured in `src/config.ts`; the Fire route checkpoints remain in the CLTE app component. Guided Injury and Haze moments live in `src/GuidedScenes.tsx`. Scenario 05 lives in `src/ReportingScene.tsx` with layout styles in `src/reporting.css`.
+The CLTE entry point is `src/CLTESafetyApp.tsx`. Office hotspots are structured in `src/config.ts`; the Fire route checkpoints remain in the CLTE app component. Guided Injury and Haze moments live in `src/GuidedScenes.tsx`.
 
 `src/safety.css` preserves the existing CLTE visual system. `src/guided.css` supplies the content-first layout, larger learning text, smaller illustrations and guided interaction states.
 
@@ -37,22 +37,21 @@ The unrelated AuditLens prototype in `src/App.tsx` and `src/styles.css` is prese
 ### Guided scenario 01
 
 - `src/OfficeScene.tsx` and `src/office.css` provide a full-canvas office scene with five named hazards and a compact, high-contrast decision panel (at most 34% of the desktop width). The image and markers scale together; feedback is given space without covering a hazard. Phones show the complete illustration above the choices. Content and marker coordinates live in `src/config.ts`.
-- Each hazard contrasts a realistic quick fix with a safer action: move a bag aside versus store it; partly close a drawer versus close it fully; unplug unfamiliar equipment versus ask for help; store heavy files overhead versus on a lower shelf; add a drink lid versus move it away. One short context sentence makes the distinction clear. Correct positions vary without randomisation. Green checks / “Correct” and warm red crosses / “Not quite — try again” accompany brief explanations. No score, drag-and-drop or object movement. All five remain freely accessible through numbered markers or names.
+- Scenario 01 has two short parts: the office workspace, then Experiment Room hazards. Each hazard contrasts a tempting shortcut with a safer action. The choice feedback explains why; safe choices earn completion checks. There is no score, drag-and-drop or object movement. All five office hazards remain freely accessible through numbered markers or names.
 - Corrected image/copy mismatches: files lean on the cabinet beside the laptop, the cable hangs beside the desk, and the drink marker now points at the cup rather than the printer. The original illustration remains visible and is labelled as the starting scene.
 - The files activity identifies the files as heavy before asking where to store them. Cable guidance explicitly says the equipment is unfamiliar, so staff need not guess whether unplugging it is appropriate.
-- Choice progress uses `clte-office-v3`, survives revisits and is cleared by Reset activity (which also clears legacy v1/v2 keys). Earlier choices do not preselect answers in this version. Main text remains at least 18px; markers have 44px minimum tap targets. Selecting the safe action for each hazard enables Continue to Fire; unsafe choices never receive completion checks.
+- Choice progress uses `clte-office-v3`, survives revisits and is cleared by Reset activity (which also clears legacy v1/v2 keys). Earlier choices do not preselect answers in this version. Main text remains at least 18px; markers have 44px minimum tap targets. Complete both parts of Scenario 01 to continue to Fire; unsafe choices never receive completion checks.
 - `scripts/verify-office.js` checks 90 states: before selection, shortcut feedback and safer-action feedback for all five hazards at six widths. It also covers mixed answer positions, concise copy, free/sequential navigation, keyboard use, marker hit targets, correct-only progress, changing an answer, persistence/resume, reset, malformed/legacy storage and completion. Existing safe answers retain their stable IDs; replaced shortcuts receive new IDs so old selections cannot silently choose new actions.
 - `scripts/verify-office-immersive.js` checks 135 additional layout states from 320 to 3778px, including enlarged text and 3640px, to protect each active hazard's actual image region as well as every marker. Drink uses a middle-left panel and right-aligned scene; its marker sits beside the cup with a pointer line.
 
-### Illustrated decisions: scenarios 03, 04 and 05
+### Illustrated decisions: scenarios 03 and 04
 
 - `src/DecisionJourney.tsx` and `src/journey.css` provide a full-scene illustration, one concise situation, two choices and brief feedback. Data lives in `src/journeyData.ts`; the existing scene exports are lightweight wrappers. Desktop imagery fills the scene; phones show a full-width illustration above the panel.
 - **Injury:** check before moving someone, keep others clear, and ask directly for first-aid support.
 - **Haze:** change the outdoor plan, choose cleaner indoor air rather than a covered walkway, and call 995 for breathing difficulty. No PSI-number quiz or campus-location guessing.
-- **Reporting:** distinguish urgent help from a form, an injury from a fault-only report, a near miss from “nothing happened”, and an unused defective chair from a near miss. All four use relevant illustrations.
 - Every situation is freely accessible. Correct choices earn completion checks; incorrect choices explain the distinction and can be changed immediately. Answer positions vary but are not shuffled. No timer, score, movement puzzle, scripted-call button or passive stamp/reveal task.
 - Longer guidance is available in a closed **Quick reference**. Emergency reminders remain visible. Practice actions do not make calls or send reports. Report-practice fields remain blank and their hints are now opt-in.
-- Progress uses `clte-decisions-v1-injury`, `clte-decisions-v1-haze` and `clte-decisions-v1-reporting`. Prior passive completion is not treated as an answer. Reset clears these and legacy per-scene keys; existing overall progress is preserved.
+- Progress uses `clte-decisions-v1-injury` and `clte-decisions-v1-haze`. Prior passive completion is not treated as an answer. Reset clears these and legacy per-scene keys; existing overall progress is preserved.
 - Main situation, choice and feedback text stays at least 18px. New scenes use no decorative movement; keyboard/touch and enlarged text are supported.
 
 `scripts/verify-journeys.js` replaces the older passive `verify-guided.js` and `verify-reporting.js` checks. Run it in a dedicated Playwright CLI session:
@@ -62,7 +61,7 @@ npx --yes --package @playwright/cli playwright-cli -s=clte-redesign open http://
 npx --yes --package @playwright/cli playwright-cli -s=clte-redesign run-code --filename scripts/verify-journeys.js
 ```
 
-The script resets only test-browser progress. It covers all ten decisions and both options, four loaded illustrations, full-width imagery, keyboard use, concise-copy budgets, reference panels, correct-only progress, resume/reset, malformed/legacy storage and hand-off to blank report practice. Existing illustration prompts remain documented in [the asset manifest](output/imagegen/scenario-05-prompts.md).
+The script resets only test-browser progress. It covers all six decisions and both options, the Injury and Haze illustrations, full-width imagery, keyboard use, concise-copy budgets, reference panels, correct-only progress, resume/reset, malformed/legacy storage and the direct hand-off to blank report practice.
 
 ### ERC feedback refinements
 

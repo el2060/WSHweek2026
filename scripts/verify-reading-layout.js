@@ -11,11 +11,10 @@ async (page) => {
     if (await menu.isVisible() && await menu.getAttribute('aria-expanded') !== 'true') await menu.click();
     await button(name).click();
   };
-  const fixture = { office: true, walkway: true, haze: true, evacuation: true, reporting: true, practice: false, guide: false, completion: false };
+  const fixture = { office: true, walkway: true, haze: true, evacuation: true, practice: false, guide: false, completion: false };
   const seed = async data => {
     await page.evaluate(value => {
       localStorage.setItem('clte-safety-progress', JSON.stringify(value));
-      localStorage.removeItem('clte-decisions-v1-reporting');
       localStorage.removeItem('clte-office-v3');
       ['injury', 'haze'].forEach(kind => localStorage.removeItem(`clte-decisions-v1-${kind}`));
     }, data);
@@ -88,14 +87,6 @@ async (page) => {
       }
       await page.locator('.journey-reference summary').click(); await audit(`${prefix}-reference`);
       await page.locator('.journey-reference summary').click();
-    }
-    await nav('05 Report');
-    for (let index = 0; index < 4; index++) {
-      await page.locator('.journey-nav button').nth(index).click();
-      await audit(`report-${index}`);
-      const correct = [0,1,0,1][index];
-      await page.locator('.journey-choices button').nth(1-correct).click(); await audit(`report-${index}-incorrect`);
-      await page.locator('.journey-choices button').nth(correct).click(); await audit(`report-${index}-feedback`, index === 0);
     }
     await button('Continue to report practice').click(); await audit('practice-type', true);
     await button('Incident').click(); await button('Fall, trip and slip').click(); await audit('practice-type-selected');

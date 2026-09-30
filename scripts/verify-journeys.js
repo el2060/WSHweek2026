@@ -1,10 +1,11 @@
 // Dedicated Playwright CLI browser; only its test progress is changed.
 async (page) => {
   const failures=[], errors=[], images=new Set(), wordCounts=[];
-  const scenarios=[['03 Injury','injury',[1,0,1],'Continue to Haze','#haze'],['04 Haze','haze',[0,1,0],'Continue to Report','#reporting'],['05 Report','reporting',[0,1,0,1],'Continue to report practice','#practice']];
+  const scenarios=[['03 Injury','injury',[1,0,1],'Continue to Haze','#haze'],['04 Haze','haze',[0,1,0],'Continue to report practice','#practice']];
   let states=0;
   const assert=(ok,label)=>{if(!ok)failures.push(label);};
   const button=name=>page.getByRole('button',{name,exact:true});
+  const completed=()=>page.locator('.journey-nav .sr-only').count();
   const nav=async name=>{
     const menu=button('Toggle navigation');
     if(await menu.isVisible()&&await menu.getAttribute('aria-expanded')!=='true')await menu.click();
@@ -44,19 +45,18 @@ async (page) => {
   };
   for(const [width,scale]of [[1920,1],[1440,1],[1024,1],[768,1],[390,1],[320,1],[390,1.25]]){
     await page.setViewportSize({width,height:1000});
-    await page.evaluate(()=>['clte-safety-progress',...['injury','haze','reporting'].map(kind=>`clte-decisions-v1-${kind}`)].forEach(key=>localStorage.removeItem(key)));
+    await page.evaluate(()=>['clte-safety-progress',...['injury','haze'].map(kind=>`clte-decisions-v1-${kind}`)].forEach(key=>localStorage.removeItem(key)));
     await page.reload();await page.evaluate(()=>document.fonts.ready);
     if(scale!==1)await page.addStyleTag({content:`html{font-size:${scale*100}%!important}`});
     for(const [chapter,kind,correct,continueLabel,target]of scenarios){
       await nav(chapter);
-      assert((await page.locator('.journey-count').innerText()).startsWith('0/'),`${width}/${kind}: pre-awarded progress`);
+      assert(await completed()===0,`${width}/${kind}: pre-awarded progress`);
       await page.locator('.journey-nav button').last().focus();await page.keyboard.press('Enter');
       assert((await page.locator('.journey-step').innerText()).includes(`${correct.length} of`),`${width}/${kind}: last step locked`);
       await button('Review remaining').click();
       for(let step=0;step<correct.length;step++){
         await page.locator('.journey-nav button').nth(step).click();
         await page.locator('.journey-art img').evaluate(img=>img.decode());
-        if(kind==='reporting'&&step>0&&width<=1100)assert(await page.locator('.journey-art').evaluate(el=>el.getBoundingClientRect().top>=0),'New report scene should be visible after changing situation');
         images.add(await page.locator('.journey-art img').getAttribute('src'));
         const before=await audit(`${width}/${scale}/${kind}/${step}/before`);
         wordCounts.push(before.panelWords);
@@ -69,7 +69,7 @@ async (page) => {
           await audit(`${width}/${scale}/${kind}/${step}/${good?'correct':'incorrect'}`);
           assert(await page.locator(`.journey-feedback>.${good?'correct':'incorrect'}`).count()===1,`${kind}/${step}: incorrect feedback state`);
           assert((await page.locator('.journey-feedback p').innerText()).trim().split(/\s+/).length<=28,`${kind}/${step}: long feedback`);
-          assert((await page.locator('.journey-count').innerText()).startsWith(`${step+(good?1:0)}/`),`${kind}/${step}: wrong progress`);
+          assert(await completed()===step+(good?1:0),`${kind}/${step}: wrong progress`);
           assert(await page.locator(`.journey-choices .${good?'correct':'incorrect'} svg`).count()===1,`${kind}/${step}: missing feedback icon`);
         }
         if(scale===1&&[1440,390].includes(width)){
@@ -83,38 +83,38 @@ async (page) => {
       await page.locator('.journey-reference summary').click();
       await page.reload();await nav(chapter);
       if(scale!==1)await page.addStyleTag({content:`html{font-size:${scale*100}%!important}`});
-      assert((await page.locator('.journey-count').innerText()).startsWith(`${correct.length}/`),`${kind}: persistence failed`);
+      assert(await completed()===correct.length,`${kind}: persistence failed`);
       await button(continueLabel).click();
       assert(await page.locator(target).isVisible(),`${kind}: continuation failed`);
-      if(kind==='reporting')assert(await page.locator('.choice-field [aria-pressed=true]').count()===0,'practice report prefilled');
+      if(kind==='haze')assert(await page.locator('.choice-field [aria-pressed=true]').count()===0,'practice report prefilled');
     }
   }
   // Unknown/legacy progress must not become an answered new question.
   await page.setViewportSize({width:1440,height:900});
   await page.evaluate(()=>{
-    ['injury','haze','reporting'].forEach(kind=>localStorage.setItem(`clte-decisions-v1-${kind}`,'{"invalid":true}'));
+    ['injury','haze'].forEach(kind=>localStorage.setItem(`clte-decisions-v1-${kind}`,'{"invalid":true}'));
     localStorage.setItem('clte-guided-v1-haze','{"done":[true,true,true],"plan":"indoors"}');
-    localStorage.setItem('clte-reporting-v1','["help","injury","near-miss","repair"]');
+    localStorage.setItem('clte-decisions-v1-reporting','{"help":"call"}');
   });
   await page.reload();
-  for(const [chapter]of scenarios){await nav(chapter);assert((await page.locator('.journey-count').innerText()).startsWith('0/'),`${chapter}: invalid or legacy answer accepted`);}
+  for(const [chapter]of scenarios){await nav(chapter);assert(await completed()===0,`${chapter}: invalid or legacy answer accepted`);}
   // A wrong answer persists as wrong; resume returns to that unfinished decision.
   await page.evaluate(()=>localStorage.setItem('clte-decisions-v1-haze',JSON.stringify({plan:'change',shelter:'covered',urgent:'call'})));
   await page.reload();await nav('04 Haze');
   assert((await page.locator('.journey-step').innerText()).includes('2 of 3'),'resume must find unfinished decision');
   assert(await page.locator('.journey-choices .incorrect').count()===1,'wrong answer should persist honestly');
-  assert(await button('Continue to Report').count()===0,'wrong answer completed scenario');
+  assert(await button('Continue to report practice').count()===0,'wrong answer completed scenario');
   await page.locator('.journey-choices button').nth(1).click();
-  assert(await button('Continue to Report').count()===1,'correction did not enable completion');
+  assert(await button('Continue to report practice').count()===1,'correction did not enable completion');
   await page.locator('.journey-choices button').first().click();
-  assert(await button('Continue to Report').count()===0,'changing answer left stale completion');
+  assert(await button('Continue to report practice').count()===0,'changing answer left stale completion');
   // Reset uses the existing app confirmation and clears both storage generations.
   await page.getByRole('button',{name:/Ngee Ann Polytechnic.*Home/}).click();
   await button('Start again').click();await button('Reset activity').click();
   for(const [chapter,kind]of scenarios){
-    await nav(chapter);assert((await page.locator('.journey-count').innerText()).startsWith('0/'),`${kind}: reset failed`);
+    await nav(chapter);assert(await completed()===0,`${kind}: reset failed`);
   }
-  assert(images.size===4,'expected four relevant illustrations');
+  assert(images.size===2,'expected the Injury and Haze illustrations');
   assert(!errors.length,`runtime errors: ${errors.join(';')}`);
   if(failures.length)throw new Error(failures.join('\n'));
   return {result:'PASS',states,distinctImages:images.size,maxInitialPanelWords:Math.max(...wordCounts),runtimeErrors:errors};

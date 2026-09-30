@@ -65,7 +65,7 @@ export function readScormProgress<T>() {
 
 export function saveScormProgress(progress: Record<string, boolean>) {
   if (!api || !initialized || finished) return;
-  const scenarioKeys = ['office', 'evacuation', 'walkway', 'haze', 'reporting'];
+  const scenarioKeys = ['office', 'evacuation', 'walkway', 'haze'];
   const completedScenarios = scenarioKeys.filter(key => progress[key]).length;
   const score = Math.round((completedScenarios / scenarioKeys.length) * 100);
   const complete = Boolean(progress.completion);

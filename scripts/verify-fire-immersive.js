@@ -84,7 +84,7 @@ async (page) => {
     await button('Route map').click();
     assert(await page.getByRole('dialog').isVisible(), `${width}: route map`);
     await button('Close route map').click();
-    await button('Finish Fire 02').click();
+    await button('Continue to Injury').click();
     assert(await page.locator('#walkway').isVisible(), `${width}: continuation to injury`);
   }
   // Desktop parallax changes only the image; reduced motion and mobile stop it.

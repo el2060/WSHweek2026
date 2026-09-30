@@ -5,7 +5,6 @@ import './safety.css';
 import './guided.css';
 import './reading.css';
 import './workspace.css';
-import './reporting.css';
 import './office.css';
 import './experiment-room.css';
 import './fire.css';

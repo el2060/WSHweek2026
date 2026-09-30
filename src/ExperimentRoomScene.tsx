@@ -11,8 +11,8 @@ export function clearExperimentRoomProgress() {
 
 const hazards: RoomHazard[] = [
   { id: 'aisle-cable', x: 18, y: 60, label: 'Damage', title: 'Damaged cable insulation', story: 'The cable crossing the floor has split insulation and exposed wiring.', choices: [
-    { id: 'small-tape', label: 'Cover the damaged section with tape', correct: false, feedback: 'Tape is not a reliable repair for damaged electrical insulation. Stop using the cable and keep people clear.' },
-    { id: 'reroute', label: 'Isolate it, place a warning sign and report it', correct: true, feedback: 'Keep people clear with an electrical-hazard warning sign, isolate the supply if safe, and arrange replacement by an authorised person.' },
+  { id: 'small-tape', label: 'Cover the damaged section with tape', correct: false, feedback: 'Tape is not a reliable repair for damaged electrical insulation. Stop using the cable and keep people clear.' },
+  { id: 'reroute', label: 'Keep clear, warn others and report the cable', correct: true, feedback: 'Keep people clear with an electrical-hazard warning sign, isolate the supply if safe, and arrange replacement by an authorised person.' },
   ]},
   { id: 'aisle-bag', x: 92, y: 91, label: 'Caster', title: 'Detached chair caster', story: 'A caster has come away from the front-right chair, leaving it unstable.', choices: [
     { id: 'under-table', label: 'Keep the chair out of use and report it', correct: true, feedback: 'Move the chair aside without sitting on it, label it clearly and arrange a proper repair or replacement.' },
@@ -20,11 +20,11 @@ const hazards: RoomHazard[] = [
   ]},
   { id: 'exit-route', x: 37, y: 69, label: 'Power', title: 'Overloaded power strip', story: 'Several plugs share a loose power strip, with its lead stretched across the floor.', choices: [
     { id: 'later', label: 'Tuck the strip beneath the nearest table', correct: false, feedback: 'That hides the problem but leaves the electrical load and trailing lead unsafe.' },
-    { id: 'clear', label: 'Stop using it and have the setup checked', correct: true, feedback: 'Reduce the load, check the power requirement and route the supply safely before use.' },
+  { id: 'clear', label: 'Stop using it; ask an authorised person to check it', correct: true, feedback: 'Reduce the load, check the power requirement and route the supply safely before use.' },
   ]},
   { id: 'power-adapter', x: 73, y: 80, label: 'Spill', title: 'Liquid beside a power lead', story: 'A bottle has spilled onto the carpet beside connected equipment.', choices: [
     { id: 'extend', label: 'Pick up the bottle and wipe around the cable', correct: false, feedback: 'Do not approach liquid near live equipment until the electrical risk has been controlled.' },
-    { id: 'stop', label: 'Keep clear, isolate power safely and get help', correct: true, feedback: 'Prevent access, have the supply isolated by a competent person, then clean and inspect the area safely.' },
+  { id: 'stop', label: 'Keep clear; ask an authorised person to isolate power', correct: true, feedback: 'Prevent access, have the supply isolated by a competent person, then clean and inspect the area safely.' },
   ]},
 ];
 
@@ -71,7 +71,7 @@ export default function ExperimentRoomScene({ onComplete, onBack }: { onComplete
   return <section ref={sceneRef} className={`experiment-room ${active ? 'has-focus' : ''}`} data-focus-side={active && active.x < 48 ? 'left' : 'right'} style={focusStyle} onPointerMove={movePhoto} onPointerLeave={resetPhoto}>
     <div className="experiment-camera"><img src="/assets/experiment-room/training-composite-avatars-v3.webp" alt="Stylized 3D avatars taking part in a hands-on Experiment Room workshop, with laptops, training kits, refreshments and four safety hazards to inspect."/></div>
     <div className="experiment-shade" aria-hidden="true"/><div className="experiment-focus" aria-hidden="true"/>
-    <div className="experiment-heading"><p>01B · CLTE space</p><h1>Experiment Room</h1><span><MapPin/> Block 31 · Level 2</span></div>
+    <div className="experiment-heading"><p>Scenario 01 · Part 2 of 2</p><h1>Experiment Room hazards</h1><span><MapPin/> Block 31 · Level 2</span></div>
     <div className="experiment-score" aria-live="polite"><strong>{count}/{hazards.length}</strong><span>made safe</span></div>
     {isDone(hazards[0]) && <div className="experiment-warning-sign" role="status" aria-label="Electrical hazard warning sign placed. Keep clear.">
       <span className="experiment-warning-symbol"><TriangleAlert/><Zap/></span>

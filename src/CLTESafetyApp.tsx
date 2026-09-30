@@ -6,19 +6,26 @@ import OfficeScene, { clearOfficeProgress } from './OfficeScene';
 import ExperimentRoomScene, { clearExperimentRoomProgress } from './ExperimentRoomScene';
 import { InjuryScene, HazeScene, clearGuidedProgress } from './GuidedScenes';
 import PracticeReport from './PracticeReport';
-import ReportingScene, { clearReportingProgress } from './ReportingScene';
 import { ReadingText } from './ReadingText';
 import { isScormActive, readScormProgress, saveScormProgress } from './scorm';
 
-type Progress = { office: boolean; walkway: boolean; haze: boolean; evacuation: boolean; reporting: boolean; practice: boolean; guide: boolean; completion: boolean };
-type View = 'intro' | 'office' | 'walkway' | 'haze' | 'evacuation' | 'reporting' | 'practice' | 'guide' | 'completion';
+type Progress = { office: boolean; walkway: boolean; haze: boolean; evacuation: boolean; practice: boolean; guide: boolean; completion: boolean };
+type View = 'intro' | 'office' | 'walkway' | 'haze' | 'evacuation' | 'practice' | 'guide' | 'completion';
 type HazardPart = 'office' | 'experiment';
-const initialProgress: Progress = { office: false, walkway: false, haze: false, evacuation: false, reporting: false, practice: false, guide: false, completion: false };
+const initialProgress: Progress = { office: false, walkway: false, haze: false, evacuation: false, practice: false, guide: false, completion: false };
+
+function normalizeProgress(saved: Partial<Progress> | null): Progress {
+  return {
+    office: Boolean(saved?.office), walkway: Boolean(saved?.walkway), haze: Boolean(saved?.haze),
+    evacuation: Boolean(saved?.evacuation), practice: Boolean(saved?.practice), guide: Boolean(saved?.guide),
+    completion: Boolean(saved?.completion),
+  };
+}
 
 function useSavedProgress() {
   const [progress, setProgress] = useState<Progress>(() => {
-    if (isScormActive()) return { ...initialProgress, ...(readScormProgress<Progress>() ?? {}) };
-    try { return { ...initialProgress, ...JSON.parse(localStorage.getItem('clte-safety-progress') || sessionStorage.getItem('clte-safety-progress') || '') } as Progress; } catch { return initialProgress; }
+    if (isScormActive()) return normalizeProgress(readScormProgress<Progress>());
+    try { return normalizeProgress(JSON.parse(localStorage.getItem('clte-safety-progress') || sessionStorage.getItem('clte-safety-progress') || '')); } catch { return initialProgress; }
   });
   useEffect(() => { try { localStorage.setItem('clte-safety-progress', JSON.stringify(progress)); } catch { /* Progress can remain in memory. */ } saveScormProgress(progress); }, [progress]);
   return [progress, setProgress] as const;
@@ -35,7 +42,7 @@ function Intro({ onStart, onReset, startLabel, statusText, canReset }: { onStart
       <div className="wsh-week-lockup"><strong>WSH Week</strong><b>2026</b></div>
       <p className="eyebrow light">CLTE staff activity</p>
       <h1><span>Workplace safety</span><em>made practical.</em></h1>
-      <p className="tagline"><span className="reading-phrase">Make the call in five practical</span>{' '}<span className="reading-phrase">workplace safety scenarios.</span></p>
+      <p className="tagline"><span className="reading-phrase">Try four practical workplace</span>{' '}<span className="reading-phrase">safety scenarios. Learn as you go.</span></p>
       <div className="intro-actions"><button className="primary light-button" onClick={onStart}><span>{startLabel}</span><ArrowDown size={19}/></button>{canReset&&<button className="intro-reset" onClick={onReset}><RotateCcw/><span>Start again</span></button>}</div>
       {statusText&&<p className="intro-note" aria-live="polite">{statusText}</p>}
     </div>
@@ -132,7 +139,7 @@ function EvacuationScene({ onComplete }: { onComplete: () => void }) {
       <div className="pov-decision-head"><h3>{stage.prompt}</h3></div>
       <div className="pov-choices">{stage.choices.map((choice,index)=><button key={choice.id} aria-pressed={answers[routeStage]===choice.id} className={answers[routeStage]===choice.id?`selected ${choice.best?'safe':'risk'}`:''} onClick={()=>setAnswers(value=>({...value,[routeStage]:choice.id}))}><span>{answers[routeStage]===choice.id?(choice.best?<Check/>:<X/>):String.fromCharCode(65+index)}</span><strong>{choice.label}</strong></button>)}</div>
       {selected&&<div className={`pov-feedback ${selected.best?'good':'consider'}`} aria-live="polite"><Info/><div><strong>{selected.best?'Why this helps':'A safer next step'}</strong><p><ReadingText>{selected.feedback}</ReadingText></p></div></div>}
-      <div className="pov-actions"><button disabled={routeStage===0} onClick={()=>selectStage(routeStage-1)}><ArrowRight className="turn"/> Back</button>{allCorrect?<><button className="pov-recap-action" onClick={()=>setProtocolOpen(true)}><CirclePlay/> Watch recap</button><button className="pov-complete-action" onClick={onComplete}>Finish Fire 02 <ArrowRight/></button></>:routeStage<routeStages.length-1?<button onClick={()=>selectStage(routeStage+1)}>Next checkpoint <ArrowRight/></button>:<button onClick={reviewNext}>Review remaining checkpoints <ArrowRight/></button>}</div>
+      <div className="pov-actions"><button disabled={routeStage===0} onClick={()=>selectStage(routeStage-1)}><ArrowRight className="turn"/> Back</button>{allCorrect?<><button className="pov-recap-action" onClick={()=>setProtocolOpen(true)}><CirclePlay/> Watch recap</button><button className="pov-complete-action" onClick={onComplete}>Continue to Injury <ArrowRight/></button></>:routeStage<routeStages.length-1?<button onClick={()=>selectStage(routeStage+1)}>Next checkpoint <ArrowRight/></button>:<button onClick={reviewNext}>Review remaining checkpoints <ArrowRight/></button>}</div>
     </aside>
     <div className="pov-stage-rail" role="tablist" aria-label="Actual evacuation route checkpoints">{routeStages.map((item,index)=>{const done=item.choices.find(choice=>choice.id===answers[index])?.best;return <button key={item.id} role="tab" aria-selected={routeStage===index} className={`${routeStage===index?'active':''} ${done?'done':''}`} onClick={()=>selectStage(index)}><span>{done?<Check/>:index+1}</span><strong>{item.label}</strong></button>})}</div>
     {mapOpen&&<div className="pov-map-backdrop" onMouseDown={event=>{if(event.target===event.currentTarget)setMapOpen(false)}}><div className="pov-map-dialog" role="dialog" aria-modal="true" aria-label="Block 27 to Admin Field route map"><button className="sheet-close" onClick={()=>setMapOpen(false)} aria-label="Close route map"><X/></button><img src="/assets/block27-admin-field-route.jpg" alt="Aerial emergency route map from Block 27 to Zone A at Admin Field."/><p><MapPin/><span><strong>Block 27 → Zone A, Admin Field</strong><small><ReadingText>Follow fire wardens and current posted evacuation instructions.</ReadingText></small></span></p></div></div>}
@@ -162,18 +169,18 @@ function ResetDialog({ open, onCancel, onConfirm }: { open: boolean; onCancel: (
   useEffect(()=>{if(open)cancelRef.current?.focus()},[open]);
   useEffect(()=>{if(!open)return;const close=(event:KeyboardEvent)=>{if(event.key==='Escape')onCancel()};document.addEventListener('keydown',close);return()=>document.removeEventListener('keydown',close)},[open,onCancel]);
   if(!open)return null;
-  return <div className="reset-backdrop" onMouseDown={event=>{if(event.target===event.currentTarget)onCancel()}}><section className="reset-dialog" role="dialog" aria-modal="true" aria-labelledby="reset-title" aria-describedby="reset-description"><RotateCcw/><p className="eyebrow">Start again</p><h2 id="reset-title">Reset your activity?</h2><p id="reset-description">This clears your saved progress and returns all scenarios to 0/5.</p><div><button ref={cancelRef} className="secondary" onClick={onCancel}>Keep progress</button><button className="reset-confirm" onClick={onConfirm}>Reset activity</button></div></section></div>;
+  return <div className="reset-backdrop" onMouseDown={event=>{if(event.target===event.currentTarget)onCancel()}}><section className="reset-dialog" role="dialog" aria-modal="true" aria-labelledby="reset-title" aria-describedby="reset-description"><RotateCcw/><p className="eyebrow">Start again</p><h2 id="reset-title">Reset your activity?</h2><p id="reset-description">This clears your saved progress and returns all scenarios to 0/4.</p><div><button ref={cancelRef} className="secondary" onClick={onCancel}>Keep progress</button><button className="reset-confirm" onClick={onConfirm}>Reset activity</button></div></section></div>;
 }
 
 function Completion({ onReview, onGuide, onReset, onHome }: { onReview: (view: View) => void; onGuide: () => void; onReset: () => void; onHome: () => void }) {
-  const reviewItems:{view:View;n:string;label:string}[]=[{view:'office',n:'01',label:'Office hazards'},{view:'evacuation',n:'02',label:'Fire emergency'},{view:'walkway',n:'03',label:'Injury response'},{view:'haze',n:'04',label:'Haze response'},{view:'reporting',n:'05',label:'Reporting'}];
+  const reviewItems:{view:View;n:string;label:string}[]=[{view:'office',n:'01',label:'Office hazards'},{view:'evacuation',n:'02',label:'Fire emergency'},{view:'walkway',n:'03',label:'Injury response'},{view:'haze',n:'04',label:'Haze response'}];
   return <section className="completion">
     <Sparkles/><p className="eyebrow">CLTE WSH Week 2026</p><h2>Activity complete</h2>
-    <p>You’ve reached the end. You can close this tab or return to the home screen.</p>
+    <p>You’ve completed all four scenarios, report practice and contacts. You can close this tab or return home.</p>
     <div className="completion-actions"><button className="primary" onClick={onHome}>Back to home <ArrowRight/></button><button className="text-button" onClick={onGuide}>Review contacts</button></div>
     <div className="completion-review"><article><span>01</span><strong>Care first</strong><p>Help the person. Control the risk.</p></article><article><span>02</span><strong>Call clearly</strong><p>For serious injury: 995 + exact location.</p></article><article><span>03</span><strong>Close the loop</strong><p>Report, join roll call and remain.</p></article></div>
     <div className="personal-takeaway"><Check/><span>Know your nearest exit, assembly point and emergency contacts.</span></div>
-    <div className="review-hub"><p className="eyebrow">Replay any scenario</p><div>{reviewItems.map(item=><button key={item.view} onClick={()=>onReview(item.view)}><span>{item.n}</span>{item.label}<ArrowRight/></button>)}</div></div>
+    <div className="review-hub"><p className="eyebrow">Replay a scenario</p><div>{reviewItems.map(item=><button key={item.view} onClick={()=>onReview(item.view)}><span>{item.n}</span>{item.label}<ArrowRight/></button>)}</div></div>
     <button className="start-again" onClick={onReset}><RotateCcw/>Start again</button>
   </section>;
 }
@@ -184,16 +191,16 @@ export default function App() {
   const [hazardsPart,setHazardsPart]=useState<HazardPart>(()=>{try{return localStorage.getItem('clte-hazards-part')==='experiment'?'experiment':'office'}catch{return'office'}});
   useEffect(()=>{window.scrollTo({top:0,behavior:'instant'});setMenu(false)},[view]);
   const complete=(key:keyof Progress,next:View)=>{setProgress(v=>({...v,[key]:true}));setView(next)};
-  const scenarioKeys:(keyof Progress)[]=['office','walkway','haze','evacuation','reporting'];
+  const scenarioKeys:(keyof Progress)[]=['office','walkway','haze','evacuation'];
   const completed=useMemo(()=>scenarioKeys.filter(key=>progress[key]).length,[progress]);
-  const chapters:{n:string;id:keyof Progress;label:string}[]=[{n:'01',id:'office',label:'Hazards'},{n:'02',id:'evacuation',label:'Fire'},{n:'03',id:'walkway',label:'Injury'},{n:'04',id:'haze',label:'Haze'},{n:'05',id:'reporting',label:'Report'}];
-  const resumeView:View=!progress.office?'office':!progress.evacuation?'evacuation':!progress.walkway?'walkway':!progress.haze?'haze':!progress.reporting?'reporting':!progress.practice?'practice':!progress.guide?'guide':'completion';
-  const resumeLabels:Record<View,string>={intro:'activity',office:'office hazards',walkway:'injury response',haze:'haze response',evacuation:'fire emergency',reporting:'reporting',practice:'report practice',guide:'WSH contacts',completion:'activity review'};
+  const chapters:{n:string;id:keyof Progress;label:string}[]=[{n:'01',id:'office',label:'Hazards'},{n:'02',id:'evacuation',label:'Fire'},{n:'03',id:'walkway',label:'Injury'},{n:'04',id:'haze',label:'Haze'}];
+  const resumeView:View=!progress.office?'office':!progress.evacuation?'evacuation':!progress.walkway?'walkway':!progress.haze?'haze':!progress.practice?'practice':!progress.guide?'guide':'completion';
+  const resumeLabels:Record<View,string>={intro:'activity',office:'office hazards',walkway:'injury response',haze:'haze response',evacuation:'fire emergency',practice:'report practice',guide:'WSH contacts',completion:'activity review'};
   const startLabel=progress.completion?'Review activity':completed?`Continue: ${resumeLabels[resumeView]}`:'Start activity';
-  const statusText=progress.completion?'Completed · progress saved':completed===0?'':completed<5?`${completed}/5 scenarios completed`:!progress.practice?'5/5 scenarios · report practice remaining':!progress.guide?'Report practice complete · contacts remaining':'Activity complete';
-  const headerStatus=completed<5?`${completed}/5 scenarios`:!progress.practice?'5/5 · Report practice':!progress.guide?'5/5 · Contacts':'Activity complete';
+  const statusText=progress.completion?'Completed · progress saved':completed===0?'':completed<4?`${completed}/4 scenarios completed`:!progress.practice?'4/4 scenarios · report practice remaining':!progress.guide?'Report practice complete · contacts remaining':'Activity complete';
+  const headerStatus=completed<4?`${completed}/4 scenarios`:!progress.practice?'4/4 · Report practice':!progress.guide?'4/4 · Contacts':'Activity complete';
   const chooseHazardsPart=(part:HazardPart)=>{setHazardsPart(part);setView('office');setMenu(false);window.scrollTo({top:0,behavior:'instant'});try{localStorage.setItem('clte-hazards-part',part)}catch{/* Optional local progress. */}};
-  const resetProgress=()=>{clearGuidedProgress();clearReportingProgress();clearOfficeProgress();clearExperimentRoomProgress();try{localStorage.removeItem('clte-hazards-part');localStorage.removeItem('clte-safety-progress');sessionStorage.removeItem('clte-safety-progress')}catch{/* Storage is optional. */}setProgress(initialProgress);setHazardsPart('office');setView('intro');setResetOpen(false)};
+  const resetProgress=()=>{clearGuidedProgress();clearOfficeProgress();clearExperimentRoomProgress();try{localStorage.removeItem('clte-hazards-part');localStorage.removeItem('clte-safety-progress');sessionStorage.removeItem('clte-safety-progress')}catch{/* Storage is optional. */}setProgress(initialProgress);setHazardsPart('office');setView('intro');setResetOpen(false)};
   return <div className="app-shell"><header><button className="logo" onClick={()=>{setMenu(false);setView('intro')}} aria-label="Ngee Ann Polytechnic · CLTE workplace safety activity · Home"><img src="/assets/np-logo.png" alt="Ngee Ann Polytechnic"/></button><nav className={menu?'open':''} aria-label="Scenarios · open in any order">{chapters.map(({n,id,label})=>id==='office'?<div key={id} className={`hazards-nav-group ${view==='office'?'expanded':''}`}><button aria-label={`${n} ${label}`} aria-description={progress[id]?'Completed':'Two activities'} aria-current={view===id?'page':undefined} onClick={()=>{setMenu(false);setView(id)}} className={`${view===id?'current':''} ${progress[id]?'done':''}`}>{n}<span>{label}</span></button>{view==='office'&&<div className="hazards-subnav" role="group" aria-label="Hazard activities"><button aria-pressed={hazardsPart==='office'} onClick={()=>chooseHazardsPart('office')}><span>1</span> Office workspace</button><button aria-pressed={hazardsPart==='experiment'} onClick={()=>chooseHazardsPart('experiment')}><span>2</span> Experiment Room</button></div>}</div>:<button key={id} aria-label={`${n} ${label}`} aria-description={progress[id]?'Completed':'Not yet completed'} aria-current={view===id?'page':undefined} onClick={()=>{setMenu(false);setView(id)}} className={`${view===id?'current':''} ${progress[id]?'done':''}`}>{n}<span>{label}</span></button>)}</nav><div className="header-tools"><span aria-live="polite">{headerStatus}</span><button className="menu" onClick={()=>setMenu(!menu)} aria-label="Toggle navigation" aria-expanded={menu}>{menu?<X/>:<Menu/>}</button></div></header>
-    <main className="experience-stage"><div key={view} className="view-transition">{view==='intro'&&<Intro startLabel={startLabel} statusText={statusText} canReset={completed>0||progress.practice||progress.guide||progress.completion} onReset={()=>setResetOpen(true)} onStart={()=>setView(progress.completion?'completion':resumeView)}/>} {view==='office'&&<HazardsExperience part={hazardsPart} onPartChange={chooseHazardsPart} onComplete={()=>complete('office','evacuation')}/>} {view==='evacuation'&&<EvacuationScene onComplete={()=>complete('evacuation','walkway')}/>} {view==='walkway'&&<InjuryScene onComplete={()=>complete('walkway','haze')}/>} {view==='haze'&&<HazeScene onComplete={()=>complete('haze','reporting')}/>} {view==='reporting'&&<ReportingScene onComplete={()=>complete('reporting','practice')}/>} {view==='practice'&&<PracticeReport onComplete={()=>complete('practice','guide')}/>} {view==='guide'&&<PocketGuide reviewing={progress.completion} onComplete={()=>{setProgress(value=>({...value,guide:true,completion:true}));setView('completion')}}/>} {view==='completion'&&<Completion onHome={()=>setView('intro')} onReview={setView} onGuide={()=>setView('guide')} onReset={()=>setResetOpen(true)}/>}</div></main><ResetDialog open={resetOpen} onCancel={()=>setResetOpen(false)} onConfirm={resetProgress}/></div>;
+    <main className="experience-stage"><div key={view} className="view-transition">{view==='intro'&&<Intro startLabel={startLabel} statusText={statusText} canReset={completed>0||progress.practice||progress.guide||progress.completion} onReset={()=>setResetOpen(true)} onStart={()=>setView(progress.completion?'completion':resumeView)}/>} {view==='office'&&<HazardsExperience part={hazardsPart} onPartChange={chooseHazardsPart} onComplete={()=>complete('office','evacuation')}/>} {view==='evacuation'&&<EvacuationScene onComplete={()=>complete('evacuation','walkway')}/>} {view==='walkway'&&<InjuryScene onComplete={()=>complete('walkway','haze')}/>} {view==='haze'&&<HazeScene onComplete={()=>complete('haze','practice')}/>} {view==='practice'&&<PracticeReport onComplete={()=>complete('practice','guide')}/>} {view==='guide'&&<PocketGuide reviewing={progress.completion} onComplete={()=>{setProgress(value=>({...value,guide:true,completion:true}));setView('completion')}}/>} {view==='completion'&&<Completion onHome={()=>setView('intro')} onReview={setView} onGuide={()=>setView('guide')} onReset={()=>setResetOpen(true)}/>}</div></main><ResetDialog open={resetOpen} onCancel={()=>setResetOpen(false)} onConfirm={resetProgress}/></div>;
 }

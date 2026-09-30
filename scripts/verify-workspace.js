@@ -3,6 +3,7 @@ async (page) => {
   const failures = [], errors = [], measurements = [];
   const assert = (condition, message) => { if (!condition) failures.push(message); };
   const button = name => page.getByRole('button', { name, exact: true });
+  const completedHazards = () => page.locator('.hazard-picker .sr-only').count();
   page.on('pageerror', error => errors.push(error.message));
   await page.emulateMedia({ reducedMotion: 'reduce' });
   const nav = async name => {
@@ -32,7 +33,7 @@ async (page) => {
     await nav('01 Hazards'); await check(`${width}/office`);
     assert(await page.locator('.hazard-choice').count() === 2, `${width}: first risk should be ready to try`);
     assert(await page.locator('.hazard-result').count() === 0, `${width}: no answer should be preselected`);
-    assert((await page.locator('.scene-counter').innerText()).includes('0/5'), `${width}: no progress should be awarded on entry`);
+    assert(await completedHazards()===0, `${width}: no progress should be awarded on entry`);
     const measure = await page.evaluate(() => {
       const panel = document.querySelector('.office-workspace').getBoundingClientRect();
       const heading = document.querySelector('.scene-heading').getBoundingClientRect();
@@ -52,8 +53,8 @@ async (page) => {
     if ([3778,2267,1920,1366,390].includes(width)) await page.screenshot({path:`output/playwright/spacing-office-${width}.png`,fullPage:true});
     await page.locator('.hazard-picker button').last().click(); await check(`${width}/free-navigation`);
     await page.getByRole('button',{name:'Inspect: Loose cable',exact:true}).click();
-    await button('Keep others clear and ask for the cable to be secured').click(); await check(`${width}/office-feedback`);
-    for (const chapter of ['02 Fire','03 Injury','04 Haze','05 Report']) {
+    await button('Keep people clear and ask for help').click(); await check(`${width}/office-feedback`);
+    for (const chapter of ['02 Fire','03 Injury','04 Haze']) {
       await nav(chapter); await check(`${width}/${chapter}`);
       if (chapter === '02 Fire') {
         await page.getByRole('tab',{name:/Blk 56/}).click();
@@ -66,11 +67,11 @@ async (page) => {
       await check(`${width}/${chapter}/feedback`);
       if ([2267,1920,390].includes(width)) await page.screenshot({path:`output/playwright/spacing-${chapter.split(' ')[1].toLowerCase()}-${width}.png`,fullPage:true});
     }
-    await page.evaluate(() => localStorage.setItem('clte-safety-progress',JSON.stringify({office:true,evacuation:true,walkway:true,haze:true,reporting:true,practice:false,guide:false,completion:false})));
+    await page.evaluate(() => localStorage.setItem('clte-safety-progress',JSON.stringify({office:true,evacuation:true,walkway:true,haze:true,practice:false,guide:false,completion:false})));
     await page.reload(); await button('Continue: report practice').click(); await check(`${width}/practice-type`);
     await button('Next').click(); await check(`${width}/practice-impact`);
     await button('Next').click(); await button('Review my practice report').click(); await check(`${width}/practice-review`);
-    await page.evaluate(() => localStorage.setItem('clte-safety-progress',JSON.stringify({office:true,evacuation:true,walkway:true,haze:true,reporting:true,practice:true,guide:false,completion:false})));
+    await page.evaluate(() => localStorage.setItem('clte-safety-progress',JSON.stringify({office:true,evacuation:true,walkway:true,haze:true,practice:true,guide:false,completion:false})));
     await page.reload(); await button('Continue: WSH contacts').click();
     for (const name of ['Emergency','Incident / near miss','Hazard / defect']) { await page.getByRole('tab',{name,exact:true}).click(); await check(`${width}/${name}`); }
     await button('Finish activity').click(); await check(`${width}/completion`);

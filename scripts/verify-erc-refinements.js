@@ -5,7 +5,7 @@ async (page) => {
   page.on('pageerror', error => errors.push(error.message));
   const assert = (value, message) => { if (!value) failures.push(message); };
   const button = name => page.getByRole('button', { name, exact: true });
-  const fixture = { office: true, walkway: true, haze: true, evacuation: true, reporting: true, practice: false, guide: false, completion: false };
+  const fixture = { office: true, walkway: true, haze: true, evacuation: true, practice: false, guide: false, completion: false };
   const nav = async label => {
     if (await button('Toggle navigation').isVisible()) await button('Toggle navigation').click();
     await button(label).click();

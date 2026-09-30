@@ -5,9 +5,7 @@ import { ReadingText } from './ReadingText';
 
 const storageKey = (kind: JourneyKind) => `clte-decisions-v1-${kind}`;
 export function clearDecisionProgress(kind: JourneyKind) {
-  try {
-    [storageKey(kind), kind === 'reporting' ? 'clte-reporting-v1' : `clte-guided-v1-${kind}`].forEach(key => localStorage.removeItem(key));
-  } catch { /* Optional local progress. */ }
+  try { [storageKey(kind), `clte-guided-v1-${kind}`].forEach(key => localStorage.removeItem(key)); } catch { /* Optional local progress. */ }
 }
 function readChoices(kind: JourneyKind, definition: JourneyDefinition): Record<string, string> {
   try {

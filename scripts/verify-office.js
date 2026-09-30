@@ -6,6 +6,7 @@ async (page) => {
   let states = 0;
   const assert = (value, label) => { if (!value) failures.push(label); };
   const button = name => page.getByRole('button', { name, exact: true });
+  const completed = () => page.locator('.hazard-picker .sr-only').count();
   page.on('pageerror', error => errors.push(error.message));
   await page.emulateMedia({ reducedMotion: 'reduce' });
   const enter = async () => {
@@ -50,17 +51,19 @@ async (page) => {
   };
   for (const width of [1920,1440,1024,768,390,320]) {
     await page.setViewportSize({width,height:1000});
-    await page.evaluate(() => ['clte-safety-progress','clte-office-v3'].forEach(key => localStorage.removeItem(key)));
+    await page.evaluate(() => ['clte-safety-progress','clte-office-v3','clte-hazards-part'].forEach(key => localStorage.removeItem(key)));
     await page.reload(); await enter(); await page.evaluate(() => document.fonts.ready);
     await page.locator('.scene-frame img').evaluate(img => img.decode());
-    assert((await page.locator('.scene-counter').innerText()).includes('0/5'), `${width}: pre-awarded progress`);
+    assert(await completed()===0, `${width}: pre-awarded progress`);
     assert(await page.locator('.hazard-result').count() === 0, `${width}: pre-applied action`);
     await page.locator('.hazard-picker button').last().focus(); await page.keyboard.press('Enter');
     assert((await page.locator('.hazard-panel h3').innerText()).includes('printer'), `${width}: free navigation`);
-    await button('Review remaining').click();
-    assert((await page.locator('.hazard-panel h3').innerText()).includes('Bag'), `${width}: untried hazard navigation`);
+    await button('Inspect: Drink beside the printer').click();
+    assert((await page.locator('.hazard-panel h3').innerText()).includes('printer'), `${width}: untried hazard navigation`);
+    await button('Skip for now').click();
+    assert((await page.locator('.hazard-panel h3').innerText()).includes('Bag'), `${width}: first unfinished hazard`);
     for (let index=0; index<5; index++) {
-      if (index>0) await button('Next hazard').click();
+      if (index>0) await button('Next').click();
       await audit(`${width}/${index}/before`);
       assert((await page.locator('.hazard-prompt').innerText()).length>10, `${width}/${index}: prompt missing`);
       assert(await page.locator('.hazard-choice').count() === 2, `${width}/${index}: meaningful alternatives missing`);
@@ -82,16 +85,16 @@ async (page) => {
         assert(await page.locator('[draggable="true"],.hazard-placed-token,.hazard-cue').count()===0, `${width}/${index}: unnecessary interaction or duplicate instruction remains`);
         assert(await page.locator('.hazard-choice').nth(option).getAttribute('aria-pressed')==='true', `${width}/${index}: choice not selected`);
         const correct = option===correctPositions[index];
-        assert((await page.locator('.hazard-result strong').innerText())===(correct?'Correct':'Not quite — try again'), `${width}/${index}: feedback label`);
+        assert((await page.locator('.hazard-result strong').innerText())===(correct?'Why this helps':'Try this instead'), `${width}/${index}: feedback label`);
         assert(await page.locator(`.hazard-choice.selected.${correct?'correct':'incorrect'} svg.lucide-${correct?'check':'x'}`).count()===1, `${width}/${index}: missing right/wrong icon`);
-        assert((await page.locator('.scene-counter').innerText()).includes(`${index+(correct?1:0)}/5`), `${width}/${index}: incorrect progress awarded`);
+        assert(await completed()===index+(correct?1:0), `${width}/${index}: incorrect progress awarded`);
         assert(await page.locator('.hazard-marker.done').count()===index+(correct?1:0), `${width}/${index}: wrong choice marked done`);
         if (!correct && [1440,390].includes(width) && index===0) {
           await page.evaluate(() => window.scrollTo(0,0));
           await page.screenshot({path:`output/playwright/office-incorrect-${width}.png`,fullPage:true});
         }
       }
-      assert((await page.locator('.scene-counter').innerText()).includes(`${index+1}/5`), `${width}/${index}: duplicate progress`);
+      assert(await completed()===index+1, `${width}/${index}: duplicate progress`);
       assert(await page.locator('.hazard-marker.done').count() === index+1, `${width}/${index}: marker not updated`);
       if ([1440,390].includes(width)) {
         await page.evaluate(() => window.scrollTo(0,0));
@@ -101,35 +104,35 @@ async (page) => {
     assert(await page.locator('.decision-options').count() === 0, `${width}: old quiz remains`);
     // Changing a correct answer must not leave stale completion or green markers.
     await page.locator('.hazard-choice').nth(1-correctPositions[4]).click();
-    assert(await button('Continue to Fire').count()===0, `${width}: wrong answer can complete`);
+    assert(await button('Enter Experiment Room').count()===0, `${width}: wrong answer can complete`);
     await page.reload(); await enter();
     assert((await page.locator('.hazard-panel h3').innerText()).includes('printer'), `${width}: resume did not find remaining hazard`);
-    assert((await page.locator('.scene-counter').innerText()).includes('4/5'), `${width}: persisted wrong answer counted`);
+    assert(await completed()===4, `${width}: persisted wrong answer counted`);
     assert(await page.locator('.hazard-choice.selected.incorrect').count()===1, `${width}: persisted wrong answer lost`);
-    await button('Review remaining').click();
     await page.locator('.hazard-choice').nth(correctPositions[4]).click();
     await page.reload(); await enter();
-    assert((await page.locator('.scene-counter').innerText()).includes('5/5'), `${width}: persistence failed`);
-    await button('Continue to Fire').click();
-    assert(await page.locator('#evacuation').isVisible(), `${width}: completion did not lead to Fire`);
+    assert(await completed()===5, `${width}: persistence failed`);
+    await button('Enter Experiment Room').click();
+    assert(await page.getByRole('heading',{name:'Experiment Room hazards'}).isVisible(), `${width}: office workspace did not lead to Experiment Room`);
   }
   await page.setViewportSize({width:1440,height:900});
-  await page.getByRole('button',{name:/Ngee Ann Polytechnic.*Home/}).click();
+  await page.evaluate(() => localStorage.setItem('clte-safety-progress',JSON.stringify({office:true,walkway:false,haze:false,evacuation:false,practice:false,guide:false,completion:false})));
+  await page.reload();
   await button('Start again').click(); await button('Reset activity').click(); await enter();
-  assert((await page.locator('.scene-counter').innerText()).includes('0/5'), 'reset failed');
+  assert(await completed()===0, 'reset failed');
   await page.evaluate(() => localStorage.setItem('clte-office-v3','{"invalid":true}'));
   await page.reload(); await enter();
-  assert((await page.locator('.scene-counter').innerText()).includes('0/5'), 'invalid saved state not handled');
+  assert(await completed()===0, 'invalid saved state not handled');
   await page.evaluate(() => {
     localStorage.removeItem('clte-office-v3');
     localStorage.setItem('clte-office-v2',JSON.stringify({bag:'cubby',drawer:'close',cable:'owner',files:'shelf',drink:'table'}));
   });
   await page.reload(); await enter();
-  assert((await page.locator('.scene-counter').innerText()).includes('0/5'), 'legacy choices pre-awarded progress');
+  assert(await completed()===0, 'legacy choices pre-awarded progress');
   assert(await page.locator('.hazard-choice[aria-pressed="true"]').count()===0, 'legacy choices pre-selected');
   await page.evaluate(() => localStorage.setItem('clte-office-v3',JSON.stringify({bag:'leave',drawer:'close',cable:'leave',files:'store',drink:'leave'})));
   await page.reload(); await enter();
-  assert((await page.locator('.scene-counter').innerText()).includes('2/5'), 'valid safe answers should survive copy updates');
+  assert(await completed()===2, 'valid safe answers should survive copy updates');
   assert(await page.locator('.hazard-choice[aria-pressed="true"]').count()===0, 'replaced shortcuts should not inherit an old answer');
   assert(errors.length===0, `runtime errors: ${errors.join(';')}`);
   if (failures.length) throw new Error(failures.join('\n'));
