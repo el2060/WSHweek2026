@@ -9,6 +9,7 @@ import './office.css';
 import './experiment-room.css';
 import './fire.css';
 import './journey.css';
+import './pantry.css';
 import { initializeScorm } from './scorm';
 
 initializeScorm();

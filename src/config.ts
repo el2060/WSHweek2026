@@ -16,45 +16,45 @@ export const officialInfo = {
   },
 };
 
-export const officeHotspots = [
+export const pantryHotspots = [
   {
-    id: 'bag', label: 'Bag', title: 'Bag blocks the walkway', x: 49, y: 80,
-    body: '', prompt: 'Where should the bag go?',
+    id: 'spill', label: 'Spill', title: 'Water on the pantry floor', x: 76, y: 86,
+    body: '', prompt: 'Colleagues are approaching. What do you do first?',
     options: [
-      { id: 'store', label: 'In a cupboard', correct: true, feedback: 'Keep bags and straps fully off the walkway.' },
-      { id: 'side', label: 'At the side of the walkway', correct: false, feedback: 'Still a trip risk. Store it fully off the walkway.' },
+      { id: 'protect', label: 'Keep people clear and arrange cleanup', correct: true, feedback: 'Warn approaching colleagues. Clean up only if safe, or get help, and keep the area clear until the floor is dry.' },
+      { id: 'later', label: 'Leave it for the next cleaning round', correct: false, feedback: 'Someone could slip before then. Keep people clear and arrange prompt cleanup; the floor needs to be dry before normal use.' },
     ],
   },
   {
-    id: 'drawer', label: 'Drawer', title: 'Drawer left open', x: 35, y: 85,
-    body: '', prompt: 'You need it again soon. What now?',
+    id: 'pantry-bag', label: 'Bag', title: 'Bag and strap in the walkway', x: 48, y: 78,
+    body: '', prompt: 'You’re only stopping for a drink. Where should your bag go?',
     options: [
-      { id: 'halfway', label: 'Leave it half-open', correct: false, feedback: 'It still sticks into the path. Close it between uses.' },
-      { id: 'close', label: 'Close it fully', correct: true, feedback: 'Close drawers between uses so they do not project into the path.' },
+      { id: 'chair', label: 'Beside a chair, with the strap in the aisle', correct: false, feedback: 'The strap can still catch someone’s foot. Store both the bag and its straps fully clear of the walkway.' },
+      { id: 'store', label: 'In a storage space clear of the walkway', correct: true, feedback: 'Keep the whole bag and its straps out of walking routes, even during a quick pantry break.' },
     ],
   },
   {
-    id: 'cable', label: 'Cable', title: 'Loose cable', x: 15, y: 81,
-    body: '', prompt: 'You don’t know what it powers. What now?',
+    id: 'pantry-cable', label: 'Cable', title: 'Air purifier cable across the aisle', x: 35, y: 90,
+    body: '', prompt: 'The purifier is running. What is the safer next step?',
     options: [
-      { id: 'unplug', label: 'Unplug it now', correct: false, feedback: 'Don’t unplug unknown equipment. Keep people clear and ask for help.' },
-      { id: 'secure', label: 'Keep people clear and ask for help', correct: true, feedback: 'Protect the area and get the cable secured safely.' },
+      { id: 'mat', label: 'Hide the cable under a loose mat', correct: false, feedback: 'A loose mat can conceal the cable and add another trip hazard. Keep people clear and ask for a safe cable route.' },
+      { id: 'secure', label: 'Keep people clear and ask for safe rerouting', correct: true, feedback: 'Ask the person responsible to reposition the purifier or secure its cable away from walking routes. Don’t move powered equipment by pulling its cable.' },
     ],
   },
   {
-    id: 'files', label: 'Files', title: 'Heavy files near the edge', x: 29, y: 67,
-    body: '', prompt: 'Where should the files go?',
+    id: 'hot-mug', label: 'Hot mug', title: 'Hot drink near the table edge', x: 43, y: 41,
+    body: '', prompt: 'A sleeve or bag could catch the handle. What would help?',
     options: [
-      { id: 'store', label: 'On a low cupboard shelf', correct: true, feedback: 'Heavy files are safer stored low and away from edges.' },
-      { id: 'high', label: 'On top of the cupboard', correct: false, feedback: 'They could fall from height. Store heavy files low.' },
+      { id: 'move', label: 'Move it back from the edge, handle inward', correct: true, feedback: 'If safe to handle, place the mug on a stable surface away from the edge with its handle clear of passing people. This reduces the chance of a knock and scald.' },
+      { id: 'warn', label: 'Leave it there and tell people to be careful', correct: false, feedback: 'A warning alone leaves the hot drink within reach of a passing sleeve or bag. Move it safely away from the edge, with the handle inward.' },
     ],
   },
   {
-    id: 'drink', label: 'Drink', title: 'Drink beside the printer', x: 86.5, y: 71,
-    body: '', prompt: 'Where should the drink go?',
+    id: 'cupboard', label: 'Cupboard', title: 'Cupboard door left open', x: 86, y: 66,
+    body: '', prompt: 'You’ll need another cup soon. What should you do?',
     options: [
-      { id: 'lid', label: 'Beside the printer, with a lid', correct: false, feedback: 'A lid can still leak. Move the drink away from equipment.' },
-      { id: 'move', label: 'On a table away from the printer', correct: true, feedback: 'Distance keeps spills away from electrical equipment.' },
+      { id: 'ajar', label: 'Leave it partly open for the next person', correct: false, feedback: 'A partly open door still projects into the aisle. Close it fully between uses so people can pass safely.' },
+      { id: 'close', label: 'Close it fully between uses', correct: true, feedback: 'Closing the door removes an obstruction at knee height. If it won’t close properly, keep people clear and report the defect.' },
     ],
   },
 ];

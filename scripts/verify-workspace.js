@@ -26,7 +26,7 @@ async (page) => {
   };
   for (const [width,height] of [[3778,1870],[2560,1440],[2267,1122],[1920,1080],[1440,900],[1366,768],[1024,768],[900,900],[768,1024],[390,844],[320,740]]) {
     await page.setViewportSize({ width,height });
-    await page.evaluate(() => ['clte-safety-progress','clte-decisions-v1-injury','clte-decisions-v1-haze','clte-decisions-v1-reporting','clte-office-v3'].forEach(key => localStorage.removeItem(key)));
+    await page.evaluate(() => ['clte-safety-progress','clte-decisions-v1-injury','clte-decisions-v1-haze','clte-decisions-v1-reporting','clte-pantry-v1','clte-hazards-part'].forEach(key => localStorage.removeItem(key)));
     await page.reload(); await page.evaluate(() => document.fonts.ready);
     await check(`${width}/home`);
     if ([1920,390].includes(width)) await page.screenshot({path:`output/playwright/spacing-home-${width}.png`,fullPage:true});
@@ -52,8 +52,8 @@ async (page) => {
     assert(measure.font >= 18, `${width}: small decision text`);
     if ([3778,2267,1920,1366,390].includes(width)) await page.screenshot({path:`output/playwright/spacing-office-${width}.png`,fullPage:true});
     await page.locator('.hazard-picker button').last().click(); await check(`${width}/free-navigation`);
-    await page.getByRole('button',{name:'Inspect: Loose cable',exact:true}).click();
-    await button('Keep people clear and ask for help').click(); await check(`${width}/office-feedback`);
+    await page.getByRole('button',{name:'Inspect: Air purifier cable across the aisle',exact:true}).click();
+    await button('Keep people clear and ask for safe rerouting').click(); await check(`${width}/office-feedback`);
     for (const chapter of ['02 Fire','03 Injury','04 Haze']) {
       await nav(chapter); await check(`${width}/${chapter}`);
       if (chapter === '02 Fire') {

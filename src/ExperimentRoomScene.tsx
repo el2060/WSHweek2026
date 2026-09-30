@@ -86,6 +86,6 @@ export default function ExperimentRoomScene({ onComplete, onBack }: { onComplete
         <div className="experiment-actions">{allDone ? <button className="primary" onClick={onComplete}>Continue to Fire <ArrowRight/></button> : <button className="secondary" onClick={nextHazard}>{selected?.correct ? 'Next hazard' : 'Skip for now'} <ArrowRight/></button>}</div>
       </>}
     </aside>
-    <button className="experiment-back" onClick={onBack}><ArrowLeft/> Office workspace</button>
+    <button className="experiment-back" onClick={onBack}><ArrowLeft/> CLTE pantry</button>
   </section>;
 }

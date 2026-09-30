@@ -1,0 +1,83 @@
+/* Keep the real pantry's counter, pendant lights and book column visible. */
+.app-shell .pantry-intro {
+  padding-inline: var(--activity-gutter);
+  background: #f6f0e4;
+}
+.pantry-intro::before {
+  background: linear-gradient(90deg, #f6f0e4 0%, #f6f0e4f5 23%, #f6f0e4e8 32%, #f6f0e480 43%, #f6f0e400 57%);
+}
+.pantry-intro .intro-copy { width: min(36rem, 40%); }
+.pantry-intro h1 { font-size: clamp(2.75rem, 4.3vw, 4.5rem); }
+.pantry-intro h1>span { text-wrap: initial; }
+.pantry-intro .tagline { max-width: 27rem; }
+.pantry-intro .wsh-hero-visual { inset: 72px 0 0; }
+.pantry-intro .wsh-hero-visual>img {
+  display: block;
+  object-position: 62% center;
+  filter: none;
+  animation: pantry-arrive .8s ease-out both;
+}
+.pantry-intro .wsh-hero-visual::after { display: none; }
+.pantry-caption {
+  position: absolute;
+  right: var(--activity-gutter);
+  bottom: 1.5rem;
+  display: flex;
+  align-items: center;
+  gap: .5rem;
+  margin: 0;
+  padding: .5rem .75rem;
+  border-radius: .25rem;
+  background: #f6f0e4f2;
+  color: #173e3d;
+  font-size: .8125rem;
+  font-weight: 700;
+  line-height: 1.5;
+}
+.pantry-caption span { padding-left: .5rem; border-left: 1px solid #b7bdb0; font-weight: 500; }
+@keyframes pantry-arrive { from { opacity: .4; transform: scale(1.025); } to { opacity: 1; transform: scale(1); } }
+@media (min-width: 1440px) {
+  .pantry-intro .wsh-hero-visual { top: 4.5rem; }
+}
+@media (max-width: 1100px) and (min-width: 901px) {
+  .pantry-intro .intro-copy { width: 44%; }
+  .pantry-intro::before { background: linear-gradient(90deg,#f6f0e4 0%,#f6f0e4f5 30%,#f6f0e4c9 42%,transparent 64%); }
+}
+@media (max-width: 900px) {
+  .app-shell .pantry-intro { padding: 6rem 6vw 0; }
+  .pantry-intro .intro-copy { width: 100%; padding-bottom: 1.5rem; }
+  .pantry-intro h1 { font-size: clamp(2.5rem, 6vw, 3.5rem); }
+  .pantry-intro .wsh-hero-visual {
+    inset: auto;
+    width: calc(100% + 12vw);
+    height: auto;
+    min-height: 0;
+    max-height: none;
+    aspect-ratio: 16 / 9;
+    flex: none;
+    margin: 0 -6vw;
+  }
+  .pantry-intro .wsh-hero-visual>img { object-position: center; }
+  .pantry-caption { bottom: .75rem; right: 6vw; font-size: .75rem; }
+}
+@media (max-width: 480px) {
+  .pantry-intro h1 { font-size: clamp(2.3rem, 9.5vw, 2.85rem); }
+  .pantry-intro .wsh-hero-visual { aspect-ratio: 4 / 3; }
+  .pantry-intro .wsh-hero-visual>img { object-position: 65% center; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .pantry-intro .wsh-hero-visual>img { animation: none; }
+}
+
+/* The small mug stays visible beside its marker; other markers sit on larger hazards. */
+.pantry-mug-leader { position: absolute; z-index: 1; inset: 0; width: 100%; height: 100%; pointer-events: none; }
+.pantry-mug-leader line { stroke: #fffdf7; stroke-width: 2; vector-effect: non-scaling-stroke; }
+@media (min-width: 1281px) {
+  /* Keep the lower-right spill clear of the hazard navigation. */
+  .office-immersive .hazard-picker { left: var(--activity-gutter); right: auto; }
+}
+@media (max-width: 600px) {
+  .office-immersive .hazard-picker { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: .375rem; }
+  .office-immersive .hazard-picker button,
+  .office-immersive .hazard-picker button:nth-child(n+4) { grid-column: auto; flex-direction: row; padding: .5rem .25rem; }
+}
