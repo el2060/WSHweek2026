@@ -33,7 +33,7 @@ function Intro({ onOpen, onReset, progress, notice }: { onOpen: (view: View) => 
       <div className="wsh-week-lockup"><strong>WSH Week</strong><b>2026</b></div>
       <p className="eyebrow light">CLTE staff activity</p>
       <h1><span>Workplace safety</span><em>made practical.</em></h1>
-      <p className="tagline">Pick a scenario, learn from each decision, come back anytime.</p>
+      <p className="tagline">Make the call. See what happens.</p>
       <div className="intro-actions"><button className="primary light-button" onClick={chooseScenario}>Choose a scenario<ArrowDown size={19}/></button></div>
     </div>
     <div className="wsh-hero-visual">
@@ -42,11 +42,11 @@ function Intro({ onOpen, onReset, progress, notice }: { onOpen: (view: View) => 
     </div>
   </section>
   <section id="scenarios" className="scenario-hub" aria-labelledby="scenario-title">
-    <div className="scenario-hub-heading"><div><p className="eyebrow">Explore at your own pace</p><h2 id="scenario-title" tabIndex={-1}>Where would you like to start?</h2><p>Pick any scenario—there’s no wrong path.</p></div><strong className="hub-count">{completed}/{scenarios.length} completed</strong></div>
+    <div className="scenario-hub-heading"><div><p className="eyebrow">Explore the scenarios</p><h2 id="scenario-title" tabIndex={-1}>Where would you like to start?</h2><p>Choose any scenario. There’s no set order.</p></div><strong className="hub-count">{completed}/{scenarios.length} completed</strong></div>
     {notice && <p className="hub-notice" role="status"><Check aria-hidden="true"/>{notice}</p>}
     {completed === scenarios.length && <p className="hub-finished"><Sparkles aria-hidden="true"/> All done! Revisit any scenario, or check WSH contacts.</p>}
-    <div className="scenario-list">{scenarios.map(scenario => <button key={scenario.id} className="scenario-entry" onClick={()=>onOpen(scenario.id)} aria-label={`${progress[scenario.id]?'Revisit':'Open'} ${scenario.title}`}><img src={scenario.image} alt="" loading="lazy"/><span className="scenario-entry-copy"><span className="scenario-entry-meta">{scenario.detail} <span>{progress[scenario.id]?<><Check size={16}/>Completed</>:'Not completed'}</span></span><strong>{scenario.title}</strong><span>{scenario.description}</span></span><ArrowRight aria-hidden="true"/></button>)}</div>
-    <div className="home-resources"><div><h3>Need help fast?</h3><p>Emergency numbers and who to call.</p></div><button className="secondary" onClick={()=>onOpen('guide')}>WSH contacts <ArrowRight/></button></div>
+    <div className="scenario-list">{scenarios.map(scenario => <button key={scenario.id} className="scenario-entry" onClick={()=>onOpen(scenario.id)} aria-label={`${progress[scenario.id]?'Revisit':'Open'} ${scenario.title}`}><img src={scenario.image} alt="" loading="lazy"/><span className="scenario-entry-copy"><span className="scenario-entry-meta">{scenario.detail} {progress[scenario.id]&&<span><Check size={16}/>Completed</span>}</span><strong>{scenario.title}</strong><span>{scenario.description}</span></span><ArrowRight aria-hidden="true"/></button>)}</div>
+    <div className="home-resources"><div><h3>Need help?</h3><p>Emergency contacts and key actions.</p></div><button className="secondary" onClick={()=>onOpen('guide')}>WSH contacts <ArrowRight/></button></div>
     <button className="intro-reset" onClick={onReset}><RotateCcw/>Reset saved progress</button>
   </section></>;
 }
