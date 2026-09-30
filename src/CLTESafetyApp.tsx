@@ -47,7 +47,7 @@ function Intro({ onOpen, onReset, progress, notice }: { onOpen: (view: View) => 
     {completed === scenarios.length && <p className="hub-finished"><Sparkles aria-hidden="true"/> All done! Revisit any scenario, or check WSH contacts.</p>}
     <div className="scenario-list">{scenarios.map(scenario => <button key={scenario.id} className="scenario-entry" onClick={()=>onOpen(scenario.id)} aria-label={`${progress[scenario.id]?'Revisit':'Open'} ${scenario.title}`}><img src={scenario.image} alt="" loading="lazy"/><span className="scenario-entry-copy"><span className="scenario-entry-meta">{scenario.detail} {progress[scenario.id]&&<span><Check size={16}/>Completed</span>}</span><strong>{scenario.title}</strong><span>{scenario.description}</span></span><ArrowRight aria-hidden="true"/></button>)}</div>
     <div className="home-resources"><div><h3>Need help?</h3><p>Emergency contacts and key actions.</p></div><button className="secondary" onClick={()=>onOpen('guide')}>WSH contacts <ArrowRight/></button></div>
-    <button className="intro-reset" onClick={onReset}><RotateCcw/>Reset saved progress</button>
+    <button className="intro-reset" onClick={onReset}><RotateCcw/>Reset progress</button>
   </section></>;
 }
 
@@ -167,7 +167,7 @@ function ResetDialog({ open, onCancel, onConfirm }: { open: boolean; onCancel: (
   useEffect(()=>{if(open)cancelRef.current?.focus()},[open]);
   useEffect(()=>{if(!open)return;const close=(event:KeyboardEvent)=>{if(event.key==='Escape')onCancel()};document.addEventListener('keydown',close);return()=>document.removeEventListener('keydown',close)},[open,onCancel]);
   if(!open)return null;
-  return <div className="reset-backdrop" onMouseDown={event=>{if(event.target===event.currentTarget)onCancel()}}><section className="reset-dialog" role="dialog" aria-modal="true" aria-labelledby="reset-title" aria-describedby="reset-description"><RotateCcw/><p className="eyebrow">Start again</p><h2 id="reset-title">Reset your activity?</h2><p id="reset-description">This clears your saved progress and answers, back to 0/5.</p><div><button ref={cancelRef} className="secondary" onClick={onCancel}>Keep progress</button><button className="reset-confirm" onClick={onConfirm}>Reset activity</button></div></section></div>;
+  return <div className="reset-backdrop" onMouseDown={event=>{if(event.target===event.currentTarget)onCancel()}}><section className="reset-dialog" role="dialog" aria-modal="true" aria-labelledby="reset-title" aria-describedby="reset-description"><RotateCcw/><p className="eyebrow">Start over</p><h2 id="reset-title">Reset your progress?</h2><p id="reset-description">This clears your answers and completed scenarios on this device. You can’t undo it.</p><div><button ref={cancelRef} className="secondary" onClick={onCancel}>Cancel</button><button className="reset-confirm" onClick={onConfirm}>Reset progress</button></div></section></div>;
 }
 
 export default function App() {

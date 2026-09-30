@@ -159,6 +159,8 @@
 .reset-dialog h2 { font-size: var(--reading-panel); line-height: 1.2; }
 .reset-dialog p:not(.eyebrow) { font-size: 1.125rem; line-height: 1.55; }
 .reset-dialog>div { flex-wrap: wrap; }
+.reset-dialog>div { align-items: stretch; }
+.reset-dialog>div>button { min-height: 3rem; padding: .75rem 1.25rem; font-size: 1.125rem; line-height: 1.4; }
 
 @media(max-width:1050px) {
   header .menu { display: grid!important; }
