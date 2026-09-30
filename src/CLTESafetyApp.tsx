@@ -5,12 +5,11 @@ import { officialInfo } from './config';
 import OfficeScene, { clearOfficeProgress } from './OfficeScene';
 import ExperimentRoomScene, { clearExperimentRoomProgress } from './ExperimentRoomScene';
 import { InjuryScene, HazeScene, clearGuidedProgress } from './GuidedScenes';
-import PracticeReport from './PracticeReport';
 import { ReadingText } from './ReadingText';
 import { isScormActive, readScormProgress, saveScormProgress } from './scorm';
 import { scenarios, normalizeProgress, initialProgress, completeActivity, hasAnswer, type Progress, type ScenarioId } from './activityProgress';
 
-type View = 'intro' | ScenarioId | 'practice' | 'guide';
+type View = 'intro' | ScenarioId | 'guide';
 
 function useSavedProgress() {
   const [progress, setProgress] = useState<Progress>(() => {
@@ -36,7 +35,7 @@ function Intro({ onOpen, onReset, progress, notice }: { onOpen: (view: View) => 
       <h1><span>Workplace safety</span><em>made practical.</em></h1>
       <p className="tagline">Pick a scenario, learn from each decision, come back anytime.</p>
       <div className="intro-actions"><button className="primary light-button" onClick={chooseScenario}>Choose a scenario<ArrowDown size={19}/></button></div>
-      <p className="intro-note">Any order · No score · Your progress is saved</p>
+      <p className="intro-note">Any order · No score · Auto-saved</p>
     </div>
     <div className="wsh-hero-visual">
       <img src="/assets/clte-pantry-hero.png" alt="Illustration of colleagues in the CLTE pantry, with its patterned tile counter, black pendant lights, book display and white wire chairs." width="1672" height="941" fetchPriority="high"/>
@@ -44,11 +43,11 @@ function Intro({ onOpen, onReset, progress, notice }: { onOpen: (view: View) => 
     </div>
   </section>
   <section id="scenarios" className="scenario-hub" aria-labelledby="scenario-title">
-    <div className="scenario-hub-heading"><div><p className="eyebrow">Explore at your own pace</p><h2 id="scenario-title" tabIndex={-1}>Where would you like to start?</h2><p>Pick any scenario and answer to see what happens—there’s no wrong path.</p></div><strong className="hub-count">{completed}/{scenarios.length} completed</strong></div>
+    <div className="scenario-hub-heading"><div><p className="eyebrow">Explore at your own pace</p><h2 id="scenario-title" tabIndex={-1}>Where would you like to start?</h2><p>Pick any scenario—there’s no wrong path.</p></div><strong className="hub-count">{completed}/{scenarios.length} completed</strong></div>
     {notice && <p className="hub-notice" role="status"><Check aria-hidden="true"/>{notice}</p>}
-    {completed === scenarios.length && <p className="hub-finished"><Sparkles aria-hidden="true"/> All done! Revisit any scenario, or keep the contacts handy.</p>}
+    {completed === scenarios.length && <p className="hub-finished"><Sparkles aria-hidden="true"/> All done! Revisit any scenario, or check WSH contacts.</p>}
     <div className="scenario-list">{scenarios.map(scenario => <button key={scenario.id} className="scenario-entry" onClick={()=>onOpen(scenario.id)} aria-label={`${progress[scenario.id]?'Revisit':'Open'} ${scenario.title}`}><img src={scenario.image} alt="" loading="lazy"/><span className="scenario-entry-copy"><span className="scenario-entry-meta">{scenario.detail} <span>{progress[scenario.id]?<><Check size={16}/>Completed</>:'Not completed'}</span></span><strong>{scenario.title}</strong><span>{scenario.description}</span></span><ArrowRight aria-hidden="true"/></button>)}</div>
-    <div className="home-resources"><div><h3>Useful extras</h3><p>Optional practice and contacts, anytime.</p></div><button className="secondary" onClick={()=>onOpen('practice')}>Report practice <ArrowRight/></button><button className="secondary" onClick={()=>onOpen('guide')}>WSH contacts <ArrowRight/></button></div>
+    <div className="home-resources"><div><h3>Need help fast?</h3><p>Emergency numbers and who to call.</p></div><button className="secondary" onClick={()=>onOpen('guide')}>WSH contacts <ArrowRight/></button></div>
     <button className="intro-reset" onClick={onReset}><RotateCcw/>Reset saved progress</button>
   </section></>;
 }
@@ -188,10 +187,10 @@ export default function App() {
     });
     return()=>cancelAnimationFrame(frame);
   },[view,notice]);
-  const complete=(key:ScenarioId|'practice'|'guide')=>{
+  const complete=(key:ScenarioId|'guide')=>{
     setProgress(current=>completeActivity(current,key));
     const title=scenarios.find(scenario=>scenario.id===key)?.title;
-    setNotice(title?`${title} complete. Choose another scenario anytime.`:key==='practice'?'Report practice complete. Choose a scenario anytime.':'Contacts reviewed—come back anytime.');
+    setNotice(title?`${title} complete. Choose another scenario anytime.`:'Contacts reviewed—come back anytime.');
     setView('intro');
   };
   const resetProgress=()=>{
@@ -212,7 +211,6 @@ export default function App() {
       {view==='evacuation'&&<EvacuationScene onComplete={()=>complete('evacuation')}/>}
       {view==='walkway'&&<InjuryScene onComplete={()=>complete('walkway')}/>}
       {view==='haze'&&<HazeScene onComplete={()=>complete('haze')}/>}
-      {view==='practice'&&<PracticeReport onComplete={()=>complete('practice')}/>}
       {view==='guide'&&<PocketGuide onComplete={()=>complete('guide')}/>}
     </div></main>
     <ResetDialog open={resetOpen} onCancel={()=>setResetOpen(false)} onConfirm={resetProgress}/>

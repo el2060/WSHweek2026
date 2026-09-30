@@ -7,20 +7,20 @@ export const scenarios = [
 ] as const;
 
 export type ScenarioId = typeof scenarios[number]['id'];
-export type Progress = Record<ScenarioId, boolean> & { practice: boolean; guide: boolean; completion: boolean };
-export const initialProgress: Progress = { office: false, experiment: false, walkway: false, haze: false, evacuation: false, practice: false, guide: false, completion: false };
+export type Progress = Record<ScenarioId, boolean> & { guide: boolean; completion: boolean };
+export const initialProgress: Progress = { office: false, experiment: false, walkway: false, haze: false, evacuation: false, guide: false, completion: false };
 
 export function normalizeProgress(saved: Partial<Progress> | null): Progress {
   // The old office completion included both pantry and Experiment Room.
   const progress = { ...initialProgress,
     office: Boolean(saved?.office), experiment: Boolean(saved?.experiment ?? saved?.office),
     walkway: Boolean(saved?.walkway), haze: Boolean(saved?.haze), evacuation: Boolean(saved?.evacuation),
-    practice: Boolean(saved?.practice), guide: Boolean(saved?.guide),
+    guide: Boolean(saved?.guide),
   };
   return { ...progress, completion: scenarios.every(scenario => progress[scenario.id]) };
 }
 
-export function completeActivity(progress: Progress, key: ScenarioId | 'practice' | 'guide'): Progress {
+export function completeActivity(progress: Progress, key: ScenarioId | 'guide'): Progress {
   return normalizeProgress({ ...progress, [key]: true });
 }
 
