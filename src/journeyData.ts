@@ -4,7 +4,7 @@ export type JourneyKind = 'injury' | 'haze';
 export type JourneyChoice = { id: string; label: string; correct: boolean; feedback: string };
 export type JourneyMoment = { id: string; label: string; title: string; story: string; image: string; alt: string; choices: JourneyChoice[] };
 export type JourneyDefinition = {
-  id: string; heading: string; next: string; safety: string;
+  id: string; heading: string; safety: string;
   reference: string[]; links: { label: string; href: string }[]; moments: JourneyMoment[];
 };
 const injuryImage = { image: '/assets/walkway.webp', alt: 'A student seated on a wet campus walkway while colleagues help and guide people around.' };
@@ -19,7 +19,7 @@ const emergencyLink = { label: 'SCDF emergency advice', href: 'https://www.scdf.
 // Keep each setup short and each feedback to one useful distinction.
 export const journeys: Record<JourneyKind, JourneyDefinition> = {
   injury: {
-    id: 'walkway', heading: '03 · Injury response', next: 'Haze',
+    id: 'walkway', heading: 'Injury response',
     safety: `Serious injury or breathing difficulty? Call ${officialInfo.ambulanceNumber}.`,
     reference: [...emergencyReference, 'For this practice: the student is awake, breathing normally and seated beside Block 73. Arrange first aid; report the incident after care and safety are addressed.'],
     links: [emergencyLink],
@@ -48,7 +48,7 @@ export const journeys: Record<JourneyKind, JourneyDefinition> = {
     ],
   },
   haze: {
-    id: 'haze', heading: '04 · Haze response', next: 'report practice',
+    id: 'haze', heading: 'Haze response',
     safety: `Breathing difficulty? Call ${officialInfo.ambulanceNumber} immediately.`,
     reference: [...emergencyReference, 'Reduce haze exposure. People with asthma who develop symptoms should seek medical advice promptly. Check current NEA advice when planning outdoor activities.'],
     links: [{label:'NEA haze advice',href:'https://www.haze.gov.sg/'},{label:'HealthHub haze advice',href:'https://www.healthhub.sg/highlights-and-insights/health-safety-advisory/how-to-protect-yourself-against-haze'},emergencyLink],

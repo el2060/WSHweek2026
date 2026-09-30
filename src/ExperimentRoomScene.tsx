@@ -1,6 +1,8 @@
 import { type CSSProperties, useEffect, useRef, useState } from 'react';
 import { ArrowLeft, ArrowRight, Check, Eye, MapPin, TriangleAlert, X, Zap } from 'lucide-react';
 
+import { hasAnswer } from './activityProgress';
+
 type RoomChoice = { id: string; label: string; correct: boolean; feedback: string };
 type RoomHazard = { id: string; x: number; y: number; label: string; title: string; story: string; choices: RoomChoice[] };
 const storageKey = 'clte-experiment-room-v1';
@@ -40,13 +42,13 @@ function readChoices(): Record<string, string> {
 
 export default function ExperimentRoomScene({ onComplete, onBack }: { onComplete: () => void; onBack: () => void }) {
   const [choices, setChoices] = useState(readChoices);
-  const firstUnfinished = hazards.find(hazard => !hazard.choices.some(choice => choice.correct && choice.id === choices[hazard.id]));
+  const firstUnfinished = hazards.find(hazard => !hasAnswer(hazard.choices, choices[hazard.id]));
   const [activeId, setActiveId] = useState<string | null>(() => firstUnfinished?.id || hazards[0].id);
   const sceneRef = useRef<HTMLElement>(null);
   const titleRef = useRef<HTMLHeadingElement>(null);
   const active = hazards.find(hazard => hazard.id === activeId);
   const selected = active?.choices.find(choice => choice.id === choices[active.id]);
-  const isDone = (hazard: RoomHazard) => hazard.choices.some(choice => choice.correct && choice.id === choices[hazard.id]);
+  const isDone = (hazard: RoomHazard) => hasAnswer(hazard.choices, choices[hazard.id]);
   const count = hazards.filter(isDone).length;
   const allDone = count === hazards.length;
   const focusStyle = active ? ({ '--room-focus-x': `${active.x}%`, '--room-focus-y': `${active.y}%` } as CSSProperties) : undefined;
@@ -71,21 +73,21 @@ export default function ExperimentRoomScene({ onComplete, onBack }: { onComplete
   return <section ref={sceneRef} className={`experiment-room ${active ? 'has-focus' : ''}`} data-focus-side={active && active.x < 48 ? 'left' : 'right'} style={focusStyle} onPointerMove={movePhoto} onPointerLeave={resetPhoto}>
     <div className="experiment-camera"><img src="/assets/experiment-room/training-composite-avatars-v3.webp" alt="Stylized 3D avatars taking part in a hands-on Experiment Room workshop, with laptops, training kits, refreshments and four safety hazards to inspect."/></div>
     <div className="experiment-shade" aria-hidden="true"/><div className="experiment-focus" aria-hidden="true"/>
-    <div className="experiment-heading"><p>Scenario 01 · Part 2 of 2</p><h1>Experiment Room hazards</h1><span><MapPin/> Block 31 · Level 2</span></div>
-    <div className="experiment-score" aria-live="polite"><strong>{count}/{hazards.length}</strong><span>made safe</span></div>
-    {isDone(hazards[0]) && <div className="experiment-warning-sign" role="status" aria-label="Electrical hazard warning sign placed. Keep clear.">
+    <div className="experiment-heading"><p>Explore at your own pace</p><h1>Experiment Room hazards</h1><span><MapPin/> Block 31 · Level 2</span></div>
+    <div className="experiment-score" aria-live="polite"><strong>{count}/{hazards.length}</strong><span>explored</span></div>
+    {hazards[0].choices.some(choice=>choice.correct&&choice.id===choices[hazards[0].id]) && <div className="experiment-warning-sign" role="status" aria-label="Electrical hazard warning sign placed. Keep clear.">
       <span className="experiment-warning-symbol"><TriangleAlert/><Zap/></span>
       <strong>Electrical hazard</strong><small>Keep clear</small>
     </div>}
     <div className="experiment-hotspots" aria-label="Guided room hazards">{hazards.map(hazard => <button key={hazard.id} style={{left:`${hazard.x}%`,top:`${hazard.y}%`}} className={`${activeId === hazard.id ? 'active' : ''} ${isDone(hazard) ? 'done' : ''}`} aria-label={`Inspect ${hazard.title}`} onClick={() => inspect(hazard)}>{isDone(hazard) ? <Check/> : <><span/><small>{hazard.label}</small></>}</button>)}</div>
     <aside className={`experiment-panel ${active ? 'has-hazard' : 'is-brief'}`}>
-      {!active ? <div className="experiment-brief"><Eye/><p>Part 2 of 2 · Photo walkthrough</p><h2>Look around the room.</h2><span>Follow the soft pulse to inspect each hazard.</span></div> : <>
+      {!active ? <div className="experiment-brief"><Eye/><p>Photo walkthrough</p><h2>Look around the room.</h2><span>Follow the soft pulse to inspect each hazard.</span></div> : <>
         <p className="experiment-meta">{active.label} · {hazards.indexOf(active) + 1} of {hazards.length}</p><h2 ref={titleRef} tabIndex={-1}>{active.title}</h2><p className="experiment-story">{active.story}</p>
         <div className="experiment-choices" role="group" aria-label={active.title}>{active.choices.map(choice => <button key={choice.id} aria-pressed={selected?.id === choice.id} className={selected?.id === choice.id ? (choice.correct ? 'correct' : 'incorrect') : ''} onClick={() => setChoices(current => ({...current,[active.id]:choice.id}))}><span>{choice.label}</span>{selected?.id === choice.id && (choice.correct ? <Check/> : <X/>)}</button>)}</div>
-        {selected && <div className={`experiment-feedback ${selected.correct ? 'correct' : 'incorrect'}`} role="status"><strong>{selected.correct ? 'Why this helps' : 'Try this instead'}</strong><p>{selected.feedback}</p>{active.id === 'aisle-cable' && selected.correct && <span className="experiment-sign-confirmation"><TriangleAlert/> Warning sign placed · Keep clear</span>}</div>}
-        <div className="experiment-actions">{allDone ? <button className="primary" onClick={onComplete}>Continue to Fire <ArrowRight/></button> : <button className="secondary" onClick={nextHazard}>{selected?.correct ? 'Next hazard' : 'Skip for now'} <ArrowRight/></button>}</div>
+        {selected && <div className={`experiment-feedback ${selected.correct ? 'correct' : 'incorrect'}`} role="status"><strong>{selected.correct ? 'Why this helps' : 'A safer next step'}</strong><p>{selected.feedback}</p>{active.id === 'aisle-cable' && selected.correct && <span className="experiment-sign-confirmation"><TriangleAlert/> Warning sign placed · Keep clear</span>}</div>}
+        <div className="experiment-actions">{allDone ? <button className="primary" onClick={onComplete}>Finish & return home <ArrowRight/></button> : <button className="secondary" disabled={!selected} onClick={nextHazard}>Next hazard <ArrowRight/></button>}</div>
       </>}
     </aside>
-    <button className="experiment-back" onClick={onBack}><ArrowLeft/> CLTE pantry</button>
+    <button className="experiment-back" onClick={onBack}><ArrowLeft/> Home</button>
   </section>;
 }

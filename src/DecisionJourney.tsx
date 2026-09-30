@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import { ArrowLeft, ArrowRight, Check, X } from 'lucide-react';
 import { journeys, type JourneyDefinition, type JourneyKind } from './journeyData';
 import { ReadingText } from './ReadingText';
+import { hasAnswer } from './activityProgress';
 
 const storageKey = (kind: JourneyKind) => `clte-decisions-v1-${kind}`;
 export function clearDecisionProgress(kind: JourneyKind) {
@@ -20,7 +21,7 @@ function readChoices(kind: JourneyKind, definition: JourneyDefinition): Record<s
 export default function DecisionJourney({ kind, onComplete }: { kind: JourneyKind; onComplete: () => void }) {
   const definition = journeys[kind];
   const [choices, setChoices] = useState(() => readChoices(kind, definition));
-  const isDone = (index: number) => definition.moments[index].choices.some(choice => choice.correct && choice.id === choices[definition.moments[index].id]);
+  const isDone = (index: number) => hasAnswer(definition.moments[index].choices, choices[definition.moments[index].id]);
   const [step, setStep] = useState(() => Math.max(0, definition.moments.findIndex((_, index) => !isDone(index))));
   const heading = useRef<HTMLHeadingElement>(null);
   const scene = useRef<HTMLElement>(null);
@@ -55,10 +56,10 @@ export default function DecisionJourney({ kind, onComplete }: { kind: JourneyKin
           <span>{choice.label}</span>{selected?.id === choice.id && (choice.correct ? <Check size={21} aria-hidden="true"/> : <X size={21} aria-hidden="true"/>)}
         </button>)}
       </div>
-      <div className="journey-feedback" role="status" aria-live="polite" aria-atomic="true">{selected && <div className={selected.correct ? 'correct' : 'incorrect'}><strong>{selected.correct ? 'Why this helps' : 'Try this instead'}</strong><p><ReadingText>{selected.feedback}</ReadingText></p></div>}</div>
+      <div className="journey-feedback" role="status" aria-live="polite" aria-atomic="true">{selected && <div className={selected.correct ? 'correct' : 'incorrect'}><strong>{selected.correct ? 'Why this helps' : 'A safer next step'}</strong><p><ReadingText>{selected.feedback}</ReadingText></p></div>}</div>
       <div className="journey-actions"><div>
         {step > 0 && <button className="text-button" onClick={() => moveTo(step - 1)}><ArrowLeft size={18}/>Back</button>}
-        {allDone ? <button className="primary" onClick={onComplete}>Continue to {definition.next}<ArrowRight size={19}/></button> : <button className="secondary" onClick={next}>{step < definition.moments.length - 1 ? 'Next' : 'Review remaining'}<ArrowRight size={19}/></button>}
+        {allDone ? <button className="primary" onClick={onComplete}>Finish & return home<ArrowRight size={19}/></button> : <button className="secondary" disabled={!selected} onClick={next}>{step < definition.moments.length - 1 ? 'Next' : 'Next unanswered decision'}<ArrowRight size={19}/></button>}
       </div></div>
       <details className="journey-reference" key={step}><summary>Quick reference</summary><ul>{definition.reference.map(item => <li key={item}><ReadingText>{item}</ReadingText></li>)}</ul><div>{definition.links.map(link => <a key={link.href} href={link.href} target="_blank" rel="noreferrer">{link.label}</a>)}</div></details>
     </div>

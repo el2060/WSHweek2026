@@ -10,6 +10,7 @@ import './experiment-room.css';
 import './fire.css';
 import './journey.css';
 import './pantry.css';
+import './home-flow.css';
 import { initializeScorm } from './scorm';
 
 initializeScorm();

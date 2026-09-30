@@ -65,15 +65,15 @@ export function readScormProgress<T>() {
 
 export function saveScormProgress(progress: Record<string, boolean>) {
   if (!api || !initialized || finished) return;
-  const scenarioKeys = ['office', 'evacuation', 'walkway', 'haze'];
+  const scenarioKeys = ['office', 'experiment', 'evacuation', 'walkway', 'haze'];
   const completedScenarios = scenarioKeys.filter(key => progress[key]).length;
   const score = Math.round((completedScenarios / scenarioKeys.length) * 100);
   const complete = Boolean(progress.completion);
   api.LMSSetValue('cmi.core.score.raw', String(score));
   api.LMSSetValue('cmi.core.lesson_status', complete ? 'completed' : 'incomplete');
-  api.LMSSetValue('cmi.core.lesson_location', complete ? 'completion' : `scenario-${completedScenarios + 1}`);
+  api.LMSSetValue('cmi.core.lesson_location', 'home');
   api.LMSSetValue('cmi.core.exit', complete ? '' : 'suspend');
-  api.LMSSetValue('cmi.suspend_data', JSON.stringify({ version: 1, progress }));
+  api.LMSSetValue('cmi.suspend_data', JSON.stringify({ version: 2, progress }));
   api.LMSCommit('');
 }
 
