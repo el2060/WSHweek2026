@@ -35,7 +35,6 @@ function Intro({ onOpen, onReset, progress, notice }: { onOpen: (view: View) => 
       <h1><span>Workplace safety</span><em>made practical.</em></h1>
       <p className="tagline">Pick a scenario, learn from each decision, come back anytime.</p>
       <div className="intro-actions"><button className="primary light-button" onClick={chooseScenario}>Choose a scenario<ArrowDown size={19}/></button></div>
-      <p className="intro-note">Any order · No score · Auto-saved</p>
     </div>
     <div className="wsh-hero-visual">
       <img src="/assets/clte-pantry-hero.png" alt="Illustration of colleagues in the CLTE pantry, with its patterned tile counter, black pendant lights, book display and white wire chairs." width="1672" height="941" fetchPriority="high"/>
