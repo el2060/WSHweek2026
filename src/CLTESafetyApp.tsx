@@ -34,7 +34,7 @@ function Intro({ onOpen, onReset, progress, notice }: { onOpen: (view: View) => 
       <div className="wsh-week-lockup"><strong>WSH Week</strong><b>2026</b></div>
       <p className="eyebrow light">CLTE staff activity</p>
       <h1><span>Workplace safety</span><em>made practical.</em></h1>
-      <p className="tagline">Choose a scenario. Learn from each decision. Come back for another, whenever you’re ready.</p>
+      <p className="tagline">Pick a scenario, learn from each decision, come back anytime.</p>
       <div className="intro-actions"><button className="primary light-button" onClick={chooseScenario}>Choose a scenario<ArrowDown size={19}/></button></div>
       <p className="intro-note">Any order · No score · Your progress is saved</p>
     </div>
@@ -44,11 +44,11 @@ function Intro({ onOpen, onReset, progress, notice }: { onOpen: (view: View) => 
     </div>
   </section>
   <section id="scenarios" className="scenario-hub" aria-labelledby="scenario-title">
-    <div className="scenario-hub-heading"><div><p className="eyebrow">Explore at your own pace</p><h2 id="scenario-title" tabIndex={-1}>Where would you like to start?</h2><p>Pick any scenario. Choose an answer to see the feedback, then move on—no need to get every answer right.</p></div><strong className="hub-count">{completed}/{scenarios.length} completed</strong></div>
+    <div className="scenario-hub-heading"><div><p className="eyebrow">Explore at your own pace</p><h2 id="scenario-title" tabIndex={-1}>Where would you like to start?</h2><p>Pick any scenario and answer to see what happens—there’s no wrong path.</p></div><strong className="hub-count">{completed}/{scenarios.length} completed</strong></div>
     {notice && <p className="hub-notice" role="status"><Check aria-hidden="true"/>{notice}</p>}
-    {completed === scenarios.length && <p className="hub-finished"><Sparkles aria-hidden="true"/> You’ve explored every scenario. Revisit any of them, or keep the contacts handy.</p>}
+    {completed === scenarios.length && <p className="hub-finished"><Sparkles aria-hidden="true"/> All done! Revisit any scenario, or keep the contacts handy.</p>}
     <div className="scenario-list">{scenarios.map(scenario => <button key={scenario.id} className="scenario-entry" onClick={()=>onOpen(scenario.id)} aria-label={`${progress[scenario.id]?'Revisit':'Open'} ${scenario.title}`}><img src={scenario.image} alt="" loading="lazy"/><span className="scenario-entry-copy"><span className="scenario-entry-meta">{scenario.detail} <span>{progress[scenario.id]?<><Check size={16}/>Completed</>:'Not completed'}</span></span><strong>{scenario.title}</strong><span>{scenario.description}</span></span><ArrowRight aria-hidden="true"/></button>)}</div>
-    <div className="home-resources"><div><h3>Useful extras</h3><p>Optional practice and contacts, available anytime.</p></div><button className="secondary" onClick={()=>onOpen('practice')}>Report practice <ArrowRight/></button><button className="secondary" onClick={()=>onOpen('guide')}>WSH contacts <ArrowRight/></button></div>
+    <div className="home-resources"><div><h3>Useful extras</h3><p>Optional practice and contacts, anytime.</p></div><button className="secondary" onClick={()=>onOpen('practice')}>Report practice <ArrowRight/></button><button className="secondary" onClick={()=>onOpen('guide')}>WSH contacts <ArrowRight/></button></div>
     <button className="intro-reset" onClick={onReset}><RotateCcw/>Reset saved progress</button>
   </section></>;
 }
@@ -60,13 +60,13 @@ function FireProtocolDialog({ open, recap, onClose }: { open: boolean; recap: bo
   if(!open)return null;
   return createPortal(<div className="fire-protocol-backdrop" onMouseDown={event=>{if(event.target===event.currentTarget)onClose()}}>
     <section className="fire-protocol-dialog" role="dialog" aria-modal="true" aria-labelledby="fire-protocol-title" aria-describedby="fire-protocol-description">
-      <div className="fire-protocol-head"><div><p className="eyebrow">{recap?'Fire evacuation recap':'Optional reference'}</p><h2 id="fire-protocol-title">Fire emergency protocol</h2><p id="fire-protocol-description">A 33-second visual overview of the CLTE office evacuation response.</p></div><button ref={closeRef} className="fire-protocol-close" onClick={onClose} aria-label="Close emergency protocol"><X/></button></div>
+      <div className="fire-protocol-head"><div><p className="eyebrow">{recap?'Fire evacuation recap':'Optional reference'}</p><h2 id="fire-protocol-title">Fire emergency protocol</h2><p id="fire-protocol-description">A 33-second overview of the evacuation response.</p></div><button ref={closeRef} className="fire-protocol-close" onClick={onClose} aria-label="Close emergency protocol"><X/></button></div>
       <video ref={videoRef} controls preload="metadata" playsInline poster="/assets/fire-emergency-protocol-cover.png" aria-label="Animated fire emergency protocol overview">
         <source src="/assets/fire-emergency-protocol.mp4" type="video/mp4"/>
         Your browser does not support embedded video.
       </video>
       <div className="fire-protocol-summary" aria-label="Protocol summary"><strong>Leave</strong><span>Follow</span><span>Gather</span><span>Account</span></div>
-      <p className="fire-protocol-note"><Info/> Follow fire wardens and current posted evacuation instructions.</p>
+      <p className="fire-protocol-note"><Info/> Follow fire wardens and posted instructions.</p>
     </section>
   </div>,document.body);
 }
@@ -75,32 +75,32 @@ function EvacuationScene({ onComplete }: { onComplete: () => void }) {
   const [routeStage,setRouteStage]=useState(0); const [photoIndex,setPhotoIndex]=useState(0); const [answers,setAnswers]=useState<Record<number,string>>(()=>{try{const saved=JSON.parse(localStorage.getItem('clte-fire-answers-v1')||'{}');return saved&&typeof saved==='object'&&!Array.isArray(saved)?saved:{}}catch{return{}}}); const [mapOpen,setMapOpen]=useState(false); const [protocolOpen,setProtocolOpen]=useState(false);
   const routeStages=[
     {id:'exit',label:'Exit',location:'Block 27 · Pantry',situation:'The fire alarm sounds while you’re in the pantry.',photos:[['/assets/fire-route/route-01.webp','Pantry exit · open-door view'],['/assets/fire-route/route-02.webp','Pantry exit · approach view'],['/assets/fire-route/route-03.webp','Alternative exit · lift lobby view']],prompt:'What do you do first?',choices:[
-      {id:'evacuate',label:'Leave by the nearest safe exit',feedback:'Leave promptly. Follow exit signs and the fire warden. Use stairs, not lifts.',best:true},
-      {id:'bag',label:'Collect your bag from the desk',feedback:'Don’t delay to collect belongings. Leave by a safe exit and use stairs, not lifts.',best:false},
+      {id:'evacuate',label:'Leave by the nearest safe exit',feedback:'Leave now. Follow exit signs and the fire warden—stairs, not lifts.',best:true},
+      {id:'bag',label:'Collect your bag from the desk',feedback:'Don’t stop for belongings. Take the nearest safe exit and use stairs, not lifts.',best:false},
     ]},
     {id:'stairs',label:'Stairs',location:'Block 27 · Stairwell',situation:'The stairs are busy as colleagues head down.',photos:[['/assets/fire-route/route-04.webp','Middle staircase · entry'],['/assets/fire-route/route-05.webp','Mezzanine landing'],['/assets/fire-route/route-06.webp','First-floor landing']],prompt:'How do you go down?',choices:[
-      {id:'rush',label:'Hurry past others to clear the stairs',feedback:'Rushing past others can cause a fall. Walk steadily with the group and use the handrail.',best:false},
-      {id:'steady',label:'Walk steadily and use the handrail',feedback:'A steady pace and the handrail help prevent falls without disrupting the people behind you.',best:true},
+      {id:'rush',label:'Hurry past others to clear the stairs',feedback:'Rushing past others can cause a fall. Walk steadily and use the handrail.',best:false},
+      {id:'steady',label:'Walk steadily and use the handrail',feedback:'A steady pace and the handrail keep everyone moving safely.',best:true},
     ]},
     {id:'ground',label:'Ground',location:'Block 27 · Ground floor',situation:'Your usual path branches away from the evacuation group.',photos:[['/assets/fire-route/route-07.webp','Ground floor · DST Office'],['/assets/fire-route/route-08.webp','Route past Studio 27'],['/assets/fire-route/route-09.webp','Route beside OIC']],prompt:'Which way do you go?',choices:[
-      {id:'group',label:'Stay with the group on the walkway',feedback:'This route passes DST Office, Studio 27 and OIC towards Block 56. Follow the warden’s directions.',best:true},
-      {id:'own',label:'Take your usual route and meet them later',feedback:'Use the designated route with the group, not a familiar shortcut. Follow the warden’s directions.',best:false},
+      {id:'group',label:'Stay with the group on the walkway',feedback:'This route passes DST Office, Studio 27 and OIC to Block 56—follow the warden.',best:true},
+      {id:'own',label:'Take your usual route and meet them later',feedback:'Stick with the group’s route, not a familiar shortcut. Follow the warden.',best:false},
     ]},
     {id:'blk56',label:'Blk 56',location:'Block 56',situation:'A colleague starts towards the crossing in the photo.',photos:[['/assets/fire-route/route-10.webp','Block 56 · crossing beside the walkway']],prompt:'How do you respond?',choices:[
-      {id:'follow',label:'Follow them to keep together',feedback:'Stay on the walkway. Call them back—the crossing in this photo is not part of this route.',best:false},
-      {id:'stay',label:'Call them back to the walkway',feedback:'Keep the group on the walkway. A crossing can be safe for everyday use but not be part of this evacuation route.',best:true},
+      {id:'follow',label:'Follow them to keep together',feedback:'Stay on the walkway and call them back—this crossing isn’t part of the route.',best:false},
+      {id:'stay',label:'Call them back to the walkway',feedback:'Keep the group on the walkway. It’s a safe crossing day-to-day, just not on this route.',best:true},
     ]},
     {id:'junction',label:'Junction',location:'Admin Field approach',situation:'Your group reaches the marked crossing near Admin Field.',photos:[['/assets/fire-route/route-11.webp','T-junction near Admin Field'],['/assets/fire-route/route-12.webp','Zebra crossing to Admin Field']],prompt:'When do you cross?',choices:[
-      {id:'follow',label:'As soon as the group ahead moves',feedback:'Don’t assume traffic has stopped. Follow the warden’s directions and check it is safe before crossing.',best:false},
-      {id:'walkway',label:'When the warden directs and it is safe',feedback:'Use this marked crossing near Admin Field—not the one at Block 56. Follow the warden and check traffic.',best:true},
+      {id:'follow',label:'As soon as the group ahead moves',feedback:'Don’t assume traffic has stopped. Wait for the warden and check it’s safe.',best:false},
+      {id:'walkway',label:'When the warden directs and it is safe',feedback:'Use this marked crossing, not the one at Block 56. Follow the warden and check traffic.',best:true},
     ]},
     {id:'approach',label:'Approach',location:'Admin Field · Zone A',situation:'You’ve reached the field. A colleague stops on the approach walkway.',photos:[['/assets/fire-route/route-13.webp','Walkway around Admin Field']],prompt:'What do you suggest?',choices:[
-      {id:'zone',label:'Join CLTE in Zone A',feedback:'Gathering in Zone A keeps the approach clear for others and helps CLTE account for everyone.',best:true},
-      {id:'walkway',label:'Wait here for the rest of the group',feedback:'Waiting on the approach can block others. Continue to Zone A and join CLTE there.',best:false},
+      {id:'zone',label:'Join CLTE in Zone A',feedback:'Zone A keeps the approach clear and helps CLTE account for everyone.',best:true},
+      {id:'walkway',label:'Wait here for the rest of the group',feedback:'Waiting here blocks others. Head to Zone A and join CLTE.',best:false},
     ]},
     {id:'rollcall',label:'Roll call',location:'Admin Field · Zone A',situation:'During roll call, a colleague is unaccounted for.',photos:[['/assets/fire-route/route-14.webp','Admin Field · assembly point']],prompt:'What would help most?',choices:[
-      {id:'search',label:'Go back to check their desk',feedback:'Do not re-enter to search. Tell the warden who is missing and where they were last seen, if known.',best:false},
-      {id:'report',label:'Tell the warden where you last saw them',feedback:'Share their name and last known location, if known. Stay with CLTE; do not go back to search.',best:true},
+      {id:'search',label:'Go back to check their desk',feedback:'Don’t go back in to search. Tell the warden who’s missing and where you last saw them.',best:false},
+      {id:'report',label:'Tell the warden where you last saw them',feedback:'Share their name and last known location. Stay with CLTE—don’t go back to search.',best:true},
     ]},
   ];
   const stage=routeStages[routeStage]; const photo=stage.photos[photoIndex]||stage.photos[0]; const selected=stage.choices.find(choice=>choice.id===answers[routeStage]);
@@ -167,7 +167,7 @@ function ResetDialog({ open, onCancel, onConfirm }: { open: boolean; onCancel: (
   useEffect(()=>{if(open)cancelRef.current?.focus()},[open]);
   useEffect(()=>{if(!open)return;const close=(event:KeyboardEvent)=>{if(event.key==='Escape')onCancel()};document.addEventListener('keydown',close);return()=>document.removeEventListener('keydown',close)},[open,onCancel]);
   if(!open)return null;
-  return <div className="reset-backdrop" onMouseDown={event=>{if(event.target===event.currentTarget)onCancel()}}><section className="reset-dialog" role="dialog" aria-modal="true" aria-labelledby="reset-title" aria-describedby="reset-description"><RotateCcw/><p className="eyebrow">Start again</p><h2 id="reset-title">Reset your activity?</h2><p id="reset-description">This clears your saved progress and returns all scenarios to 0/5. Your answers will also be cleared.</p><div><button ref={cancelRef} className="secondary" onClick={onCancel}>Keep progress</button><button className="reset-confirm" onClick={onConfirm}>Reset activity</button></div></section></div>;
+  return <div className="reset-backdrop" onMouseDown={event=>{if(event.target===event.currentTarget)onCancel()}}><section className="reset-dialog" role="dialog" aria-modal="true" aria-labelledby="reset-title" aria-describedby="reset-description"><RotateCcw/><p className="eyebrow">Start again</p><h2 id="reset-title">Reset your activity?</h2><p id="reset-description">This clears your saved progress and answers, back to 0/5.</p><div><button ref={cancelRef} className="secondary" onClick={onCancel}>Keep progress</button><button className="reset-confirm" onClick={onConfirm}>Reset activity</button></div></section></div>;
 }
 
 export default function App() {
@@ -191,7 +191,7 @@ export default function App() {
   const complete=(key:ScenarioId|'practice'|'guide')=>{
     setProgress(current=>completeActivity(current,key));
     const title=scenarios.find(scenario=>scenario.id===key)?.title;
-    setNotice(title?`${title} complete. Choose another scenario whenever you’re ready.`:key==='practice'?'Report practice complete. Choose a scenario whenever you’re ready.':'Contacts reviewed. You can return to them anytime.');
+    setNotice(title?`${title} complete. Choose another scenario anytime.`:key==='practice'?'Report practice complete. Choose a scenario anytime.':'Contacts reviewed—come back anytime.');
     setView('intro');
   };
   const resetProgress=()=>{

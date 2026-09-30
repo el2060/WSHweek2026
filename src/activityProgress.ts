@@ -1,9 +1,9 @@
 export const scenarios = [
-  { id: 'office', title: 'Pantry hazards', label: 'Pantry', description: 'Explore five everyday hazards in the CLTE pantry.', image: '/assets/clte-pantry-hazards.png', detail: '5 decisions' },
-  { id: 'experiment', title: 'Experiment Room', label: 'Experiment Room', description: 'Spot equipment and shared-space hazards during a workshop.', image: '/assets/experiment-room/training-composite-avatars-v3.webp', detail: '4 decisions' },
+  { id: 'office', title: 'Pantry hazards', label: 'Pantry', description: 'Five everyday hazards in the CLTE pantry.', image: '/assets/clte-pantry-hazards.png', detail: '5 decisions' },
+  { id: 'experiment', title: 'Experiment Room', label: 'Experiment Room', description: 'Spot hazards in a shared workshop space.', image: '/assets/experiment-room/training-composite-avatars-v3.webp', detail: '4 decisions' },
   { id: 'evacuation', title: 'Fire evacuation', label: 'Fire', description: 'Follow the route from Block 27 to the assembly point.', image: '/assets/fire-route/route-01.webp', detail: '7 decisions' },
-  { id: 'walkway', title: 'Injury response', label: 'Injury', description: 'Practise responding when someone is hurt.', image: '/assets/walkway.webp', detail: '3 decisions' },
-  { id: 'haze', title: 'Haze response', label: 'Haze', description: 'Make everyday decisions when air quality changes.', image: '/assets/haze-response.png', detail: '3 decisions' },
+  { id: 'walkway', title: 'Injury response', label: 'Injury', description: 'Practise responding when someone’s hurt.', image: '/assets/walkway.webp', detail: '3 decisions' },
+  { id: 'haze', title: 'Haze response', label: 'Haze', description: 'Everyday decisions when air quality changes.', image: '/assets/haze-response.png', detail: '3 decisions' },
 ] as const;
 
 export type ScenarioId = typeof scenarios[number]['id'];

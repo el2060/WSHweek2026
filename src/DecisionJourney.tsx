@@ -64,6 +64,6 @@ export default function DecisionJourney({ kind, onComplete }: { kind: JourneyKin
       <details className="journey-reference" key={step}><summary>Quick reference</summary><ul>{definition.reference.map(item => <li key={item}><ReadingText>{item}</ReadingText></li>)}</ul><div>{definition.links.map(link => <a key={link.href} href={link.href} target="_blank" rel="noreferrer">{link.label}</a>)}</div></details>
     </div>
     <div className="journey-nav" role="group" aria-label="Situations — explore in any order">{definition.moments.map((item, index) => <button key={item.id} aria-current={step === index ? 'step' : undefined} onClick={() => moveTo(index)}><span>{isDone(index) ? <Check size={18} aria-hidden="true"/> : index + 1}</span>{item.label}{isDone(index) && <span className="sr-only"> — completed</span>}</button>)}</div>
-    <div className="journey-footnote"><p>{definition.safety ? `${definition.safety} This activity does not place calls or submit reports.` : 'Practice only · Nothing is submitted.'}</p></div>
+    <div className="journey-footnote"><p>{definition.safety ? `${definition.safety} This activity doesn’t place calls or submit reports.` : 'Practice only · Nothing is submitted.'}</p></div>
   </section>;
 }

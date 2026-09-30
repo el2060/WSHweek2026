@@ -13,20 +13,20 @@ export function clearExperimentRoomProgress() {
 
 const hazards: RoomHazard[] = [
   { id: 'aisle-cable', x: 18, y: 60, label: 'Damage', title: 'Damaged cable insulation', story: 'The cable crossing the floor has split insulation and exposed wiring.', choices: [
-  { id: 'small-tape', label: 'Cover the damaged section with tape', correct: false, feedback: 'Tape is not a reliable repair for damaged electrical insulation. Stop using the cable and keep people clear.' },
-  { id: 'reroute', label: 'Keep clear, warn others and report the cable', correct: true, feedback: 'Keep people clear with an electrical-hazard warning sign, isolate the supply if safe, and arrange replacement by an authorised person.' },
+  { id: 'small-tape', label: 'Cover the damaged section with tape', correct: false, feedback: 'Tape won’t fix damaged insulation reliably. Stop using the cable and keep people clear.' },
+  { id: 'reroute', label: 'Keep clear, warn others and report the cable', correct: true, feedback: 'Put up an electrical-hazard warning sign, isolate the supply if safe, and get an authorised person to replace it.' },
   ]},
   { id: 'aisle-bag', x: 92, y: 91, label: 'Caster', title: 'Detached chair caster', story: 'A caster has come away from the front-right chair, leaving it unstable.', choices: [
     { id: 'under-table', label: 'Keep the chair out of use and report it', correct: true, feedback: 'Move the chair aside without sitting on it, label it clearly and arrange a proper repair or replacement.' },
-    { id: 'table-edge', label: 'Push the caster back in and test it', correct: false, feedback: 'A loose caster may detach again under load. Do not test it by sitting—remove the chair from use.' },
+    { id: 'table-edge', label: 'Push the caster back in and test it', correct: false, feedback: 'A loose caster can give way again under load. Don’t test it by sitting—remove the chair from use.' },
   ]},
   { id: 'exit-route', x: 37, y: 69, label: 'Power', title: 'Overloaded power strip', story: 'Several plugs share a loose power strip, with its lead stretched across the floor.', choices: [
     { id: 'later', label: 'Tuck the strip beneath the nearest table', correct: false, feedback: 'That hides the problem but leaves the electrical load and trailing lead unsafe.' },
   { id: 'clear', label: 'Stop using it; ask an authorised person to check it', correct: true, feedback: 'Reduce the load, check the power requirement and route the supply safely before use.' },
   ]},
   { id: 'power-adapter', x: 73, y: 80, label: 'Spill', title: 'Liquid beside a power lead', story: 'A bottle has spilled onto the carpet beside connected equipment.', choices: [
-    { id: 'extend', label: 'Pick up the bottle and wipe around the cable', correct: false, feedback: 'Do not approach liquid near live equipment until the electrical risk has been controlled.' },
-  { id: 'stop', label: 'Keep clear; ask an authorised person to isolate power', correct: true, feedback: 'Prevent access, have the supply isolated by a competent person, then clean and inspect the area safely.' },
+    { id: 'extend', label: 'Pick up the bottle and wipe around the cable', correct: false, feedback: 'Don’t approach liquid near live equipment until the electrical risk has been controlled.' },
+  { id: 'stop', label: 'Keep clear; ask an authorised person to isolate power', correct: true, feedback: 'Keep people away, have the supply isolated by a competent person, then clean and inspect the area safely.' },
   ]},
 ];
 
@@ -81,7 +81,7 @@ export default function ExperimentRoomScene({ onComplete, onBack }: { onComplete
     </div>}
     <div className="experiment-hotspots" aria-label="Guided room hazards">{hazards.map(hazard => <button key={hazard.id} style={{left:`${hazard.x}%`,top:`${hazard.y}%`}} className={`${activeId === hazard.id ? 'active' : ''} ${isDone(hazard) ? 'done' : ''}`} aria-label={`Inspect ${hazard.title}`} onClick={() => inspect(hazard)}>{isDone(hazard) ? <Check/> : <><span/><small>{hazard.label}</small></>}</button>)}</div>
     <aside className={`experiment-panel ${active ? 'has-hazard' : 'is-brief'}`}>
-      {!active ? <div className="experiment-brief"><Eye/><p>Photo walkthrough</p><h2>Look around the room.</h2><span>Follow the soft pulse to inspect each hazard.</span></div> : <>
+      {!active ? <div className="experiment-brief"><Eye/><p>Photo walkthrough</p><h2>Look around the room.</h2><span>Follow the soft pulse to find each hazard.</span></div> : <>
         <p className="experiment-meta">{active.label} · {hazards.indexOf(active) + 1} of {hazards.length}</p><h2 ref={titleRef} tabIndex={-1}>{active.title}</h2><p className="experiment-story">{active.story}</p>
         <div className="experiment-choices" role="group" aria-label={active.title}>{active.choices.map(choice => <button key={choice.id} aria-pressed={selected?.id === choice.id} className={selected?.id === choice.id ? (choice.correct ? 'correct' : 'incorrect') : ''} onClick={() => setChoices(current => ({...current,[active.id]:choice.id}))}><span>{choice.label}</span>{selected?.id === choice.id && (choice.correct ? <Check/> : <X/>)}</button>)}</div>
         {selected && <div className={`experiment-feedback ${selected.correct ? 'correct' : 'incorrect'}`} role="status"><strong>{selected.correct ? 'Why this helps' : 'A safer next step'}</strong><p>{selected.feedback}</p>{active.id === 'aisle-cable' && selected.correct && <span className="experiment-sign-confirmation"><TriangleAlert/> Warning sign placed · Keep clear</span>}</div>}
