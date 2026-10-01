@@ -15,6 +15,7 @@ import './scene-visibility.css';
 import './hazard-focus.css';
 import './fire-route-photo.css';
 import './visual-scenario.css';
+import './scenario-closure.css';
 import { initializeScorm } from './scorm';
 
 initializeScorm();

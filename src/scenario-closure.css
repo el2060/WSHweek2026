@@ -1,0 +1,15 @@
+.scenario-closure-backdrop { position:fixed; inset:0; z-index:300; display:grid; place-items:center; padding:1.25rem; background:#08262c8f; backdrop-filter:blur(4px); animation:closureBackdropIn .18s ease-out; }
+.scenario-closure { width:min(30rem,100%); max-height:calc(100svh - 2.5rem); overflow:auto; padding:2rem; background:#fffdf7; color:var(--ink); border:1px solid #ffffffc9; border-radius:16px; box-shadow:0 18px 60px #03171c45; animation:closureIn .22s ease-out; }
+.scenario-closure-check { display:grid; place-items:center; width:44px; height:44px; margin-bottom:1.25rem; border-radius:50%; background:#dbeee5; color:#08615c; }
+.scenario-closure .eyebrow { margin:0 0 .5rem; color:#08615c; font-size:.8rem; letter-spacing:.08em; }
+.scenario-closure h2 { margin:0 0 1rem; font-size:clamp(1.8rem,4vw,2.25rem); line-height:1.15; letter-spacing:-.035em; }
+.scenario-closure h2:focus { outline:none; }
+.scenario-closure>p:not(.eyebrow):not(.scenario-closure-progress) { margin:0; font-size:1.125rem; line-height:1.55; color:var(--ink-2); }
+.scenario-closure-progress { margin:1.25rem 0 0; color:#536b67; font-size:.9375rem; line-height:1.5; }
+.scenario-closure-actions { display:flex; flex-wrap:wrap; align-items:center; gap:.5rem 1rem; padding-top:1.25rem; margin-top:1.25rem; border-top:1px solid var(--line); }
+.scenario-closure-actions button { min-height:48px; font-size:1rem; }
+.scenario-closure button:focus-visible { outline:3px solid #9d5a00; outline-offset:3px; }
+@keyframes closureBackdropIn { from { background:#08262c00; backdrop-filter:blur(0); } }
+@keyframes closureIn { from { opacity:0; transform:translateY(6px); } to { opacity:1; transform:translateY(0); } }
+@media(max-width:600px) { .scenario-closure { padding:1.5rem; } .scenario-closure-actions { flex-direction:column; align-items:stretch; gap:.5rem; } .scenario-closure-actions .primary { justify-content:center; } .scenario-closure-actions .text-button { justify-content:center; } }
+@media(prefers-reduced-motion:reduce) { .scenario-closure-backdrop,.scenario-closure { animation:none; } }

@@ -3,6 +3,7 @@ import { ArrowDown, ArrowRight, Check, ExternalLink, Eye, Flame, HeartHandshake,
 import { officialInfo } from './config';
 import CubicleScene, { clearCubicleProgress } from './CubicleScene';
 import FireRoutePhoto from './FireRoutePhoto';
+import ScenarioClosure from './ScenarioClosure';
 import OfficeScene, { clearOfficeProgress } from './OfficeScene';
 import ExperimentRoomScene, { clearExperimentRoomProgress } from './ExperimentRoomScene';
 import { InjuryScene, HazeScene, clearGuidedProgress } from './GuidedScenes';
@@ -111,7 +112,7 @@ function EvacuationScene({ onComplete }: { onComplete: () => void }) {
       <div className="pov-decision-head"><h3>{stage.prompt}</h3></div>
       <div className="pov-choices">{stage.choices.map((choice,index)=><button key={choice.id} aria-pressed={answers[routeStage]===choice.id} className={answers[routeStage]===choice.id?`selected ${choice.best?'safe':'risk'}`:''} onClick={()=>setAnswers(value=>({...value,[routeStage]:choice.id}))}><span>{answers[routeStage]===choice.id?(choice.best?<Check/>:<X/>):String.fromCharCode(65+index)}</span><strong>{choice.label}</strong></button>)}</div>
       {selected&&<div className={`pov-feedback ${selected.best?'good':'consider'}`} aria-live="polite"><Info/><div><strong>{selected.best?'Why this helps':'A safer next step'}</strong><p><ReadingText>{selected.feedback}</ReadingText></p></div></div>}
-      <div className="pov-actions"><button disabled={routeStage===0} onClick={()=>selectStage(routeStage-1)}><ArrowRight className="turn"/> Back</button>{allAnswered?<><button className="pov-complete-action" onClick={onComplete}>Finish & return home <ArrowRight/></button></>:routeStage<routeStages.length-1?<button disabled={!selected} onClick={()=>selectStage(routeStage+1)}>Next checkpoint <ArrowRight/></button>:<button disabled={!selected} onClick={reviewNext}>Next unanswered <ArrowRight/></button>}</div>
+      <div className="pov-actions"><button disabled={routeStage===0} onClick={()=>selectStage(routeStage-1)}><ArrowRight className="turn"/> Back</button>{allAnswered?<><button className="pov-complete-action" onClick={onComplete}>Finish scenario <ArrowRight/></button></>:routeStage<routeStages.length-1?<button disabled={!selected} onClick={()=>selectStage(routeStage+1)}>Next checkpoint <ArrowRight/></button>:<button disabled={!selected} onClick={reviewNext}>Next unanswered <ArrowRight/></button>}</div>
     </aside>
     <div className="pov-stage-rail" role="tablist" aria-label="Evacuation checkpoints, in order">{routeStages.map((item,index)=>{const done=hasAnswer(item.choices,answers[index]);const locked=index>openIndex;return <button key={item.id} role="tab" aria-selected={routeStage===index} aria-disabled={locked} disabled={locked} className={`${routeStage===index?'active':''} ${done?'done':''}`} onClick={()=>selectStage(index)}><span>{done?<Check/>:locked?<Lock size={14}/>:index+1}</span><strong>{item.label}</strong></button>})}</div>
     {mapOpen&&<div className="pov-map-backdrop" onMouseDown={event=>{if(event.target===event.currentTarget)setMapOpen(false)}}><div className="pov-map-dialog" role="dialog" aria-modal="true" aria-label="Block 27 to Admin Field route map"><button className="sheet-close" onClick={()=>setMapOpen(false)} aria-label="Close route map"><X/></button><img src="/assets/block27-admin-field-route.jpg" alt="Aerial emergency route map from Block 27 to Zone A at Admin Field."/><p><MapPin/><span><strong>Block 27 → Zone A, Admin Field</strong><small><ReadingText>Follow fire wardens and current posted evacuation instructions.</ReadingText></small></span></p></div></div>}
@@ -148,9 +149,11 @@ export default function App() {
   const [menu,setMenu]=useState(false);
   const [resetOpen,setResetOpen]=useState(false);
   const [view,setView]=useState<View>('intro');
+  const [finished,setFinished]=useState<ScenarioId | null>(null);
+  const completionTrigger=useRef<HTMLElement | null>(null);
   const [notice,setNotice]=useState('');
   const completed=useMemo(()=>scenarios.filter(scenario=>progress[scenario.id]).length,[progress]);
-  const open=(next:View)=>{setNotice('');setMenu(false);setView(next)};
+  const open=(next:View)=>{setFinished(null);setNotice('');setMenu(false);setView(next)};
   useEffect(()=>{
     setMenu(false);
     const frame=requestAnimationFrame(()=>{
@@ -163,16 +166,19 @@ export default function App() {
   },[view,notice]);
   const complete=(key:ScenarioId|'guide')=>{
     setProgress(current=>completeActivity(current,key));
-    const title=scenarios.find(scenario=>scenario.id===key)?.title;
-    setNotice(title?`${title} complete.`:'Contacts reviewed.');
-    setView('intro');
+    if(key==='guide'){setNotice('Contacts reviewed.');setView('intro')}
+    else { completionTrigger.current=document.activeElement as HTMLElement | null; setFinished(key); }
+  };
+  const returnHome=()=>{
+    const title=scenarios.find(scenario=>scenario.id===finished)?.title;
+    setFinished(null);setNotice(title?`${title} complete.`:'');setView('intro');
   };
   const resetProgress=()=>{
     clearGuidedProgress();clearOfficeProgress();clearExperimentRoomProgress();clearCubicleProgress();
     try{['clte-hazards-part','clte-safety-progress','clte-fire-answers-v1'].forEach(key=>localStorage.removeItem(key));sessionStorage.removeItem('clte-safety-progress')}catch{/* Storage is optional. */}
-    setProgress(initialProgress);setNotice('');setView('intro');setResetOpen(false);
+    setProgress(initialProgress);setFinished(null);setNotice('');setView('intro');setResetOpen(false);
   };
-  return <div className="app-shell standalone-app">
+  return <><div className="app-shell standalone-app" inert={finished !== null} aria-hidden={finished ? true : undefined}>
     <header>
       <button className="logo" onClick={()=>open('intro')} aria-label="Ngee Ann Polytechnic · CLTE workplace safety activity · Home"><img src="/assets/np-logo.png" alt="Ngee Ann Polytechnic"/></button>
       <nav className={menu?'open':''} aria-label="Scenarios · open in any order">{scenarios.map(scenario=><button key={scenario.id} aria-label={scenario.title} aria-description={progress[scenario.id]?'Completed':'Open scenario'} aria-current={view===scenario.id?'page':undefined} onClick={()=>open(scenario.id)} className={`${view===scenario.id?'current':''} ${progress[scenario.id]?'done':''}`}><span>{scenario.label}</span></button>)}</nav>
@@ -189,5 +195,5 @@ export default function App() {
       {view==='guide'&&<PocketGuide onComplete={()=>complete('guide')}/>}
     </div></main>
     <ResetDialog open={resetOpen} onCancel={()=>setResetOpen(false)} onConfirm={resetProgress}/>
-  </div>;
+  </div>{finished && <ScenarioClosure scenarioId={finished} completed={completed} returnFocusTo={completionTrigger.current} onHome={returnHome} onReview={()=>setFinished(null)}/>}</>;
 }
