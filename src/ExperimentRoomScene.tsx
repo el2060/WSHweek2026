@@ -5,28 +5,24 @@ import { hasAnswer } from './activityProgress';
 
 type RoomChoice = { id: string; label: string; correct: boolean; feedback: string };
 type RoomHazard = { id: string; x: number; y: number; label: string; title: string; story: string; choices: RoomChoice[] };
-const storageKey = 'clte-experiment-room-v1';
+const storageKey = 'clte-experiment-room-v2';
 
 export function clearExperimentRoomProgress() {
-  try { localStorage.removeItem(storageKey); } catch { /* Optional local progress. */ }
+  try { localStorage.removeItem(storageKey); localStorage.removeItem('clte-experiment-room-v1'); } catch { /* Optional local progress. */ }
 }
 
 const hazards: RoomHazard[] = [
-  { id: 'aisle-cable', x: 18, y: 60, label: 'Damage', title: 'Damaged cable insulation', story: 'The cable crossing the floor has split insulation and exposed wiring.', choices: [
+  { id: 'aisle-cable', x: 18, y: 66, label: 'Damage', title: 'Damaged cable insulation', story: 'The cable crossing the floor has split insulation and exposed wiring.', choices: [
   { id: 'small-tape', label: 'Cover the damaged section with tape', correct: false, feedback: 'Tape won’t fix damaged insulation reliably. Stop using the cable and keep people clear.' },
-  { id: 'reroute', label: 'Keep clear, warn others and report the cable', correct: true, feedback: 'Put up an electrical-hazard warning sign, isolate the supply if safe, and get an authorised person to replace it.' },
+  { id: 'reroute', label: 'Keep clear, warn others and report the cable', correct: true, feedback: 'Keep people away and ask an authorised person to isolate the supply and replace the damaged cable.' },
   ]},
-  { id: 'aisle-bag', x: 92, y: 91, label: 'Caster', title: 'Detached chair caster', story: 'A caster has come away from the front-right chair, leaving it unstable.', choices: [
+  { id: 'aisle-bag', x: 88, y: 94, label: 'Caster', title: 'Detached chair caster', story: 'A caster has come away from the front-right chair, leaving it unstable.', choices: [
     { id: 'under-table', label: 'Keep the chair out of use and report it', correct: true, feedback: 'Move the chair aside without sitting on it, label it clearly and arrange a proper repair or replacement.' },
     { id: 'table-edge', label: 'Push the caster back in and test it', correct: false, feedback: 'A loose caster can give way again under load. Don’t test it by sitting—remove the chair from use.' },
   ]},
-  { id: 'exit-route', x: 37, y: 69, label: 'Power', title: 'Overloaded power strip', story: 'Several plugs share a loose power strip, with its lead stretched across the floor.', choices: [
+  { id: 'exit-route', x: 44, y: 78, label: 'Power', title: 'Overloaded power strip', story: 'The workshop devices together exceed the rated load of this power strip.', choices: [
     { id: 'later', label: 'Tuck the strip beneath the nearest table', correct: false, feedback: 'That hides the problem but leaves the electrical load and trailing lead unsafe.' },
-  { id: 'clear', label: 'Stop using it; ask an authorised person to check it', correct: true, feedback: 'Reduce the load, check the power requirement and route the supply safely before use.' },
-  ]},
-  { id: 'power-adapter', x: 73, y: 80, label: 'Spill', title: 'Liquid beside a power lead', story: 'A bottle has spilled onto the carpet beside connected equipment.', choices: [
-    { id: 'extend', label: 'Pick up the bottle and wipe around the cable', correct: false, feedback: 'Don’t approach liquid near live equipment until the electrical risk has been controlled.' },
-  { id: 'stop', label: 'Keep clear; ask an authorised person to isolate power', correct: true, feedback: 'Keep people away, have the supply isolated by a competent person, then clean and inspect the area safely.' },
+  { id: 'clear', label: 'Stop using it; ask an authorised person to check it', correct: true, feedback: 'Have the load and supply checked before restarting. Several occupied sockets alone do not prove overloading; the equipment ratings matter.' },
   ]},
 ];
 
@@ -73,7 +69,7 @@ export default function ExperimentRoomScene({ onComplete, onBack }: { onComplete
   const resetPhoto = () => { sceneRef.current?.style.setProperty('--room-look-x', '0px'); sceneRef.current?.style.setProperty('--room-look-y', '0px'); };
 
   return <section ref={sceneRef} className={`experiment-room ${active ? 'has-focus' : ''}`} data-focus-side={active && active.x < 48 ? 'left' : 'right'} style={focusStyle} onPointerMove={movePhoto} onPointerLeave={resetPhoto}>
-    <div className="experiment-camera"><img src="/assets/experiment-room/training-composite-avatars-v3.webp" alt="Stylized 3D avatars taking part in a hands-on Experiment Room workshop, with laptops, training kits, refreshments and four safety hazards to inspect."/></div>
+    <div className="experiment-camera"><img src="/assets/experiment-room/training-illustrated-v4.png" alt="Hand-drawn colleagues in an Experiment Room workshop, with damaged cable insulation, a shared power strip and a detached chair caster to inspect."/></div>
     <div className="experiment-shade" aria-hidden="true"/><div className="experiment-focus" aria-hidden="true"/>
     <div className="experiment-heading"><p>Spot the hazard</p><h1>Experiment Room hazards</h1><span><MapPin/> Block 31 · Level 2</span></div>
     <div className="experiment-score" aria-live="polite"><strong>{count}/{hazards.length}</strong><span>explored</span></div>

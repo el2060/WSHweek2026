@@ -49,14 +49,7 @@ export const pantryHotspots = [
       { id: 'warn', label: 'Leave it there and tell people to be careful', correct: false, feedback: 'A warning alone won’t stop a passing sleeve or bag. Move the mug back from the edge, handle inward.' },
     ],
   },
-  {
-    id: 'cupboard', label: 'Cupboard', title: 'Cupboard door left open', x: 86, y: 66,
-    body: '', prompt: 'You’ll need another cup soon. What should you do?',
-    options: [
-      { id: 'ajar', label: 'Leave it partly open for the next person', correct: false, feedback: 'Even partly open, the door still juts into the aisle. Close it fully between uses so people can pass safely.' },
-      { id: 'close', label: 'Close it fully between uses', correct: true, feedback: 'Closing the door clears the obstruction. If it won’t close properly, keep people clear and report the defect.' },
-    ],
-  },
+
 ];
 
 export const wetDecisions = [

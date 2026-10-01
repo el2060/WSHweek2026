@@ -1,0 +1,21 @@
+.cubicle-scene { padding: 7rem var(--activity-gutter) 3rem; min-height: 100svh; background: #f2f0e7; }
+.cubicle-heading { display:flex; justify-content:space-between; align-items:center; gap:1rem; margin:0 auto 1.5rem; max-width:100rem; }
+.cubicle-heading h1 { font-size:clamp(1.8rem,3vw,3rem); margin:0; }
+.cubicle-heading>span { white-space:nowrap; color:#08615c; font-weight:700; }
+.cubicle-layout { display:grid; grid-template-columns:minmax(0,1.8fr) minmax(20rem,1fr); gap:1.5rem; max-width:100rem; margin:auto; align-items:start; }
+.cubicle-image { position:relative; }
+.cubicle-image img { width:100%; display:block; border-radius:1rem; }
+.cubicle-marker { position:absolute; transform:translate(-50%,-50%); display:grid; place-items:center; width:44px; height:44px; border:2px solid white; border-radius:50%; background:#143c40; color:white; font-weight:700; box-shadow:0 2px 8px #0005; }
+.cubicle-marker.active { background:#a34b2e; outline:4px solid #ffda8999; }
+.cubicle-picker { margin-top:1rem; display:flex; flex-wrap:wrap; gap:.5rem; }
+.cubicle-picker button { min-height:44px; padding:.6rem .8rem; border:1px solid #819c95; border-radius:.5rem; background:#fffdf7; color:#143c40; }
+.cubicle-picker button[aria-current] { background:#143c40; color:white; }
+.cubicle-panel { padding:1.5rem; border-radius:1rem; background:#fffdf7; border:1px solid #d2dbd1; }
+.cubicle-panel h2 { font-size:clamp(1.5rem,2vw,2rem); margin:.5rem 0 1rem; }
+.cubicle-panel p { font-size:1.125rem; line-height:1.5; }
+.cubicle-panel .eyebrow { font-size:.875rem; }
+.cubicle-actions { display:flex; flex-wrap:wrap; justify-content:flex-end; gap:.75rem; border-top:1px solid #d2dbd1; margin-top:1.25rem; padding-top:1rem; }
+.cubicle-scene button:focus-visible { outline:3px solid #9d5a00; outline-offset:3px; }
+@media(max-width:1100px) { .cubicle-layout { grid-template-columns:1fr; } .cubicle-panel { max-width:46rem; width:100%; justify-self:center; } }
+@media(max-width:600px) { .cubicle-scene { padding:5.5rem 1rem 2rem; } .cubicle-heading { align-items:start; } .cubicle-heading>span { font-size:.875rem; } .cubicle-panel { padding:1.125rem; } .cubicle-picker { display:grid; grid-template-columns:1fr 1fr; } }
+

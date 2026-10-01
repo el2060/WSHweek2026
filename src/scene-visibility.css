@@ -1,0 +1,59 @@
+/* Scenes own an uncropped image area. Questions and feedback never overlay it. */
+.app-shell #office.office-immersive,
+.app-shell .experiment-room,
+.app-shell .decision-journey,
+.app-shell .pov-response {
+  padding: 6.5rem var(--activity-gutter) 2rem;
+  min-height: 100svh;
+  background: #12343a;
+}
+.app-shell #office .scene-heading { position: static; max-width: none; width: fit-content; margin: 0 0 1rem; }
+.app-shell #office .office-workspace { display: grid; grid-template-columns: minmax(0,1.8fr) minmax(22rem,1fr); grid-template-areas: 'art panel' 'nav panel'; align-items:start; gap:1rem 1.5rem; min-height:0; padding:0; }
+.app-shell #office .office-context { grid-area:art; position:relative; inset:auto; width:100%; max-width:none; margin:0; overflow:visible; }
+.app-shell #office .scene-frame { position:relative; inset:auto; transform:none; width:100%; max-width:none; border-radius:.75rem; }
+.app-shell #office .scene-frame>img { width:100%; height:auto; aspect-ratio:auto; }
+.app-shell #office .hazard-panel { grid-area:panel; position:relative; inset:auto; width:100%; max-width:none; margin:0; padding:1.5rem; }
+.app-shell #office .hazard-picker { grid-area:nav; position:static; width:100%; max-width:none; margin:0; padding:0; display:flex; flex-wrap:wrap; }
+.app-shell #office .hazard-picker button { flex:1 1 7rem; }
+.app-shell #office .office-footnote { position:static; padding:1rem 0 0; }
+.app-shell #office .office-scene-shade { display:none; }
+
+.app-shell .experiment-room { display:grid; grid-template-columns:minmax(0,1.8fr) minmax(22rem,1fr); grid-template-areas:'heading score' 'art panel' 'back panel'; grid-template-rows:auto auto auto; gap:1rem 1.5rem; align-content:start; overflow:visible; }
+.experiment-room .experiment-heading { grid-area:heading; position:static; width:fit-content; }
+.experiment-room .experiment-score { grid-area:score; position:static; justify-self:end; align-self:center; }
+.experiment-room .experiment-camera { grid-area:art; position:relative; inset:auto; width:100%; height:auto; aspect-ratio:1672/941; z-index:0; border-radius:.75rem; animation:none; }
+.experiment-room .experiment-camera img { width:100%; height:auto; margin:0; object-fit:contain; transform:none; }
+.experiment-room .experiment-focus,.experiment-room .experiment-hotspots { grid-area:art; position:relative; inset:auto; width:100%; height:100%; min-height:0; align-self:stretch; }
+.experiment-room .experiment-focus { z-index:1; }
+.experiment-room .experiment-panel,.experiment-room[data-focus-side="left"] .experiment-panel { grid-area:panel; position:relative; inset:auto; width:100%; padding:1.5rem; align-self:start; }
+.experiment-room .experiment-back { grid-area:back; position:static; width:fit-content; margin:0; }
+.experiment-room .experiment-shade,.experiment-room .experiment-warning-sign { display:none; }
+.experiment-room .experiment-story,.experiment-room .experiment-choices button,.experiment-room .experiment-feedback p { font-size:1.125rem; }
+
+.app-shell .decision-journey { grid-template-columns:minmax(0,1.8fr) minmax(22rem,1fr); grid-template-rows:auto auto auto auto; grid-template-areas:'heading heading' 'art panel' 'nav panel' 'note note'; gap:1rem 1.5rem; align-content:start; }
+.decision-journey .journey-art { grid-area:art; position:relative; inset:auto; z-index:0; height:auto; border-radius:.75rem; align-self:start; }
+.decision-journey .journey-art img { width:100%; height:auto; object-fit:contain; }
+.decision-journey .journey-shade { display:none; }
+.decision-journey .journey-panel { align-self:start; padding:1.5rem; }
+.decision-journey .journey-nav { width:100%; padding:0; }
+
+.app-shell .pov-response { grid-template-columns:minmax(0,1.8fr) minmax(22rem,1fr); grid-template-rows:auto auto auto auto; grid-template-areas:'hud hud' 'art decision' 'context decision' 'rail rail'; gap:1rem 1.5rem; align-content:start; }
+.app-shell .pov-response .pov-camera { grid-area:art; position:relative; inset:auto; height:auto; width:100%; border-radius:.75rem; align-self:start; }
+.app-shell .pov-response .pov-camera img { width:100%; height:auto; object-fit:contain; transform:none; }
+.app-shell .pov-response .pov-shade { display:none; }
+.app-shell .pov-response .pov-hud { margin:0; }
+.app-shell .pov-response .pov-context { width:100%; max-width:none; margin:0; align-self:start; }
+.app-shell .pov-response .pov-decision { align-self:start; padding:1.5rem; }
+
+@media(max-width:1100px) {
+  .app-shell #office .office-workspace { grid-template-columns:minmax(0,1fr); grid-template-areas:'art' 'nav' 'panel'; }
+  .app-shell .experiment-room { grid-template-columns:minmax(0,1fr); grid-template-areas:'heading' 'score' 'art' 'panel' 'back'; }
+  .experiment-room .experiment-score { justify-self:start; }
+  .app-shell .decision-journey { grid-template-columns:minmax(0,1fr); grid-template-areas:'heading' 'art' 'panel' 'nav' 'note'; grid-template-rows:auto; }
+  .app-shell .pov-response { grid-template-columns:minmax(0,1fr); grid-template-areas:'hud' 'art' 'context' 'decision' 'rail'; grid-template-rows:auto; }
+}
+@media(max-width:600px) {
+  .app-shell #office.office-immersive,.app-shell .experiment-room,.app-shell .decision-journey,.app-shell .pov-response { padding:5rem 1rem 1.5rem; }
+  .app-shell #office .hazard-panel,.experiment-room .experiment-panel,.experiment-room[data-focus-side="left"] .experiment-panel,.decision-journey .journey-panel,.app-shell .pov-response .pov-decision { padding:1.125rem; }
+  .experiment-room .experiment-heading { max-width:none; }
+}

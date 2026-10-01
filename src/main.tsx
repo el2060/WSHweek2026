@@ -11,6 +11,7 @@ import './fire.css';
 import './journey.css';
 import './pantry.css';
 import './home-flow.css';
+import './scene-visibility.css';
 import { initializeScorm } from './scorm';
 
 initializeScorm();

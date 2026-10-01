@@ -48,17 +48,17 @@ export default function OfficeScene({ onComplete, nextLabel = 'Finish' }: { onCo
     <div className="office-workspace" ref={workspace}>
       <div className="office-context">
         <div className="scene-frame">
-          <img src="/assets/clte-pantry-hazards.png" alt="Illustrated CLTE pantry practice scene: spilled water, a bag and strap in the aisle, a trailing air purifier cable, a hot mug at the table edge and an open cupboard door."/>
+          <img src="/assets/clte-pantry-hazards-v2.png" alt="Illustrated CLTE pantry practice scene: spilled water, a bag and strap in the aisle, a trailing air purifier cable and a hot mug at the table edge."/>
           <svg className="pantry-mug-leader" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true"><line x1="43" y1="41" x2="40" y2="48"/></svg>
           {pantryHotspots.map((item, index) => { const locked = index > openIndex; return <button key={item.id} data-hazard={item.id} disabled={locked} aria-disabled={locked} className={`hazard-marker ${index === step ? 'current' : ''} ${isAnswered(item, choices) ? 'done' : ''}`} style={{ left: `var(--hazard-marker-left, ${item.x}%)`, top: `var(--hazard-marker-top, ${item.y}%)` }} aria-label={`Inspect: ${item.title}`} aria-current={index === step ? 'step' : undefined} onClick={() => choose(index)}>{isAnswered(item, choices) ? <Check size={20} aria-hidden="true"/> : locked ? <Lock size={16} aria-hidden="true"/> : index + 1}</button>; })}
         </div>
       </div>
       <div className="office-scene-shade" aria-hidden="true"/>
-      <div className="hazard-picker" role="group" aria-label="Five hazards, in order">
+      <div className="hazard-picker" role="group" aria-label={`${pantryHotspots.length} hazards, in order`}>
           {pantryHotspots.map((item, index) => { const locked = index > openIndex; return <button key={item.id} disabled={locked} aria-disabled={locked} aria-current={index === step ? 'step' : undefined} onClick={() => choose(index)}><span>{isAnswered(item, choices) ? <Check size={17} aria-hidden="true"/> : locked ? <Lock size={15} aria-hidden="true"/> : index + 1}</span>{item.label}{isAnswered(item, choices) && <span className="sr-only"> — completed</span>}</button>; })}
         </div>
       <div className="hazard-panel" ref={panel}>
-        <div className="hazard-panel-meta"><p className="eyebrow">{active.label} · {step + 1} of 5</p></div>
+        <div className="hazard-panel-meta"><p className="eyebrow">{active.label} · {step + 1} of {pantryHotspots.length}</p></div>
         <h3 ref={heading} tabIndex={-1}><ReadingText>{active.title}</ReadingText></h3>
         <div className="hazard-workbench" key={active.id}>
           <p className="hazard-prompt" id={`hazard-prompt-${active.id}`}><ReadingText>{active.prompt}</ReadingText></p>

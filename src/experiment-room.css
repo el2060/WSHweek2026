@@ -6,7 +6,7 @@
 }
 .experiment-camera,.experiment-shade,.experiment-focus { position: absolute; inset: var(--room-header) 0 0; pointer-events: none; }
 .experiment-camera { z-index: -3; overflow: hidden; animation: roomViewEnter .55s cubic-bezier(.2,.75,.25,1) both; background: #173139; }
-.experiment-camera img { width: calc(100% + 30px); height: calc(100% + 20px); margin: -10px -15px; display: block; object-fit: cover; transform: translate3d(var(--room-look-x),var(--room-look-y),0) scale(1.025); transition: transform .3s cubic-bezier(.2,.8,.2,1); }
+.experiment-camera img { width: 100%; height: 100%; margin: 0; display: block; object-fit: contain; }
 .experiment-shade { z-index: -2; background: linear-gradient(180deg,#09272e54,transparent 27%,transparent 57%,#071f26e8),linear-gradient(90deg,#071f266b,transparent 34%,transparent 72%,#071f262e); }
 .experiment-focus { z-index: 0; opacity: 0; background: #061d238f; transition: opacity .3s ease; -webkit-mask-image: radial-gradient(circle clamp(7.5rem,12vw,12rem) at var(--room-focus-x,50%) var(--room-focus-y,50%),transparent 0 52%,#000 86% 100%); mask-image: radial-gradient(circle clamp(7.5rem,12vw,12rem) at var(--room-focus-x,50%) var(--room-focus-y,50%),transparent 0 52%,#000 86% 100%); }
 .experiment-room.has-focus .experiment-focus { opacity: 1; }
@@ -62,7 +62,12 @@
 @keyframes roomViewEnter { from { opacity: .25; transform: scale(1.018); filter: blur(3px); } to { opacity: 1; transform: scale(1); filter: blur(0); } }
 @keyframes roomSignPlaced { from { opacity: 0; transform: translate(-50%,-42%) perspective(260px) rotateX(4deg) rotateY(8deg) scale(.78); } to { opacity: 1; transform: translate(-50%,-50%) perspective(260px) rotateX(4deg) rotateY(8deg) scale(1); } }
 @media(min-width:1440px) { .experiment-room { --room-header: 4.5rem; } }
-@media(max-width:900px) {
+@media(min-width:1281px) {
+  /* Keep the picture, focus mask and hotspots on the same uncropped plane. */
+  .experiment-room { min-height: calc(var(--room-header) + 100vw * .5625); }
+  .experiment-camera,.experiment-shade,.experiment-focus,.experiment-hotspots { height: calc(100vw * .5625); bottom: auto; }
+}
+@media(max-width:1280px) {
   .experiment-room { --room-header: 64px; min-height: 100svh; overflow: visible; padding-top: var(--room-header); background: #f8f3e8; color: var(--ink); }
   .experiment-camera { position: relative; inset: auto; width: 100%; height: auto; min-height: 0; aspect-ratio: 16 / 9; z-index: 0; }.experiment-camera img { width: 100%; height: 100%; margin: 0; object-fit: contain; transform: none; }
   .experiment-shade { top: var(--room-header); height: calc(100vw * .5625); bottom: auto; z-index: 1; background: linear-gradient(180deg,#09272e5c,transparent 30%,transparent 72%,#071f268f); }

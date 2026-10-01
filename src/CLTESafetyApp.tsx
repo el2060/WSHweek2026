@@ -2,6 +2,7 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { ArrowDown, ArrowRight, Check, CirclePlay, ExternalLink, Eye, Flame, HeartHandshake, Info, Lock, MapPin, Menu, Phone, RotateCcw, Sparkles, Wrench, X } from 'lucide-react';
 import { officialInfo } from './config';
+import CubicleScene, { clearCubicleProgress } from './CubicleScene';
 import OfficeScene, { clearOfficeProgress } from './OfficeScene';
 import ExperimentRoomScene, { clearExperimentRoomProgress } from './ExperimentRoomScene';
 import { InjuryScene, HazeScene, clearGuidedProgress } from './GuidedScenes';
@@ -195,7 +196,7 @@ export default function App() {
     setView('intro');
   };
   const resetProgress=()=>{
-    clearGuidedProgress();clearOfficeProgress();clearExperimentRoomProgress();
+    clearGuidedProgress();clearOfficeProgress();clearExperimentRoomProgress();clearCubicleProgress();
     try{['clte-hazards-part','clte-safety-progress','clte-fire-answers-v1'].forEach(key=>localStorage.removeItem(key));sessionStorage.removeItem('clte-safety-progress')}catch{/* Storage is optional. */}
     setProgress(initialProgress);setNotice('');setView('intro');setResetOpen(false);
   };
@@ -208,6 +209,7 @@ export default function App() {
     <main className="experience-stage"><div key={view} className="view-transition">
       {view==='intro'&&<Intro progress={progress} notice={notice} onReset={()=>setResetOpen(true)} onOpen={open}/>}
       {view==='office'&&<OfficeScene onComplete={()=>complete('office')}/>}
+      {view==='cubicles'&&<CubicleScene onComplete={()=>complete('cubicles')}/>}
       {view==='experiment'&&<ExperimentRoomScene onBack={()=>open('intro')} onComplete={()=>complete('experiment')}/>}
       {view==='evacuation'&&<EvacuationScene onComplete={()=>complete('evacuation')}/>}
       {view==='walkway'&&<InjuryScene onComplete={()=>complete('walkway')}/>}
