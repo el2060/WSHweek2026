@@ -1,0 +1,25 @@
+.hazard-focus { position:absolute; inset:0; z-index:1; pointer-events:none; border-radius:inherit; overflow:hidden; }
+.hazard-focus-overlay { display:block; width:100%; height:100%; opacity:1; transition:opacity .25s ease; }
+.hazard-focus-window { transition:x .3s ease,y .3s ease,width .3s ease,height .3s ease; }
+.hazard-focus.is-overview .hazard-focus-overlay { opacity:0; }
+.hazard-focus-toggle { position:absolute; top:12px; left:12px; display:flex; align-items:center; gap:8px; min-height:44px; padding:8px 12px; border:1px solid #ffffff80; border-radius:8px; background:#12343aee; color:#fffdf7; font-size:14px; font-weight:650; cursor:pointer; pointer-events:auto; box-shadow:0 2px 8px #0002; }
+.hazard-focus-toggle:hover { background:#215159; }
+.hazard-focus-toggle:focus-visible { outline:3px solid #ffe0a0; outline-offset:3px; }
+.cubicle-image { border-radius:1rem; isolation:isolate; }
+.cubicle-marker,.app-shell #office .hazard-marker { z-index:2; transition:opacity .2s ease,background .2s ease,box-shadow .2s ease; }
+.cubicle-marker:not(.active),.app-shell #office .hazard-marker:not(.current) { opacity:.38; box-shadow:none; }
+.cubicle-marker:not(.active):hover,.cubicle-marker:focus-visible,.app-shell #office .hazard-marker:not(:disabled):hover,.app-shell #office .hazard-marker:focus-visible { opacity:1; }
+.cubicle-marker.active,.app-shell #office .hazard-marker.current,.experiment-room .experiment-hotspots button.active { background:#143c40; color:white; border:2px solid white; outline:3px solid #f3c563; outline-offset:3px; box-shadow:0 3px 12px #06191f66; animation:none; }
+.app-shell #office .scene-frame::after { display:none; }
+.experiment-room .experiment-focus { display:none; }
+.experiment-room .experiment-camera { pointer-events:auto; }
+.experiment-room.has-focus .experiment-hotspots button:not(.active) { opacity:.38; transform:translate(-50%,-50%); pointer-events:auto; animation:none; box-shadow:none; }
+.experiment-room.has-focus .experiment-hotspots button:not(.active):disabled { pointer-events:none; opacity:.25; }
+.experiment-room.has-focus .experiment-hotspots button:not(.active):hover,.experiment-room.has-focus .experiment-hotspots button:focus-visible { opacity:1; }
+.experiment-room .experiment-hotspots button:not(.active)>small { display:none; }
+@media(max-width:600px) { .hazard-focus-toggle { top:8px; left:8px; padding:6px 9px; font-size:12px; gap:6px; } }
+@media(prefers-reduced-motion:reduce) { .hazard-focus-overlay,.hazard-focus-window,.cubicle-marker,.app-shell #office .hazard-marker { transition:none; } }
+
+/* Restore orientation cues when learners choose the overview. */
+.cubicle-image:has(.is-overview) .cubicle-marker,.app-shell #office .scene-frame:has(.is-overview) .hazard-marker:not(:disabled),.experiment-room:has(.is-overview) .experiment-hotspots button:not(:disabled) { opacity:1; }
+.app-shell #office:not([data-active-hazard="hot-mug"]) .pantry-mug-leader { display:none; }

@@ -1,8 +1,17 @@
 import { useEffect, useLayoutEffect, useRef, useState, type CSSProperties } from 'react';
 import { ArrowLeft, ArrowRight, Check, Lock, X } from 'lucide-react';
+import HazardFocus, { type FocusRegion } from './HazardFocus';
+
 import { pantryHotspots } from './config';
 import { ReadingText } from './ReadingText';
 import { hasAnswer } from './activityProgress';
+
+const focusRegions: FocusRegion[] = [
+  { x: 61, y: 70, width: 33, height: 28 },
+  { x: 38, y: 61, width: 26, height: 33 },
+  { x: 19, y: 71, width: 30, height: 28 },
+  { x: 35, y: 31, width: 18, height: 24 },
+];
 
 // One everyday situation, a tempting quick fix versus a safer action, and brief feedback.
 // No movement, scoring, drag-and-drop or repeated instruction panel.
@@ -49,6 +58,7 @@ export default function OfficeScene({ onComplete, nextLabel = 'Finish' }: { onCo
       <div className="office-context">
         <div className="scene-frame">
           <img src="/assets/clte-pantry-hazards-v2.png" alt="Illustrated CLTE pantry practice scene: spilled water, a bag and strap in the aisle, a trailing air purifier cable and a hot mug at the table edge."/>
+          <HazardFocus key={active.id} region={focusRegions[step]} label={active.label}/>
           <svg className="pantry-mug-leader" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true"><line x1="43" y1="41" x2="40" y2="48"/></svg>
           {pantryHotspots.map((item, index) => { const locked = index > openIndex; return <button key={item.id} data-hazard={item.id} disabled={locked} aria-disabled={locked} className={`hazard-marker ${index === step ? 'current' : ''} ${isAnswered(item, choices) ? 'done' : ''}`} style={{ left: `var(--hazard-marker-left, ${item.x}%)`, top: `var(--hazard-marker-top, ${item.y}%)` }} aria-label={`Inspect: ${item.title}`} aria-current={index === step ? 'step' : undefined} onClick={() => choose(index)}>{isAnswered(item, choices) ? <Check size={20} aria-hidden="true"/> : locked ? <Lock size={16} aria-hidden="true"/> : index + 1}</button>; })}
         </div>

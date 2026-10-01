@@ -1,6 +1,14 @@
 import { useEffect, useRef, useState } from 'react';
 import { ArrowLeft, ArrowRight, Check, X } from 'lucide-react';
 import './cubicle.css';
+import HazardFocus, { type FocusRegion } from './HazardFocus';
+
+const focusRegions: FocusRegion[] = [
+  { x: 10, y: 31, width: 33, height: 64 },
+  { x: 21, y: 20, width: 21, height: 18 },
+  { x: 85, y: 2, width: 14, height: 23 },
+  { x: 72, y: 2, width: 26, height: 85 },
+];
 
 const storageKey = 'clte-cubicles-v2';
 export const cubicleHazards = [
@@ -41,7 +49,7 @@ export default function CubicleScene({ onComplete }: { onComplete: () => void })
   return <section className="cubicle-scene">
     <div className="cubicle-heading"><div><p className="eyebrow">Spot the hazard · CLTE office</p><h1>Office cubicle hazards</h1></div><span>{count}/4 explored</span></div>
     <div className="cubicle-layout">
-      <div className="cubicle-visual"><div className="cubicle-image"><img src="/assets/clte-cubicle-hazards-v2.png" alt="Office cubicles with a low laptop, screen glare, a PC and monitor stored on a high cabinet and a colleague reaching from a wheeled chair."/>{cubicleHazards.map((h, i) => <button key={h.id} style={{ left: `${h.x}%`, top: `${h.y}%` }} className={`cubicle-marker ${i === step ? 'active' : ''}`} aria-label={`Inspect ${h.title}`} aria-current={i === step ? 'step' : undefined} onClick={() => choose(i)}>{choices[h.id] ? <Check size={20}/> : i + 1}</button>)}</div><div className="cubicle-picker" aria-label="Cubicle hazards">{cubicleHazards.map((h, i) => <button key={h.id} aria-current={i === step ? 'step' : undefined} onClick={() => choose(i)}>{i + 1}. {h.label}</button>)}</div></div>
+      <div className="cubicle-visual"><div className="cubicle-image"><img src="/assets/clte-cubicle-hazards-v2.png" alt="Office cubicles with a low laptop, screen glare, a PC and monitor stored on a high cabinet and a colleague reaching from a wheeled chair."/><HazardFocus key={active.id} region={focusRegions[step]} label={active.label}/>{cubicleHazards.map((h, i) => <button key={h.id} style={{ left: `${h.x}%`, top: `${h.y}%` }} className={`cubicle-marker ${i === step ? 'active' : ''}`} aria-label={`Inspect ${h.title}`} aria-current={i === step ? 'step' : undefined} onClick={() => choose(i)}>{choices[h.id] ? <Check size={20}/> : i + 1}</button>)}</div><div className="cubicle-picker" aria-label="Cubicle hazards">{cubicleHazards.map((h, i) => <button key={h.id} aria-current={i === step ? 'step' : undefined} onClick={() => choose(i)}>{i + 1}. {h.label}</button>)}</div></div>
       <div className="cubicle-panel"><p className="eyebrow">{active.label} · {step + 1} of 4</p><h2 ref={heading} tabIndex={-1}>{active.title}</h2><p>{active.prompt}</p><div className="hazard-destinations">{active.options.map(o => <button key={o.id} className={`hazard-choice ${selected?.id === o.id ? `selected ${o.correct ? 'correct' : 'incorrect'}` : ''}`} aria-pressed={selected?.id === o.id} onClick={() => setChoices(c => ({ ...c, [active.id]: o.id }))}><span>{o.label}</span>{selected?.id === o.id && (o.correct ? <Check/> : <X/>)}</button>)}</div><div aria-live="polite" role="status">{selected && <div className={`hazard-result ${selected.correct ? 'correct' : 'incorrect'}`}><strong>{selected.correct ? 'Why this helps' : 'A safer next step'}</strong><p>{selected.feedback}</p></div>}</div><div className="cubicle-actions">{step > 0 && <button className="text-button" onClick={() => choose(step - 1)}><ArrowLeft size={18}/>Back</button>}{count === 4 ? <button className="primary" onClick={onComplete}>Finish <ArrowRight size={18}/></button> : <button className="secondary" disabled={!selected} onClick={() => choose(step < 3 ? step + 1 : cubicleHazards.findIndex(h => !choices[h.id]))}>Next hazard <ArrowRight size={18}/></button>}</div></div>
     </div>
   </section>;

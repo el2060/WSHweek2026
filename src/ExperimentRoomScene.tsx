@@ -1,7 +1,15 @@
 import { type CSSProperties, useEffect, useRef, useState } from 'react';
 import { ArrowLeft, ArrowRight, Check, Eye, Lock, MapPin, TriangleAlert, X, Zap } from 'lucide-react';
 
+import HazardFocus, { type FocusRegion } from './HazardFocus';
+
 import { hasAnswer } from './activityProgress';
+
+const focusRegions: Record<string, FocusRegion> = {
+  'aisle-cable': { x: 5, y: 52, width: 28, height: 30 },
+  'aisle-bag': { x: 75, y: 75, width: 24, height: 24 },
+  'exit-route': { x: 32, y: 65, width: 25, height: 30 },
+};
 
 type RoomChoice = { id: string; label: string; correct: boolean; feedback: string };
 type RoomHazard = { id: string; x: number; y: number; label: string; title: string; story: string; choices: RoomChoice[] };
@@ -69,7 +77,7 @@ export default function ExperimentRoomScene({ onComplete, onBack }: { onComplete
   const resetPhoto = () => { sceneRef.current?.style.setProperty('--room-look-x', '0px'); sceneRef.current?.style.setProperty('--room-look-y', '0px'); };
 
   return <section ref={sceneRef} className={`experiment-room ${active ? 'has-focus' : ''}`} data-focus-side={active && active.x < 48 ? 'left' : 'right'} style={focusStyle} onPointerMove={movePhoto} onPointerLeave={resetPhoto}>
-    <div className="experiment-camera"><img src="/assets/experiment-room/training-illustrated-v4.png" alt="Hand-drawn colleagues in an Experiment Room workshop, with damaged cable insulation, a shared power strip and a detached chair caster to inspect."/></div>
+    <div className="experiment-camera"><img src="/assets/experiment-room/training-illustrated-v4.png" alt="Hand-drawn colleagues in an Experiment Room workshop, with damaged cable insulation, a shared power strip and a detached chair caster to inspect."/>{active && <HazardFocus key={active.id} region={focusRegions[active.id]} label={active.label}/>}</div>
     <div className="experiment-shade" aria-hidden="true"/><div className="experiment-focus" aria-hidden="true"/>
     <div className="experiment-heading"><p>Spot the hazard</p><h1>Experiment Room hazards</h1><span><MapPin/> Block 31 · Level 2</span></div>
     <div className="experiment-score" aria-live="polite"><strong>{count}/{hazards.length}</strong><span>explored</span></div>
