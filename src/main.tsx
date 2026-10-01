@@ -13,6 +13,7 @@ import './pantry.css';
 import './home-flow.css';
 import './scene-visibility.css';
 import './hazard-focus.css';
+import './fire-route-photo.css';
 import { initializeScorm } from './scorm';
 
 initializeScorm();

@@ -1,0 +1,44 @@
+/* The photo owns the movement; the learning workspace remains steady. */
+.app-shell .pov-response .pov-camera.route-photo { --photo-look-x:0%; --photo-look-y:0%; overflow:hidden; isolation:isolate; pointer-events:auto; background:#082128; }
+.route-photo-window { overflow:hidden; border-radius:inherit; }
+.app-shell .pov-response .route-photo-window img { display:block; width:100%; height:auto; margin:0; object-fit:contain; transform:none; animation:routePhotoReveal .35s ease-out; transition:transform .35s ease-out; }
+.route-photo-motion,.route-photo-controls { position:absolute; z-index:1; color:#fffdf7; background:#082128e8; border:1px solid #ffffff60; border-radius:8px; box-shadow:0 2px 8px #0002; }
+.route-photo-motion { display:none; position:static; align-items:center; gap:7px; padding:8px 12px; min-height:44px; font-size:13px; cursor:pointer; }
+.app-shell .pov-response .pov-tools .route-photo-motion { display:none; }
+.route-photo-controls { display:flex; align-items:center; left:50%; bottom:12px; transform:translateX(-50%); padding:2px; }
+.route-photo-controls button { display:grid; place-items:center; height:44px; width:44px; padding:0; border:0; border-radius:6px; background:transparent; color:inherit; cursor:pointer; }
+.route-photo-controls button:disabled { opacity:.3; cursor:default; }
+.route-photo-controls button:hover:not(:disabled),.route-photo-motion:hover { background:#21545b; }
+.route-photo-controls span { padding:0 10px; font-size:13px; font-weight:650; white-space:nowrap; }
+.app-shell .pov-response .pov-photo-caption { margin:.625rem 0 0; }
+@media(min-width:1101px) and (hover:hover) and (pointer:fine) and (prefers-reduced-motion:no-preference) {
+  .app-shell .pov-response .pov-tools .route-photo-motion { display:flex; }
+  .app-shell .pov-response .route-photo.has-motion .route-photo-window img { transform:translate3d(var(--photo-look-x),var(--photo-look-y),0) scale(1.024); }
+}
+@keyframes routePhotoReveal { from { opacity:.55; } to { opacity:1; } }
+@media(max-width:600px) { .route-photo-controls { bottom:8px; } }
+@media(prefers-reduced-motion:reduce) { .app-shell .pov-response .route-photo-window img { transform:none; transition:none; animation:none; } }
+
+/* Wide-screen route walkthrough: photograph fills the stage, decisions layer
+   over a calm scrim. All copy stays in normal flow as feedback grows. */
+@media(min-width:1101px) {
+  .app-shell .pov-response {
+    position:relative; isolation:isolate;
+    grid-template-columns:minmax(0,1fr) minmax(24rem,30rem);
+    grid-template-rows:auto minmax(29rem,1fr) auto;
+    grid-template-areas:'hud hud' 'context decision' 'rail rail';
+    gap:1.25rem 3rem; align-content:stretch;
+    padding:calc(var(--fire-header) + 1.25rem) var(--activity-gutter) 1.25rem;
+    min-height:100svh; background:#082128;
+  }
+  .app-shell .pov-response .pov-camera.route-photo { position:absolute; inset:var(--fire-header) 0 0; width:100%; height:calc(100% - var(--fire-header)); grid-area:auto; border-radius:0; z-index:0; }
+  .app-shell .pov-response .route-photo-window { position:absolute; inset:0; }
+  .app-shell .pov-response .route-photo-window img { width:100%; height:100%; object-fit:cover; object-position:38% center; }
+  .app-shell .pov-response .pov-shade { display:block; position:absolute; inset:var(--fire-header) 0 0; z-index:1; pointer-events:none; background:linear-gradient(180deg,#08212870,transparent 25%,transparent 55%,#082128dd),linear-gradient(90deg,transparent 40%,#08212866 100%); }
+  .app-shell .pov-response .pov-hud { grid-area:hud; align-items:start; }
+  .app-shell .pov-response .pov-decision { grid-area:decision; align-self:center; padding:1.5rem; background:#fffdf7f7; border:1px solid #ffffffb3; box-shadow:0 16px 50px #04191f40; backdrop-filter:blur(14px); }
+  .app-shell .pov-response .pov-context { grid-area:context; align-self:end; width:100%; max-width:36rem; margin:0; background:#082128eb; border:1px solid #ffffff38; padding:1rem; }
+  .app-shell .pov-response .pov-stage-rail { grid-area:rail; }
+
+  .route-photo-controls { display:none; }
+}

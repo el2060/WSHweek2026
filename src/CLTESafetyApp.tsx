@@ -1,7 +1,8 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
-import { ArrowDown, ArrowRight, Check, ExternalLink, Eye, Flame, HeartHandshake, Info, Lock, MapPin, Menu, Phone, RotateCcw, Sparkles, Wrench, X } from 'lucide-react';
+import { ArrowDown, ArrowRight, Check, ExternalLink, Eye, Flame, HeartHandshake, Info, Lock, MapPin, Menu, Move, Pause, Phone, RotateCcw, Sparkles, Wrench, X } from 'lucide-react';
 import { officialInfo } from './config';
 import CubicleScene, { clearCubicleProgress } from './CubicleScene';
+import FireRoutePhoto from './FireRoutePhoto';
 import OfficeScene, { clearOfficeProgress } from './OfficeScene';
 import ExperimentRoomScene, { clearExperimentRoomProgress } from './ExperimentRoomScene';
 import { InjuryScene, HazeScene, clearGuidedProgress } from './GuidedScenes';
@@ -52,7 +53,7 @@ function Intro({ onOpen, onReset, progress, notice }: { onOpen: (view: View) => 
 }
 
 function EvacuationScene({ onComplete }: { onComplete: () => void }) {
-  const [routeStage,setRouteStage]=useState(0); const [photoIndex,setPhotoIndex]=useState(0); const [answers,setAnswers]=useState<Record<number,string>>(()=>{try{const saved=JSON.parse(localStorage.getItem('clte-fire-answers-v1')||'{}');return saved&&typeof saved==='object'&&!Array.isArray(saved)?saved:{}}catch{return{}}}); const [mapOpen,setMapOpen]=useState(false);
+  const [routeStage,setRouteStage]=useState(0); const [photoIndex,setPhotoIndex]=useState(0); const [answers,setAnswers]=useState<Record<number,string>>(()=>{try{const saved=JSON.parse(localStorage.getItem('clte-fire-answers-v1')||'{}');return saved&&typeof saved==='object'&&!Array.isArray(saved)?saved:{}}catch{return{}}}); const [mapOpen,setMapOpen]=useState(false); const [photoMotion,setPhotoMotion]=useState(true);
   const routeStages=[
     {id:'exit',label:'Exit',location:'Block 27 · Pantry',situation:'The fire alarm sounds while you’re in the pantry.',photos:[['/assets/fire-route/route-01.webp','Pantry exit · open-door view'],['/assets/fire-route/route-02.webp','Pantry exit · approach view'],['/assets/fire-route/route-03.webp','Alternative exit · lift lobby view']],prompt:'What do you do first?',choices:[
       {id:'evacuate',label:'Leave by the nearest safe exit',feedback:'Leave now. Follow exit signs and the fire warden—stairs, not lifts.',best:true},
@@ -90,27 +91,18 @@ function EvacuationScene({ onComplete }: { onComplete: () => void }) {
   const openIndex=firstUnanswered===-1?routeStages.length-1:firstUnanswered;
   const reviewNext=()=>selectStage(firstUnanswered<0?0:firstUnanswered);
   const selectStage=(index:number)=>{setRouteStage(index);setPhotoIndex(0);setMapOpen(false)};
-  const moveCamera=(event:React.PointerEvent<HTMLElement>)=>{
-    if(mapOpen||event.pointerType!=='mouse'||!window.matchMedia('(min-width: 1101px) and (hover: hover) and (pointer: fine) and (prefers-reduced-motion: no-preference)').matches)return;
-    const box=event.currentTarget.getBoundingClientRect();
-    const x=Math.max(-.5,Math.min(.5,(event.clientX-box.left)/box.width-.5));
-    const y=Math.max(-.5,Math.min(.5,(event.clientY-box.top)/box.height-.5));
-    event.currentTarget.style.setProperty('--look-x',`${x*-18}px`);event.currentTarget.style.setProperty('--look-y',`${y*-12}px`);
-    event.currentTarget.style.setProperty('--tilt-x',`${y*.8}deg`);event.currentTarget.style.setProperty('--tilt-y',`${x*-.8}deg`);
-  };
-  const resetCamera=(event:React.PointerEvent<HTMLElement>)=>{event.currentTarget.style.setProperty('--look-x','0px');event.currentTarget.style.setProperty('--look-y','0px');event.currentTarget.style.setProperty('--tilt-x','0deg');event.currentTarget.style.setProperty('--tilt-y','0deg')};
-  return <section id="evacuation" className={`evacuation pov-response pov-stage-${routeStage} ${allAnswered?'pov-complete':''}`} onPointerMove={moveCamera} onPointerLeave={resetCamera}>
-    <div className="pov-camera" key={photo[0]}><img src={photo[0]} alt={photo[1]}/></div><div className="pov-shade" aria-hidden="true"/>
+  return <section id="evacuation" className={`evacuation pov-response pov-stage-${routeStage} ${allAnswered?'pov-complete':''}`}>
+    <FireRoutePhoto src={photo[0]} caption={photo[1]} index={photoIndex} count={stage.photos.length} onSelect={setPhotoIndex} paused={mapOpen} motion={photoMotion}/><div className="pov-shade" aria-hidden="true"/>
     <div className="pov-hud">
       <div className="pov-status"><span><Flame/> Fire evacuation</span><strong>Block 27 → Zone A</strong></div>
-      <div className="pov-tools"><button onClick={()=>setMapOpen(true)}><MapPin/> Route map</button></div>
+      <div className="pov-tools"><button className="route-photo-motion" aria-pressed={photoMotion} aria-label="Photo motion" onClick={()=>setPhotoMotion(value=>!value)}>{photoMotion?<Pause size={16}/>:<Move size={16}/>} {photoMotion?'Pause motion':'Enable motion'}</button><button onClick={()=>setMapOpen(true)}><MapPin/> Route map</button></div>
     </div>
     <div className="pov-context">
       {stage.photos.length>1&&<div className="pov-scene-gallery" aria-label="Real route views">
         <div className="pov-scene-gallery-head"><span><Eye/> Route photos</span><small>{stage.photos.length} views</small></div>
         <div className="pov-scene-thumbnails" style={{gridTemplateColumns:`repeat(${stage.photos.length},minmax(0,1fr))`}}>{stage.photos.map((view,index)=><button key={view[0]} type="button" className={photoIndex===index?'active':''} aria-pressed={photoIndex===index} aria-label={`Show route view ${index+1}: ${view[1]}`} onClick={()=>setPhotoIndex(index)}><img src={view[0]} alt=""/><span>View {index+1}</span></button>)}</div>
-        <p className="pov-photo-caption" aria-live="polite">{photo[1]}</p>
       </div>}
+      <p className="pov-photo-caption" aria-live="polite">{photo[1]}</p>
     </div>
     <aside className="pov-decision" aria-label={`Decision at ${stage.location}`}>
       <p className="pov-checkpoint">{String(routeStage+1).padStart(2,'0')} / 07 · {stage.location}</p>
