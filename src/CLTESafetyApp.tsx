@@ -67,7 +67,7 @@ function EvacuationScene({ onComplete }: { onComplete: () => void }) {
       {id:'group',label:'Stay with the group on the walkway',feedback:'This route passes DST Office, Studio 27 and OIC to Block 56—follow the warden.',best:true},
       {id:'own',label:'Take your usual route and meet them later',feedback:'Stick with the group’s route, not a familiar shortcut. Follow the warden.',best:false},
     ]},
-    {id:'blk56',label:'Blk 56',location:'Block 56',situation:'A colleague starts towards the crossing in the photo.',photos:[['/assets/fire-route/route-10.webp','Block 56 · crossing beside the walkway']],prompt:'How do you respond?',choices:[
+    {id:'blk56',label:'Blk 56',location:'Block 56',situation:'A colleague starts walking towards the crossing shown in the photo.',photos:[['/assets/fire-route/route-10.webp','Block 56 · crossing beside the walkway']],prompt:'How do you respond?',choices:[
       {id:'follow',label:'Follow them to keep together',feedback:'Stay on the walkway and call them back—this crossing isn’t part of the route.',best:false},
       {id:'stay',label:'Call them back to the walkway',feedback:'Keep the group on the walkway. It’s a safe crossing day-to-day, just not on this route.',best:true},
     ]},
@@ -92,7 +92,7 @@ function EvacuationScene({ onComplete }: { onComplete: () => void }) {
   const reviewNext=()=>selectStage(firstUnanswered<0?0:firstUnanswered);
   const selectStage=(index:number)=>{setRouteStage(index);setPhotoIndex(0);setMapOpen(false)};
   return <section id="evacuation" className={`evacuation pov-response pov-stage-${routeStage} ${allAnswered?'pov-complete':''}`}>
-    <FireRoutePhoto src={photo[0]} caption={photo[1]} index={photoIndex} count={stage.photos.length} onSelect={setPhotoIndex} paused={mapOpen} motion={photoMotion}/><div className="pov-shade" aria-hidden="true"/>
+    <FireRoutePhoto src={photo[0]} caption={photo[1]} index={photoIndex} count={stage.photos.length} onSelect={setPhotoIndex} paused={mapOpen} motion={photoMotion} colleague={stage.id==='blk56'}/><div className="pov-shade" aria-hidden="true"/>
     <div className="pov-hud">
       <div className="pov-status"><span><Flame/> Fire evacuation</span><strong>Block 27 → Zone A</strong></div>
       <div className="pov-tools"><button className="route-photo-motion" aria-pressed={photoMotion} aria-label="Photo motion" onClick={()=>setPhotoMotion(value=>!value)}>{photoMotion?<Pause size={16}/>:<Move size={16}/>} {photoMotion?'Pause motion':'Enable motion'}</button><button onClick={()=>setMapOpen(true)}><MapPin/> Route map</button></div>
