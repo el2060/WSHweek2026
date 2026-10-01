@@ -2,6 +2,8 @@ import { useEffect, useRef, useState } from 'react';
 import { ArrowLeft, ArrowRight, Check, Lock, X } from 'lucide-react';
 import { journeys, type JourneyDefinition, type JourneyKind } from './journeyData';
 import { ReadingText } from './ReadingText';
+import VisualScenarioStage from './VisualScenarioStage';
+import type { FocusRegion } from './HazardFocus';
 import { hasAnswer } from './activityProgress';
 
 const storageKey = (kind: JourneyKind) => `clte-decisions-v1-${kind}`;
@@ -45,11 +47,10 @@ export default function DecisionJourney({ kind, onComplete }: { kind: JourneyKin
   };
   const next = () => moveTo(step < definition.moments.length - 1 ? step + 1 : Math.max(0, definition.moments.findIndex((_, index) => !isDone(index))));
 
+  const protectedRegion: FocusRegion = kind === 'haze' ? { x: 44, y: 26, width: 24, height: 61 } : step === 1 ? { x: 29, y: 23, width: 69, height: 63 } : { x: 29, y: 32, width: 29, height: 48 };
   return <section ref={scene} id={definition.id} className={`decision-journey journey-${kind}`}>
-    <div className="journey-art"><img key={moment.image} src={moment.image} alt={moment.alt}/></div>
-    <div className="journey-shade" aria-hidden="true"/>
     <div className="journey-heading"><h1>{definition.heading}</h1></div>
-    <div className="journey-panel" ref={panel}>
+    <VisualScenarioStage protectedRegion={protectedRegion} artwork={<div className="journey-art"><img key={moment.image} src={moment.image} alt={moment.alt}/></div>} decision={<div className="journey-panel" ref={panel}>
       <p className="journey-step">{moment.label} · {step + 1} of {definition.moments.length}</p>
       <h2 ref={heading} tabIndex={-1}><ReadingText>{moment.title}</ReadingText></h2>
       <p className="journey-story"><ReadingText>{moment.story}</ReadingText></p>
@@ -64,8 +65,7 @@ export default function DecisionJourney({ kind, onComplete }: { kind: JourneyKin
         {allDone ? <button className="primary" onClick={onComplete}>Finish<ArrowRight size={19}/></button> : <button className="secondary" disabled={!selected} onClick={next}>{step < definition.moments.length - 1 ? 'Next' : 'Next unanswered'}<ArrowRight size={19}/></button>}
       </div></div>
       <details className="journey-reference" key={step}><summary>Quick reference</summary><ul>{definition.reference.map(item => <li key={item}><ReadingText>{item}</ReadingText></li>)}</ul><div>{definition.links.map(link => <a key={link.href} href={link.href} target="_blank" rel="noreferrer">{link.label}</a>)}</div></details>
-    </div>
-    <div className="journey-nav" role="group" aria-label="Situations, in order">{definition.moments.map((item, index) => { const locked = index > openIndex; return <button key={item.id} disabled={locked} aria-disabled={locked} aria-current={step === index ? 'step' : undefined} onClick={() => moveTo(index)}><span>{isDone(index) ? <Check size={18} aria-hidden="true"/> : locked ? <Lock size={16} aria-hidden="true"/> : index + 1}</span>{item.label}{isDone(index) && <span className="sr-only"> — completed</span>}</button>; })}</div>
+    </div>} navigation={<div className="journey-nav" role="group" aria-label="Situations, in order">{definition.moments.map((item, index) => { const locked = index > openIndex; return <button key={item.id} disabled={locked} aria-disabled={locked} aria-current={step === index ? 'step' : undefined} onClick={() => moveTo(index)}><span>{isDone(index) ? <Check size={18} aria-hidden="true"/> : locked ? <Lock size={16} aria-hidden="true"/> : index + 1}</span>{item.label}{isDone(index) && <span className="sr-only"> — completed</span>}</button>; })}</div>}/>
     <div className="journey-footnote"><p>{definition.safety ? `${definition.safety} Practice only. Nothing is sent.` : 'Practice only · Nothing is submitted.'}</p></div>
   </section>;
 }

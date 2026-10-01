@@ -1,6 +1,7 @@
 import { type CSSProperties, useEffect, useRef, useState } from 'react';
 import { ArrowLeft, ArrowRight, Check, Eye, Lock, MapPin, TriangleAlert, X, Zap } from 'lucide-react';
 
+import VisualScenarioStage from './VisualScenarioStage';
 import HazardFocus, { type FocusRegion } from './HazardFocus';
 
 import { hasAnswer } from './activityProgress';
@@ -48,6 +49,7 @@ export default function ExperimentRoomScene({ onComplete, onBack }: { onComplete
   const [choices, setChoices] = useState(readChoices);
   const firstUnfinished = hazards.find(hazard => !hasAnswer(hazard.choices, choices[hazard.id]));
   const [activeId, setActiveId] = useState<string | null>(() => firstUnfinished?.id || hazards[0].id);
+  const [overviewId, setOverviewId] = useState<string | null>(null);
   const sceneRef = useRef<HTMLElement>(null);
   const titleRef = useRef<HTMLHeadingElement>(null);
   const active = hazards.find(hazard => hazard.id === activeId);
@@ -77,23 +79,16 @@ export default function ExperimentRoomScene({ onComplete, onBack }: { onComplete
   const resetPhoto = () => { sceneRef.current?.style.setProperty('--room-look-x', '0px'); sceneRef.current?.style.setProperty('--room-look-y', '0px'); };
 
   return <section ref={sceneRef} className={`experiment-room ${active ? 'has-focus' : ''}`} data-focus-side={active && active.x < 48 ? 'left' : 'right'} style={focusStyle} onPointerMove={movePhoto} onPointerLeave={resetPhoto}>
-    <div className="experiment-camera"><img src="/assets/experiment-room/training-illustrated-v4.png" alt="Hand-drawn colleagues in an Experiment Room workshop, with damaged cable insulation, a shared power strip and a detached chair caster to inspect."/>{active && <HazardFocus key={active.id} region={focusRegions[active.id]} label={active.label}/>}</div>
-    <div className="experiment-shade" aria-hidden="true"/><div className="experiment-focus" aria-hidden="true"/>
-    <div className="experiment-heading"><p>Spot the hazard</p><h1>Experiment Room hazards</h1><span><MapPin/> Block 31 · Level 2</span></div>
-    <div className="experiment-score" aria-live="polite"><strong>{count}/{hazards.length}</strong><span>explored</span></div>
-    {hazards[0].choices.some(choice=>choice.correct&&choice.id===choices[hazards[0].id]) && <div className="experiment-warning-sign" role="status" aria-label="Electrical hazard warning sign placed. Keep clear.">
-      <span className="experiment-warning-symbol"><TriangleAlert/><Zap/></span>
-      <strong>Electrical hazard</strong><small>Keep clear</small>
-    </div>}
-    <div className="experiment-hotspots" aria-label="Guided room hazards, in order">{hazards.map((hazard, index) => { const locked = index > openIndex; return <button key={hazard.id} style={{left:`${hazard.x}%`,top:`${hazard.y}%`}} disabled={locked} aria-disabled={locked} className={`${activeId === hazard.id ? 'active' : ''} ${isDone(hazard) ? 'done' : ''}`} aria-label={`Inspect ${hazard.title}`} onClick={() => inspect(hazard)}>{isDone(hazard) ? <Check/> : locked ? <Lock size={16}/> : <><span/><small>{hazard.label}</small></>}</button>; })}</div>
-    <aside className={`experiment-panel ${active ? 'has-hazard' : 'is-brief'}`}>
+    <div className="experiment-title-row"><div className="experiment-heading"><p>Spot the hazard</p><h1>Experiment Room hazards</h1><span><MapPin/> Block 31 · Level 2</span></div>
+    <div className="experiment-score" aria-live="polite"><strong>{count}/{hazards.length}</strong><span>explored</span></div></div>
+    <VisualScenarioStage protectedRegion={active ? focusRegions[active.id] : {x: 0, y: 0, width: 100, height: 100}} overview={overviewId === activeId} artwork={<div className="experiment-art"><div className="experiment-camera"><img src="/assets/experiment-room/training-illustrated-v4.png" alt="Hand-drawn colleagues in an Experiment Room workshop, with damaged cable insulation, a shared power strip and a detached chair caster to inspect."/>{active && <HazardFocus key={active.id} region={focusRegions[active.id]} label={active.label} onOverviewChange={value => setOverviewId(value ? active.id : null)}/>}</div><div className="experiment-hotspots" aria-label="Guided room hazards, in order">{hazards.map((hazard, index) => { const locked = index > openIndex; return <button key={hazard.id} style={{left:`${hazard.x}%`,top:`${hazard.y}%`}} disabled={locked} aria-disabled={locked} className={`${activeId === hazard.id ? 'active' : ''} ${isDone(hazard) ? 'done' : ''}`} aria-label={`Inspect ${hazard.title}`} onClick={() => inspect(hazard)}>{isDone(hazard) ? <Check/> : locked ? <Lock size={16}/> : <><span/><small>{hazard.label}</small></>}</button>; })}</div></div>} decision={<aside className={`experiment-panel ${active ? 'has-hazard' : 'is-brief'}`}>
       {!active ? <div className="experiment-brief"><Eye/><p>Photo walkthrough</p><h2>Look around the room.</h2><span>Follow the soft pulse to find each hazard.</span></div> : <>
         <p className="experiment-meta">{active.label} · {hazards.indexOf(active) + 1} of {hazards.length}</p><h2 ref={titleRef} tabIndex={-1}>{active.title}</h2><p className="experiment-story">{active.story}</p>
         <div className="experiment-choices" role="group" aria-label={active.title}>{active.choices.map(choice => <button key={choice.id} aria-pressed={selected?.id === choice.id} className={selected?.id === choice.id ? (choice.correct ? 'correct' : 'incorrect') : ''} onClick={() => setChoices(current => ({...current,[active.id]:choice.id}))}><span>{choice.label}</span>{selected?.id === choice.id && (choice.correct ? <Check/> : <X/>)}</button>)}</div>
         {selected && <div className={`experiment-feedback ${selected.correct ? 'correct' : 'incorrect'}`} role="status"><strong>{selected.correct ? 'Why this helps' : 'A safer next step'}</strong><p>{selected.feedback}</p>{active.id === 'aisle-cable' && selected.correct && <span className="experiment-sign-confirmation"><TriangleAlert/> Warning sign placed · Keep clear</span>}</div>}
         <div className="experiment-actions">{allDone ? <button className="primary" onClick={onComplete}>Finish <ArrowRight/></button> : <button className="secondary" disabled={!selected} onClick={nextHazard}>Next hazard <ArrowRight/></button>}</div>
       </>}
-    </aside>
+    </aside>} navigation={<div className="experiment-picker" role="group" aria-label="Experiment Room hazards, in order">{hazards.map((hazard, index) => <button key={hazard.id} disabled={index > openIndex} aria-current={activeId === hazard.id ? 'step' : undefined} onClick={() => inspect(hazard)}><span>{isDone(hazard) ? <Check size={17}/> : index > openIndex ? <Lock size={15}/> : index + 1}</span>{hazard.label}</button>)}</div>}/>
     <button className="experiment-back" onClick={onBack}><ArrowLeft/> Home</button>
   </section>;
 }

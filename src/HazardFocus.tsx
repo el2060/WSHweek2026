@@ -4,7 +4,7 @@ import { Focus, Scan } from 'lucide-react';
 export type FocusRegion = { x: number; y: number; width: number; height: number };
 
 /** Percent-based bounds follow the uncropped artwork at every screen size. */
-export default function HazardFocus({ region, label }: { region: FocusRegion; label: string }) {
+export default function HazardFocus({ region, label, onOverviewChange }: { region: FocusRegion; label: string; onOverviewChange?: (overview: boolean) => void }) {
   const maskId = useId();
   const [overview, setOverview] = useState(false);
   return <div className={`hazard-focus ${overview ? 'is-overview' : ''}`}>
@@ -13,7 +13,7 @@ export default function HazardFocus({ region, label }: { region: FocusRegion; la
       <rect width="100" height="100" fill="#17343b" fillOpacity=".64" mask={`url(#${maskId})`}/>
       <rect className="hazard-focus-window hazard-focus-outline" {...region} rx="3" fill="none" stroke="#ffe0a0" strokeWidth="2" vectorEffect="non-scaling-stroke"/>
     </svg>
-    <button className="hazard-focus-toggle" type="button" aria-pressed={overview} aria-label={`${overview ? 'Focus on hazard' : 'Show full scene'} for ${label}`} onClick={() => setOverview(value => !value)}>
+    <button className="hazard-focus-toggle" type="button" aria-pressed={overview} aria-label={`${overview ? 'Focus on hazard' : 'Show full scene'} for ${label}`} onClick={() => { setOverview(!overview); onOverviewChange?.(!overview); }}>
       {overview ? <Focus size={16}/> : <Scan size={16}/>}<span>{overview ? 'Focus on hazard' : 'Show full scene'}</span>
     </button>
   </div>;

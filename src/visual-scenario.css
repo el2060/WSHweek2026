@@ -1,0 +1,62 @@
+/* One uncropped, full-width illustration. Panels only overlay clear space. */
+.app-shell #office.office-immersive,.app-shell .cubicle-scene,.app-shell .experiment-room,.app-shell .decision-journey {
+  display:block; position:relative; isolation:isolate; min-height:100svh;
+  padding:6rem 0 1.5rem; background:#12343a; color:#fffdf7; overflow:visible;
+}
+.app-shell #office .scene-heading,.app-shell .cubicle-heading,.app-shell .experiment-title-row,.app-shell .decision-journey .journey-heading {
+  position:static; width:auto; max-width:none; margin:0 var(--activity-gutter) 1rem;
+}
+.app-shell #office .scene-heading,.app-shell .decision-journey .journey-heading { display:table; padding:.65rem 1rem; background:#0a3038; border-left:2px solid #9fe1d1; }
+.app-shell .cubicle-heading { padding:.65rem 1rem; border-left:2px solid #9fe1d1; }
+.app-shell .cubicle-heading .eyebrow { margin:0 0 .3rem; color:#b8eee2; }
+.app-shell #office .scene-heading h1,.app-shell .cubicle-heading h1,.app-shell .experiment-heading h1,.app-shell .journey-heading h1 { margin:0; color:#fffdf7; font-size:1.5rem; line-height:1.2; letter-spacing:-.025em; }
+.app-shell .cubicle-heading>span { color:#b8eee2; }
+.app-shell .experiment-title-row { display:flex; align-items:center; justify-content:space-between; gap:1rem; }
+.app-shell .experiment-title-row .experiment-heading,.app-shell .experiment-title-row .experiment-score { position:static; width:auto; margin:0; }
+
+.app-shell .scene-stage { position:relative; display:grid; grid-template-columns:minmax(0,1fr); gap:0; width:100%; max-width:none; margin:0; }
+.scene-art-slot { position:relative; grid-row:1; min-width:0; width:100%; }
+.scene-decision-slot { position:relative; grid-row:3; width:min(28rem,calc(100% - 2rem)); justify-self:center; z-index:4; margin:0 0 1rem; }
+.scene-stage[data-panel-placement="left"]>.scene-decision-slot,.scene-stage[data-panel-placement="right"]>.scene-decision-slot { position:absolute; grid-area:auto; margin:0; }
+.scene-stage[data-panel-placement="left"]>.scene-decision-slot { left:24px; }
+.scene-stage[data-panel-placement="right"]>.scene-decision-slot { right:24px; }
+.scene-navigation { grid-row:2; padding:1rem var(--activity-gutter); }
+
+.app-shell .scene-stage .office-context,.app-shell .scene-stage .scene-frame,.app-shell .scene-stage .cubicle-image,.app-shell .scene-stage .experiment-art,.app-shell .scene-stage .experiment-camera,.app-shell .scene-stage .journey-art {
+  position:relative; inset:auto; width:100%; height:auto; min-height:0; max-width:none; margin:0; padding:0; transform:none; aspect-ratio:auto; border-radius:0; z-index:0; animation:none; overflow:visible;
+}
+.app-shell .scene-stage .scene-frame>img,.app-shell .scene-stage .cubicle-image>img,.app-shell .scene-stage .experiment-camera>img,.app-shell .scene-stage .journey-art>img { display:block; width:100%; height:auto; min-height:0; max-height:none; margin:0; object-fit:contain; aspect-ratio:auto; transform:none; border-radius:0; }
+.app-shell .scene-stage .experiment-hotspots { position:absolute; inset:0; width:100%; height:100%; min-height:0; z-index:2; }
+.app-shell .scene-stage .hazard-panel,.app-shell .scene-stage .cubicle-panel,.app-shell .scene-stage .experiment-panel,.app-shell .scene-stage .journey-panel {
+  position:static; inset:auto; width:100%; min-height:0; max-width:none; max-height:none; margin:0; padding:1.5rem;
+  background:#fffdf7f7; color:var(--ink); border:1px solid #ffffffb3; border-radius:14px;
+  box-shadow:0 12px 45px #04191f3d; backdrop-filter:blur(12px); overflow:visible;
+}
+.app-shell .scene-navigation .hazard-picker,.app-shell .scene-navigation .cubicle-picker,.app-shell .scene-navigation .experiment-picker,.app-shell .scene-navigation .journey-nav {
+  display:flex; position:static; flex-wrap:wrap; gap:.5rem; width:100%; max-width:none; margin:0; padding:0;
+}
+.scene-navigation .experiment-picker button { display:flex; align-items:center; justify-content:center; gap:.5rem; min-height:48px; padding:.625rem 1rem; background:#10383d; color:white; border:1px solid #9fc2ba; border-radius:8px; font-size:1rem; font-weight:650; cursor:pointer; }
+.scene-navigation .experiment-picker button[aria-current],.app-shell .scene-navigation .cubicle-picker button[aria-current] { background:#08665e; color:white; border-color:#b8eee2; }
+.scene-navigation .experiment-picker button:disabled { opacity:.4; cursor:not-allowed; }
+.scene-navigation .experiment-picker button>span { display:grid; place-items:center; width:24px; height:24px; border:1px solid #ffffff80; border-radius:50%; font-size:13px; }
+.app-shell .office-footnote,.app-shell .journey-footnote { position:static; padding:0 var(--activity-gutter); }
+.app-shell .experiment-room>.experiment-back { position:static; width:fit-content; margin:0 var(--activity-gutter); color:white; background:transparent; }
+.scene-stage .hazard-focus-overlay { transition:opacity .25s ease; }
+.scene-stage .hazard-focus-window { transition:none; }
+
+@media(max-width:1100px) {
+  .app-shell #office.office-immersive,.app-shell .cubicle-scene,.app-shell .experiment-room,.app-shell .decision-journey { padding-top:5.5rem; }
+  .scene-decision-slot { width:min(46rem,calc(100% - 2rem)); }
+}
+@media(max-width:600px) {
+  .app-shell #office.office-immersive,.app-shell .cubicle-scene,.app-shell .experiment-room,.app-shell .decision-journey { padding-top:5rem; }
+  .app-shell #office .scene-heading,.app-shell .cubicle-heading,.app-shell .experiment-title-row,.app-shell .decision-journey .journey-heading { margin-inline:1rem; }
+  .app-shell .cubicle-heading { padding:.5rem .75rem; align-items:center; }
+  .app-shell #office .scene-heading h1,.app-shell .cubicle-heading h1,.app-shell .experiment-heading h1,.app-shell .journey-heading h1 { font-size:1.25rem; }
+  .app-shell .cubicle-heading .eyebrow { font-size:.65rem; }
+  .app-shell .scene-stage .hazard-panel,.app-shell .scene-stage .cubicle-panel,.app-shell .scene-stage .experiment-panel,.app-shell .scene-stage .journey-panel { padding:1.125rem; }
+  .scene-navigation { padding:1rem; }
+  .app-shell .scene-navigation .cubicle-picker { display:grid; grid-template-columns:1fr 1fr; }
+  .scene-navigation .experiment-picker button { flex:1; padding:.5rem .625rem; font-size:.875rem; }
+}
+@media(prefers-reduced-motion:reduce) { .scene-stage .hazard-focus-overlay { transition:none; } }

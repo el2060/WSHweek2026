@@ -1,5 +1,6 @@
-import { useEffect, useLayoutEffect, useRef, useState, type CSSProperties } from 'react';
+import { useEffect, useRef, useState, type CSSProperties } from 'react';
 import { ArrowLeft, ArrowRight, Check, Lock, X } from 'lucide-react';
+import VisualScenarioStage from './VisualScenarioStage';
 import HazardFocus, { type FocusRegion } from './HazardFocus';
 
 import { pantryHotspots } from './config';
@@ -29,7 +30,7 @@ export default function OfficeScene({ onComplete, nextLabel = 'Finish' }: { onCo
   const [choices, setChoices] = useState(readChoices);
   const [step, setStep] = useState(() => Math.max(0, pantryHotspots.findIndex(item => !isAnswered(item, choices))));
   const heading = useRef<HTMLHeadingElement>(null);
-  const workspace = useRef<HTMLDivElement>(null);
+  const [overviewId, setOverviewId] = useState<string | null>(null);
   const panel = useRef<HTMLDivElement>(null);
   const active = pantryHotspots[step];
   const selected = active.options.find(option => option.id === choices[active.id]);
@@ -39,14 +40,6 @@ export default function OfficeScene({ onComplete, nextLabel = 'Finish' }: { onCo
   const openIndex = firstUnanswered === -1 ? pantryHotspots.length - 1 : firstUnanswered;
   const applyChoice = (id: string) => setChoices(current => ({ ...current, [active.id]: id }));
   useEffect(() => { try { localStorage.setItem(storageKey, JSON.stringify(choices)); } catch { /* Optional storage. */ } }, [choices]);
-  useLayoutEffect(() => {
-    // Reserve space below the decision panel for every on-scene hazard marker.
-    const update = () => workspace.current?.style.setProperty('--office-panel-height', `${panel.current?.offsetHeight || 600}px`);
-    const observer = new ResizeObserver(update);
-    if (panel.current) observer.observe(panel.current);
-    update();
-    return () => observer.disconnect();
-  }, []);
   const choose = (index: number) => {
     setStep(index);
     requestAnimationFrame(() => { heading.current?.focus({ preventScroll: true }); if (window.matchMedia('(max-width: 900px)').matches) heading.current?.scrollIntoView({ block: 'start', behavior: 'instant' }); });
@@ -54,20 +47,14 @@ export default function OfficeScene({ onComplete, nextLabel = 'Finish' }: { onCo
   const next = () => choose(step < pantryHotspots.length - 1 ? step + 1 : Math.max(0, pantryHotspots.findIndex(item => !isAnswered(item, choices))));
   return <section id="office" className="chapter hazard-guided office-immersive" data-active-hazard={active.id} style={{'--focus-x':`${active.x}%`,'--focus-y':`${active.y}%`} as CSSProperties}>
     <div className="scene-heading"><h1>Pantry hazards</h1></div>
-    <div className="office-workspace" ref={workspace}>
-      <div className="office-context">
+    <VisualScenarioStage protectedRegion={focusRegions[step]} overview={overviewId === active.id} artwork={<div className="office-context">
         <div className="scene-frame">
           <img src="/assets/clte-pantry-hazards-v2.png" alt="Illustrated CLTE pantry practice scene: spilled water, a bag and strap in the aisle, a trailing air purifier cable and a hot mug at the table edge."/>
-          <HazardFocus key={active.id} region={focusRegions[step]} label={active.label}/>
+          <HazardFocus key={active.id} region={focusRegions[step]} label={active.label} onOverviewChange={value => setOverviewId(value ? active.id : null)}/>
           <svg className="pantry-mug-leader" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true"><line x1="43" y1="41" x2="40" y2="48"/></svg>
           {pantryHotspots.map((item, index) => { const locked = index > openIndex; return <button key={item.id} data-hazard={item.id} disabled={locked} aria-disabled={locked} className={`hazard-marker ${index === step ? 'current' : ''} ${isAnswered(item, choices) ? 'done' : ''}`} style={{ left: `var(--hazard-marker-left, ${item.x}%)`, top: `var(--hazard-marker-top, ${item.y}%)` }} aria-label={`Inspect: ${item.title}`} aria-current={index === step ? 'step' : undefined} onClick={() => choose(index)}>{isAnswered(item, choices) ? <Check size={20} aria-hidden="true"/> : locked ? <Lock size={16} aria-hidden="true"/> : index + 1}</button>; })}
         </div>
-      </div>
-      <div className="office-scene-shade" aria-hidden="true"/>
-      <div className="hazard-picker" role="group" aria-label={`${pantryHotspots.length} hazards, in order`}>
-          {pantryHotspots.map((item, index) => { const locked = index > openIndex; return <button key={item.id} disabled={locked} aria-disabled={locked} aria-current={index === step ? 'step' : undefined} onClick={() => choose(index)}><span>{isAnswered(item, choices) ? <Check size={17} aria-hidden="true"/> : locked ? <Lock size={15} aria-hidden="true"/> : index + 1}</span>{item.label}{isAnswered(item, choices) && <span className="sr-only"> — completed</span>}</button>; })}
-        </div>
-      <div className="hazard-panel" ref={panel}>
+      </div>} decision={<div className="hazard-panel" ref={panel}>
         <div className="hazard-panel-meta"><p className="eyebrow">{active.label} · {step + 1} of {pantryHotspots.length}</p></div>
         <h3 ref={heading} tabIndex={-1}><ReadingText>{active.title}</ReadingText></h3>
         <div className="hazard-workbench" key={active.id}>
@@ -78,8 +65,9 @@ export default function OfficeScene({ onComplete, nextLabel = 'Finish' }: { onCo
         </div>
         <div className="hazard-feedback" role="status" aria-live="polite" aria-atomic="true">{selected && <div className={`hazard-result ${selected.correct ? 'correct' : 'incorrect'}`}><strong>{selected.correct ? 'Why this helps' : 'A safer next step'}</strong><p><ReadingText>{selected.feedback}</ReadingText></p></div>}</div>
         <div className="hazard-footer"><div>{step > 0 && <button className="text-button" onClick={() => choose(step - 1)}><ArrowLeft size={18}/>Back</button>}{allDone ? <button className="primary" onClick={onComplete}>{nextLabel} <ArrowRight size={19}/></button> : <button className="secondary" disabled={!selected} onClick={next}>{step < pantryHotspots.length - 1 ? 'Next hazard' : 'Next unanswered hazard'}<ArrowRight size={19}/></button>}</div></div>
-      </div>
-    </div>
+      </div>} navigation={<div className="hazard-picker" role="group" aria-label={`${pantryHotspots.length} hazards, in order`}>
+          {pantryHotspots.map((item, index) => { const locked = index > openIndex; return <button key={item.id} disabled={locked} aria-disabled={locked} aria-current={index === step ? 'step' : undefined} onClick={() => choose(index)}><span>{isAnswered(item, choices) ? <Check size={17} aria-hidden="true"/> : locked ? <Lock size={15} aria-hidden="true"/> : index + 1}</span>{item.label}{isAnswered(item, choices) && <span className="sr-only"> — completed</span>}</button>; })}
+        </div>}/>
     <div className="office-footnote"><p className="hazard-safety-note"><ReadingText>Not safe to fix? Keep clear and ask for help.</ReadingText></p></div>
   </section>;
 }
